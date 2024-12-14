@@ -63,7 +63,7 @@ json_df user_stats = json_data("path/to/users.json")
 
 ```python
 import pandas as pd
-df = pd.read_csv(sales_data)  # Global variable linked to CSV file
+df = sales_data  # Global variable linked to CSV file
 ```
 
 ---
