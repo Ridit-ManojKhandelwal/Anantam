@@ -34,10 +34,7 @@ data = {
 }
 df = pd.DataFrame(data)
 # Chart system will detect this DataFrame and visualize it interactively
-```
-```
 
----
 
 ### 2. Global Variable System
 The **Global Variable System** allows users to manage variables across the entire IDE workspace effortlessly.
