@@ -53,7 +53,7 @@ The **Global Variable System** in Anantam allows for effortless data sharing and
 
 #### 💡 Example (Manual Variable Creation in Infx):
 
-```infx
+```python
 excel_df sales_data = excel_data("path/to/sales.xlsx")
 csv_df revenue_stats = csv_data("path/to/revenue.csv")
 json_df user_stats = json_data("path/to/users.json")
