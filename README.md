@@ -76,10 +76,7 @@ Post-beta, Anantam will introduce several cutting-edge features aimed at enhanci
 - **Advanced Debugger**: Enhanced debugging tools with breakpoints, variable tracking, and flow visualization.
 - **AI-Powered Code Suggestions**: Intelligent autocomplete and context-aware code suggestions to speed up coding.
 - **Custom Language for Charts**: Full Infx language support for predefined chart creation templates.
-- **Multi-Language Support**: Future support for JavaScript, R, Julia, and more programming languages.
-- **Collaborative Coding**: Real-time collaboration tools for live editing and project sharing.
-- **Cloud Integration**: Seamless cloud platform integration for accessing datasets and resources.
-- **Data Analytics Toolkit**: Built-in tools for data cleaning, transformation, and real-time analysis.
+- **Multi-Language Support**: Future support for JavaScript, HTML, and more programming languages.
 
 ---
 
