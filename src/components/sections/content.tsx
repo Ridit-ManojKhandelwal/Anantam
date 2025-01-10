@@ -82,8 +82,8 @@ const ContentSection = React.memo((props: any) => {
       )}
       {Object.keys(folder_structure).length > 0 && active_files.length == 0 ? (
         <div className="no-selected-files">
-          {/* <PythonIcon />*/}
-          <SettingsComponent />
+          <PythonIcon />
+          {/* <SettingsComponent /> */}
         </div>
       ) : (
         <div className="content-inner">

@@ -521,8 +521,6 @@ body {
 
 .header-section {
   display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
 }
 
@@ -538,28 +536,46 @@ body {
 
 .header-section .header-main {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 4px;
+  padding-left: 8px;
   width: 100%;
+  justify-content: space-between; /* This ensures space between the icons-bar and project-info */
 }
 
-.header-section .header-main .text-container {
-  width: 40%;
-  height: 20px;
-  border: 1px solid #474747;
-  background-color: #2a2a2a;
-  border-radius: 5px;
+.action-bar {
+  justify-content: space-between; /* Space between the two child divs */
+}
+
+.action-bar > .project-info > button {
+  background: transparent;
+  border: none;
+  color: gray;
+}
+
+.icons-bar {
+  display: flex;
+  gap: 16px; /* Adjust spacing between icons */
+  align-items: center; /* Center align icons vertically */
+}
+
+.header-section .header-main .action-bar .icons-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 80%;
-  color: var(--sidebar-icon-color);
 }
 
-.header-section .header-main .text-container svg {
-  width: 13px !important;
-  height: 13px !important;
-  margin-right: 5px;
+.header-section .header-main .action-bar .icons-bar button {
+  border: none; /* Remove border for buttons */
+  padding: 0; /* Remove padding from the buttons */
+}
+
+.header-section .header-main .action-bar .icons-bar svg {
+  margin-right: 4px; /* Ensure there is space between the icon and button edge */
+}
+
+/* Apply border only between icons (not after the last one) */
+.header-section .header-main .action-bar .icons-bar button:not(:last-child) {
+  border-right: 1px solid gray;
+  margin-right: 8px; /* Space between icons */
 }
 
 .header-section .header-main > div:first-child {
@@ -567,7 +583,7 @@ body {
   align-items: center;
 }
 
-.header-section .header-main > div:first-child svg {
+.header-main .header-main .header-section .header-main > div:first-child svg {
   width: 18px !important;
   height: 18px !important;
 }
@@ -731,7 +747,7 @@ body {
 .settings-sidebar {
   width: 300px;
   border-right: 1px solid #333;
-  background: #252526;
+  background: #121212;
   padding: 10px;
   overflow: hidden;
 }
@@ -740,7 +756,7 @@ body {
 .settings-content {
   flex: 1;
   padding: 20px;
-  background: #1e1e1e;
+  background: #121212;
   overflow: hidden;
 }
 
@@ -897,4 +913,14 @@ body {
 .save-btn:hover {
   background-color: #555;
   color: #569cd6;
+}
+
+.icon-small > svg {
+  width: 15px;
+  height: 15px;
+}
+
+.tree-node.active {
+  border-left: 4px solid coral; /* Add coral color for the active option */
+  padding-left: 10px; /* Add some padding to make the border visible */
 }

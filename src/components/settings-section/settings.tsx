@@ -27,6 +27,7 @@ const treeData = [
 const SettingsComponent = React.memo(() => {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
+  const [activeOption, setActiveOption] = useState<string | null>(null);
   const settings = useAppSelector((state) => state.main.settings);
   const [theme, setTheme] = useState<string>(settings.theme);
   const [fontSize, setFontSize] = useState<number>(settings.fontSize);
@@ -241,9 +242,14 @@ const SettingsComponent = React.memo(() => {
             </Button>
           </Dropdown>
         </div>
-        <button className="save-btn" onClick={saveBasicSettings}>
+        <Button
+          onClick={saveBasicSettings}
+          style={{
+            width: "50%",
+          }}
+        >
           Save
-        </button>
+        </Button>
       </div>
     );
   };
@@ -411,9 +417,14 @@ const SettingsComponent = React.memo(() => {
             }}
           />
         </div>
-        <button className="save-btn" onClick={saveAdvancedSettings}>
+        <Button
+          onClick={saveAdvancedSettings}
+          style={{
+            width: "50%",
+          }}
+        >
           Save
-        </button>
+        </Button>
       </div>
     );
   };
@@ -428,10 +439,13 @@ const SettingsComponent = React.memo(() => {
     nodes.map((node) => (
       <div key={node.key} className="tree-item">
         <div
-          className={`tree-node ${expandedKeys.includes(node.key) ? "expanded" : ""}`}
-          onClick={() =>
-            node.children ? toggleExpand(node.key) : setSelectedKey(node.key)
-          }
+          className={`tree-node ${expandedKeys.includes(node.key) ? "expanded" : ""} 
+          ${activeOption === node.key ? "active-option" : ""}`} // Add active class
+          onClick={() => {
+            setSelectedKey(node.key);
+            setActiveOption(node.key); // Set active option on click
+            node.children ? toggleExpand(node.key) : null;
+          }}
         >
           {node.children && (
             <span

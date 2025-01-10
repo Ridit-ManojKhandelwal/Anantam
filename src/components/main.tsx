@@ -388,7 +388,7 @@ const MainComponent = React.memo((props: any) => {
   }, []);
 
   // useEffect(() => {
-  //   const socket: any = new WebSocket("ws://127.0.0.1:3000/python"); // Replace with your LSP server URL
+  //   const socket: any = new WebSocket("ws://127.0.0.1:3000/python");
 
   //   socket.onopen = () => {
   //     const reader = new WebSocketMessageReader(socket);
