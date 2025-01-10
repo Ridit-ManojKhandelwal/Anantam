@@ -100,8 +100,7 @@ The installation guide and software will be available soon at [mnovus.com](#). P
 
 Anantam is built using the following technologies:
 
-- **CodeMirror**: For modern, feature-rich code editing.
-- **Highlight.js**: For enhanced syntax highlighting.
+- **Monaco**: For modern, feature-rich code editing.
 - Additional open-source tools for a high-performance experience.
 
 Proper credits must be given to Anantam and its dependencies for any commercial use.
