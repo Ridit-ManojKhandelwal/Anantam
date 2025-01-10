@@ -76,7 +76,7 @@ Post-beta, Anantam will introduce several cutting-edge features aimed at enhanci
 
 ## Installation
 
-The installation guide and software will be available soon at [mnovus.com](mnovus.com). Please note the website is under development and will launch with the Beta release.
+The installation guide and software will be available soon at [mnovus.com](https://mnovus.com). Please note the website is under development and will launch with the Beta release.
 
 ---
 
