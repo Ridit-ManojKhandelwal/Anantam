@@ -109,7 +109,14 @@ const ContentSection = React.memo((props: any) => {
 
             {settings && (
               <div
-                onClick={() => handle_set_selected_file({ path: "settings" })}
+                onClick={() =>
+                  handle_set_selected_file({
+                    name: "settings",
+                    icon: <SettingsIcon />,
+                    path: "settings",
+                    is_touched: false,
+                  })
+                }
                 className={
                   "tab" + (active_file?.path === "settings" ? " active" : "")
                 }
