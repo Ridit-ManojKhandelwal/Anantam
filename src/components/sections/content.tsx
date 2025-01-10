@@ -62,7 +62,6 @@ const ContentSection = React.memo((props: any) => {
         } else if (_clone.length === 0) {
           dispatch(update_active_file(null)); // No tabs left
         }
-
         dispatch(update_active_files(_clone));
         useMainContextIn.handle_remove_editor(targetFile);
       }
@@ -83,7 +82,8 @@ const ContentSection = React.memo((props: any) => {
       )}
       {Object.keys(folder_structure).length > 0 && active_files.length == 0 ? (
         <div className="no-selected-files">
-          <PythonIcon />
+          {/* <PythonIcon />*/}
+          <SettingsComponent />
         </div>
       ) : (
         <div className="content-inner">

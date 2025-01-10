@@ -30,9 +30,6 @@ const MainComponent = React.memo((props: any) => {
   >([]);
   const dispatch = useAppDispatch();
   const active_files = useAppSelector((state) => state.main.active_files);
-  const folder_structure = useAppSelector(
-    (state) => state.main.folder_structure
-  );
   const settings = useAppSelector((state) => state.main.settings);
 
   const handle_set_editor = React.useCallback(
@@ -119,24 +116,95 @@ const MainComponent = React.memo((props: any) => {
 
         // Initialize Monaco editor
         editor_ref.current = monaco.editor.create(
-          document.querySelector(".editor-container"),
+          document.querySelector(".editor-container"), // Target container
           {
-            theme: settings.theme,
-            minimap: { enabled: settings.minimap ? true : false },
-            autoClosingBrackets: "always",
-            cursorBlinking: settings.cursorAnimation ? "smooth" : "blink",
-            autoIndent: "advanced",
-            cursorSmoothCaretAnimation: settings.smoothTyping ? "on" : "off",
-            smoothScrolling: true,
-            links: true,
-            linkedEditing: true,
-            quickSuggestions: true,
-            wrappingIndent: "indent",
-            formatOnType: settings.format ? true : false,
-            formatOnPaste: settings.format ? true : false,
-            fontSize: settings.fontSize,
-            fontFamily: settings.fontFamily,
-            tabSize: settings.tabSize,
+            // THEME SETTINGS
+            theme: settings.theme || "vs-dark", // Theme name
+            colorDecorators: true, // Show inline color decorators (e.g., color previews)
+
+            // MINIMAP
+            minimap: {
+              enabled: settings.minimap ?? true, // Enable/disable minimap
+              side: "right", // "right" or "left"
+              showSlider: "mouseover", // Slider behavior
+              renderCharacters: true, // Render actual characters in minimap
+              maxColumn: 120, // Max number of columns in the minimap
+            },
+
+            // CURSOR
+            cursorStyle: settings.cursorStyle || "line", // "line", "block", "underline"
+            cursorBlinking: settings.cursorAnimation ? "smooth" : "blink", // Cursor animation: "blink", "smooth", "phase", "expand"
+            cursorSmoothCaretAnimation: settings.smoothTyping ? "on" : "off", // Smooth caret animation
+
+            // EDITOR BEHAVIOR
+            autoClosingBrackets:
+              settings.autoClosingBracket || "languageDefined", // Auto close brackets
+            autoClosingQuotes: settings.autoClosingQuotes || "languageDefined", // Auto close quotes
+            autoSurround: settings.autoSurround || "languageDefined", // Auto surround text
+            tabCompletion: settings.tabCompletion ? "on" : "off", // Enable tab completion: "on", "off", "onlySnippets"
+            formatOnType: settings.format ?? true, // Format code while typing
+            formatOnPaste: settings.format ?? true, // Format code on paste
+            quickSuggestions: settings.quickSuggestions ?? true, // Show suggestions while typing
+            wordWrap: settings.wordWrap ? "on" : "off", // Word wrap: "on", "off", "bounded", "wordWrapColumn"
+            wrappingIndent: settings.wrappingIndent || "same", // Wrapping indentation
+            links: settings.links ?? true, // Detect links in code
+            linkedEditing: settings.linkedEditing ?? true, // Linked editing for HTML/XML tags
+
+            // INDENTATION
+            tabSize: settings.tabSize || 4, // Number of spaces per tab
+            insertSpaces: settings.insertSpaces ?? true, // Use spaces instead of tabs
+            autoIndent: settings.autoIndent || "full", // Auto indentation: "none", "keep", "brackets", "advanced", "full"
+
+            // FONT & APPEARANCE
+            fontSize: settings.fontSize || 14, // Font size
+            fontFamily:
+              settings.fontFamily ||
+              "Fira Code, Consolas, 'Courier New', monospace", // Font family
+            fontLigatures: settings.fontLigatures || true, // Enable font ligatures
+            lineNumbers: settings.lineNumbers || "on", // Line numbers: "on", "off", "relative", "interval"
+            lineDecorationsWidth: settings.lineDecorationsWidth || 20, // Width for line decorations
+            lineHeight: settings.lineHeight || 20, // Line height
+            glyphMargin: settings.glyphMargin ?? true, // Show glyph margin (e.g., for breakpoints)
+
+            // SCROLLING & ANIMATIONS
+            smoothScrolling: settings.smoothScrolling ?? true, // Enable smooth scrolling
+            scrollBeyondLastLine: settings.scrollBeyondLastLine ?? true, // Allow scrolling beyond last line
+            scrollbar: {
+              vertical: "visible", // Vertical scrollbar: "auto", "visible", "hidden"
+              horizontal: "visible", // Horizontal scrollbar: "auto", "visible", "hidden"
+              useShadows: true, // Use shadows in scrollbars
+              verticalScrollbarSize: 14, // Size of vertical scrollbar
+              horizontalScrollbarSize: 10, // Size of horizontal scrollbar
+            },
+
+            // HIGHLIGHTING & TOKENIZATION
+            renderWhitespace: settings.renderWhitespace || "boundary", // "none", "boundary", "selection", "all"
+            renderControlCharacters: settings.renderControlCharacters ?? true, // Render control characters
+            renderLineHighlight: settings.renderLineHighlight || "all", // Highlight current line: "none", "gutter", "line", "all"
+
+            // CODE LENS & OVERVIEWS
+            codeLens: settings.codeLens ?? true, // Show code lens
+            overviewRulerBorder: settings.overviewRulerBorder ?? true, // Show border for the overview ruler
+            overviewRulerLanes: settings.overviewRulerLanes || 3, // Number of lanes in the overview ruler
+
+            // MULTIPLE CURSORS
+            multiCursorModifier: settings.multiCursorModifier || "alt", // Modifier key for multiple cursors: "ctrlCmd", "alt"
+            multiCursorMergeOverlapping:
+              settings.multiCursorMergeOverlapping ?? true, // Merge overlapping cursors
+
+            // FIND & REPLACE
+            find: {
+              addExtraSpaceOnTop: true, // Add extra space for the find widget
+              autoFindInSelection: "always", // Auto find in selection
+            },
+
+            // OTHER SETTINGS
+            selectionClipboard: settings.selectionClipboard ?? true, // Copy selection to clipboard
+            copyWithSyntaxHighlighting:
+              settings.copyWithSyntaxHighlighting ?? true, // Enable syntax highlighting in copied text
+            suggestOnTriggerCharacters:
+              settings.suggestOnTriggerCharacters ?? true, // Suggest completions on trigger characters
+            acceptSuggestionOnEnter: settings.acceptSuggestionOnEnter || "on", // Accept suggestions on Enter: "on", "smart", "off"
           }
         );
 
@@ -160,6 +228,73 @@ const MainComponent = React.memo((props: any) => {
           });
         }
       });
+
+      // Define a custom dark theme
+      monaco.editor.defineTheme("dark", {
+        base: "vs-dark", // Use the base dark theme
+        inherit: true, // Inherit settings from the base theme
+        rules: [
+          // Python-specific token colors
+          { token: "keyword.python", foreground: "#c586c0" }, // Keywords
+          {
+            token: "comment.python",
+            foreground: "#6a9955",
+            fontStyle: "italic",
+          }, // Comments
+          { token: "string.python", foreground: "#ce9178" }, // Strings
+          { token: "number.python", foreground: "#b5cea8" }, // Numbers
+          { token: "variable.python", foreground: "#9cdcfe" }, // Variables
+          { token: "function.python", foreground: "#dcdcaa" }, // Function names
+
+          // JavaScript-specific token colors
+          { token: "keyword.js", foreground: "#569cd6" }, // Keywords
+          { token: "comment.js", foreground: "#6a9955", fontStyle: "italic" }, // Comments
+          { token: "string.js", foreground: "#d69d85" }, // Strings
+          { token: "number.js", foreground: "#b5cea8" }, // Numbers
+          { token: "variable.js", foreground: "#9cdcfe" }, // Variables
+          { token: "function.js", foreground: "#dcdcaa" }, // Function names
+
+          // HTML-specific token colors
+          { token: "tag.html", foreground: "#569cd6" }, // Tags
+          { token: "attribute.name.html", foreground: "#9cdcfe" }, // Attribute names
+          { token: "attribute.value.html", foreground: "#ce9178" }, // Attribute values
+          { token: "comment.html", foreground: "#6a9955", fontStyle: "italic" }, // Comments
+
+          // CSS-specific token colors
+          { token: "keyword.css", foreground: "#c586c0" }, // Keywords
+          { token: "comment.css", foreground: "#6a9955", fontStyle: "italic" }, // Comments
+          { token: "string.css", foreground: "#d69d85" }, // Strings
+          { token: "number.css", foreground: "#b5cea8" }, // Numbers
+          { token: "attribute.name.css", foreground: "#9cdcfe" }, // Attribute names
+
+          // JSON-specific token colors
+          { token: "property.json", foreground: "#9cdcfe" }, // Property names
+          { token: "string.value.json", foreground: "#d69d85" }, // String values
+          { token: "number.json", foreground: "#b5cea8" }, // Numbers
+          { token: "comment.json", foreground: "#6a9955", fontStyle: "italic" }, // Comments
+          { token: "keyword.json", foreground: "#c586c0" }, // Keywords
+        ],
+        colors: {
+          "editor.background": "#121212", // Set the background color
+          "editor.foreground": "#d4d4d4", // Set default text color
+          "editor.lineHighlightBackground": "#2a2a2a", // Highlighted line color
+          "editorCursor.foreground": "#ffffff", // Cursor color
+          "editor.selectionBackground": "#264f78", // Selection background
+          "editor.inactiveSelectionBackground": "#3a3d41", // Inactive selection
+          "editorLineNumber.foreground": "#858585", // Line numbers
+          "editorLineNumber.activeForeground": "#ffffff", // Active line number
+          "editorWhitespace.foreground": "#3e3e3e", // Whitespace markers
+          "editorIndentGuide.background": "#3a3a3a", // Indent guides
+          "editorIndentGuide.activeBackground": "#7a7a7a", // Active indent guides
+        },
+      });
+
+      if (settings.theme === "vs-dark") {
+        // Set the theme to "dark"
+        monaco.editor.setTheme("dark");
+      } else {
+        monaco.editor.setTheme("light");
+      }
     },
 
     [editor_files_ref.current, active_files] // Dependencies for react hook
@@ -291,7 +426,9 @@ const MainComponent = React.memo((props: any) => {
   // }, [lspConnection]);
 
   return (
-    <MainContext.Provider value={{ handle_set_editor, handle_remove_editor }}>
+    <MainContext.Provider
+      value={{ handle_set_editor, handle_remove_editor, handle_save_file }}
+    >
       <div
         className={`wrapper-component ${(settings.theme === "vs-dark" && "dark-mode") || "light-mode"}`}
         style={{ height: "100vh", display: "flex", flexDirection: "column" }}

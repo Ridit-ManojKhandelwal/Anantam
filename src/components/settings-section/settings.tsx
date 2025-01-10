@@ -9,7 +9,9 @@ import { ReactComponent as AngleRightIcon } from "../../assets/svg/r-chevron.svg
 import DropdownMenu from "../dropdown/dropdown";
 import PerfectScrollBar from "react-perfect-scrollbar";
 import { useAppSelector } from "../../shared/hooks";
-import { message } from "antd/es";
+import { Dropdown, Input, message, Button, InputNumber, Menu } from "antd/es";
+import type { MenuProps } from "antd";
+import { DownOutlined } from "@ant-design/icons/lib";
 
 const treeData = [
   {
@@ -58,13 +60,13 @@ const SettingsComponent = React.memo(() => {
 
   const saveBasicSettings = () => {
     try {
-      settings.cursorAnimation == cursorAnimation;
-      settings.fontFamily == fontFamily;
-      settings.fontSize == fontSize;
-      settings.format == format;
-      settings.minimap == minimap;
-      settings.smoothTyping == smoothTyping;
-      settings.theme == theme;
+      settings.cursorAnimation === cursorAnimation;
+      settings.fontFamily === fontFamily;
+      settings.fontSize === fontSize;
+      settings.format === format;
+      settings.minimap === minimap;
+      settings.smoothTyping === smoothTyping;
+      settings.theme === theme;
     } catch (err) {
       message.error(err);
     } finally {
@@ -73,20 +75,31 @@ const SettingsComponent = React.memo(() => {
   };
   const saveAdvancedSettings = () => {
     try {
-      settings.linkedEditing == linkedEditing;
-      settings.links == links;
-      settings.quickSuggestions == quickSuggestions;
-      settings.smoothScrolling == smoothScrolling;
-      settings.tabSize == tabSize;
-      settings.autoClosingBracket == autoClosingBracket;
-      settings.autoIndent == autoIndent;
-      settings.wrappingIndent == wrappingIndent;
+      settings.linkedEditing === linkedEditing;
+      settings.links === links;
+      settings.quickSuggestions === quickSuggestions;
+      settings.smoothScrolling === smoothScrolling;
+      settings.tabSize === tabSize;
+      settings.autoClosingBracket === autoClosingBracket;
+      settings.autoIndent === autoIndent;
+      settings.wrappingIndent === wrappingIndent;
     } catch (err) {
       message.error(err);
     } finally {
       message.success("Successfully Saved Settings");
     }
   };
+
+  // Define Menu items for Ant Design Dropdown
+  const menu = (items: string[], onSelect: (item: string) => void) => (
+    <Menu>
+      {items.map((item, index) => (
+        <Menu.Item key={index} onClick={() => onSelect(item)}>
+          {item}
+        </Menu.Item>
+      ))}
+    </Menu>
+  );
 
   const Editor = () => {
     return (
@@ -107,14 +120,13 @@ const SettingsComponent = React.memo(() => {
             <span>Font Size</span>
           </p>
           <p>Controls the font size in pixels.</p>
-          <input
-            type="text"
-            className="option-input"
-            value={fontSize} // Controlled component
-            onChange={
-              (e: React.ChangeEvent<HTMLInputElement>) =>
-                setFontSize(Number(e.target.value)) // Update on typing
-            }
+          <InputNumber
+            style={{
+              width: "50%",
+            }}
+            placeholder="Font Size"
+            value={fontSize}
+            onChange={(value) => setFontSize(value)}
           />
         </div>
         <div className="option">
@@ -123,12 +135,13 @@ const SettingsComponent = React.memo(() => {
             <span>Font Family</span>
           </p>
           <p>Controls the font family.</p>
-          <DropdownMenu
-            menuItems={["Monospace", "Arial", "Poppins"]}
-            onItemClick={(item) => {
-              setFontFamily(item);
+          <Input
+            style={{
+              width: "50%",
             }}
-            defaultValue={settings.fontFamily}
+            placeholder="Font Family"
+            value={fontFamily}
+            onChange={(e) => setFontFamily(e.target.value)}
           />
         </div>
         <div className="option">
@@ -137,13 +150,20 @@ const SettingsComponent = React.memo(() => {
             <span>Smooth Typing</span>
           </p>
           <p>Controls the smooth typing.</p>
-          <DropdownMenu
-            menuItems={["on", "off"]}
-            onItemClick={(item) => {
-              setSmoothTyping(item === "on" ? true : false);
-            }}
-            defaultValue={settings.smoothTyping ? "on" : "off"}
-          />
+          <Dropdown
+            overlay={menu(["On", "Off"], (item) =>
+              setSmoothTyping(item === "On")
+            )}
+          >
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {smoothTyping ? "On" : "Off"} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <div className="option">
           <p className="option-heading">
@@ -151,13 +171,20 @@ const SettingsComponent = React.memo(() => {
             <span>Smooth Cursor Animation</span>
           </p>
           <p>Controls the cursor animation.</p>
-          <DropdownMenu
-            menuItems={["on", "off"]}
-            onItemClick={(item) => {
-              setCursorAnimation(item === "on" ? true : false);
-            }}
-            defaultValue={settings.cursorAnimation ? "on" : "off"}
-          />
+          <Dropdown
+            overlay={menu(["On", "Off"], (item) =>
+              setCursorAnimation(item === "On")
+            )}
+          >
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {cursorAnimation ? "On" : "Off"} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <div className="option">
           <p className="option-heading">
@@ -165,13 +192,18 @@ const SettingsComponent = React.memo(() => {
             <span>Minimap</span>
           </p>
           <p>Controls the minimap.</p>
-          <DropdownMenu
-            menuItems={["on", "off"]}
-            onItemClick={(item) => {
-              setMiniMap(item === "on" ? true : false);
-            }}
-            defaultValue={settings.minimap ? "on" : "off"}
-          />
+          <Dropdown
+            overlay={menu(["On", "Off"], (item) => setMiniMap(item === "On"))}
+          >
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {minimap ? "On" : "Off"} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <div className="option">
           <p className="option-heading">
@@ -179,13 +211,18 @@ const SettingsComponent = React.memo(() => {
             <span>Format</span>
           </p>
           <p>Controls the format.</p>
-          <DropdownMenu
-            menuItems={["on", "off"]}
-            onItemClick={(item) => {
-              setFormat(item === "on" ? true : false);
-            }}
-            defaultValue={settings.format ? "on" : "off"}
-          />
+          <Dropdown
+            overlay={menu(["On", "Off"], (item) => setFormat(item === "On"))}
+          >
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {format ? "On" : "Off"} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <div className="option">
           <p className="option-heading">
@@ -193,13 +230,16 @@ const SettingsComponent = React.memo(() => {
             <span>Theme</span>
           </p>
           <p>Controls the theme.</p>
-          <DropdownMenu
-            menuItems={["dark", "light"]}
-            onItemClick={(item) => {
-              setTheme(item);
-            }}
-            defaultValue={settings.theme === "vs-dark" ? "dark" : "light"}
-          />
+          <Dropdown overlay={menu(["dark", "light"], (item) => setTheme(item))}>
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {theme === "vs-dark" ? "Dark" : "Light"} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <button className="save-btn" onClick={saveBasicSettings}>
           Save
@@ -218,13 +258,20 @@ const SettingsComponent = React.memo(() => {
             <span>Auto Closing Bracket</span>
           </p>
           <p>Controls auto closing brackets.</p>
-          <DropdownMenu
-            menuItems={["always", "languageDefined", "never"]}
-            onItemClick={(item) => {
-              setAutoClosingBracket(item);
-            }}
-            defaultValue={settings.autoClosingBracket}
-          />
+          <Dropdown
+            overlay={menu(["always", "languageDefined", "never"], (item) =>
+              setAutoClosingBracket(item)
+            )}
+          >
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {settings.autoClosingBracket} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <div className="option">
           <p className="option-heading">
@@ -232,13 +279,20 @@ const SettingsComponent = React.memo(() => {
             <span>Auto Indent</span>
           </p>
           <p>Controls auto indent.</p>
-          <DropdownMenu
-            menuItems={["advanced", "brackets"]}
-            onItemClick={(item) => {
-              setAutoIndent(item);
-            }}
-            defaultValue={settings.autoIndent}
-          />
+          <Dropdown
+            overlay={menu(["advanced", "bracket"], (item) =>
+              setAutoIndent(item)
+            )}
+          >
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {settings.autoIndent} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <div className="option">
           <p className="option-heading">
@@ -246,13 +300,20 @@ const SettingsComponent = React.memo(() => {
             <span>Smooth Scrolling</span>
           </p>
           <p>Controls the smooth scrolling.</p>
-          <DropdownMenu
-            menuItems={["on", "off"]}
-            onItemClick={(item) => {
-              setsmoothScrolling(item === "on" ? true : false);
-            }}
-            defaultValue={settings.smoothScrolling ? "on" : "off"}
-          />
+          <Dropdown
+            overlay={menu(["On", "Off"], (item) =>
+              setsmoothScrolling(item === "On")
+            )}
+          >
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {settings.smoothTyping ? "On" : "Off"} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <div className="option">
           <p className="option-heading">
@@ -260,13 +321,18 @@ const SettingsComponent = React.memo(() => {
             <span>Links</span>
           </p>
           <p>Controls the links.</p>
-          <DropdownMenu
-            menuItems={["on", "off"]}
-            onItemClick={(item) => {
-              setlinks(item === "on" ? true : false);
-            }}
-            defaultValue={settings.links ? "on" : "off"}
-          />
+          <Dropdown
+            overlay={menu(["On", "Off"], (item) => setlinks(item === "On"))}
+          >
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {settings.links ? "On" : "Off"} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <div className="option">
           <p className="option-heading">
@@ -274,13 +340,20 @@ const SettingsComponent = React.memo(() => {
             <span>Linked Editing</span>
           </p>
           <p>Controls the linkedEditing.</p>
-          <DropdownMenu
-            menuItems={["on", "off"]}
-            onItemClick={(item) => {
-              setlinkedEditing(item === "on" ? true : false);
-            }}
-            defaultValue={settings.linkedEditing ? "on" : "off"}
-          />
+          <Dropdown
+            overlay={menu(["On", "Off"], (item) =>
+              setlinkedEditing(item === "On")
+            )}
+          >
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {settings.linkedEditing ? "On" : "Off"} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <div className="option">
           <p className="option-heading">
@@ -288,13 +361,20 @@ const SettingsComponent = React.memo(() => {
             <span>Quick Suggestions</span>
           </p>
           <p>Controls the quickSuggestions.</p>
-          <DropdownMenu
-            menuItems={["on", "off"]}
-            onItemClick={(item) => {
-              setquickSuggestions(item === "on" ? true : false);
-            }}
-            defaultValue={settings.quickSuggestions ? "on" : "off"}
-          />
+          <Dropdown
+            overlay={menu(["On", "Off"], (item) =>
+              setquickSuggestions(item === "On")
+            )}
+          >
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {settings.quickSuggestions ? "On" : "Off"} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <div className="option">
           <p className="option-heading">
@@ -302,13 +382,20 @@ const SettingsComponent = React.memo(() => {
             <span>Wrapping Indent</span>
           </p>
           <p>Controls the wrappingIndent.</p>
-          <DropdownMenu
-            menuItems={["indent", "none"]}
-            onItemClick={(item) => {
-              setwrappingIndent(item);
-            }}
-            defaultValue={settings.wrappingIndent}
-          />
+          <Dropdown
+            overlay={menu(["indent", "none"], (item) =>
+              setwrappingIndent(item)
+            )}
+          >
+            <Button
+              style={{
+                width: "50%",
+                fontSize: "14px",
+              }}
+            >
+              {settings.wrappingIndent} <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
         <div className="option">
           <p className="option-heading">
@@ -316,12 +403,12 @@ const SettingsComponent = React.memo(() => {
             <span>Tab Size</span>
           </p>
           <p>Controls the tabSize.</p>
-          <DropdownMenu
-            menuItems={["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]}
-            onItemClick={(item) => {
-              settabSize(Number(item));
+          <InputNumber
+            placeholder="Tab Size"
+            defaultValue={settings.tabSize}
+            style={{
+              width: "50%",
             }}
-            defaultValue={String(settings.tabSize)}
           />
         </div>
         <button className="save-btn" onClick={saveAdvancedSettings}>

@@ -5,7 +5,7 @@
 
 :root {
   /* Dark Mode */
-  --main-bg: #1e1e1e;
+  --main-bg: #121212;
   --sidebar-text-color: #cccccc;
   --sidebar-icon-color: #868686;
   --sidebar-icon-active-color: #d7d7d7;
@@ -489,7 +489,7 @@ body {
 
 .content-inner .page-tabs-cont .tab:hover,
 .content-inner .page-tabs-cont .tab.active {
-  background-color: var(--main-bg);
+  background-color: #1e1e1e;
 }
 
 .content-inner .page-tabs-cont .tab.active::after {
@@ -720,7 +720,7 @@ body {
 /* Settings Container */
 .settings-container {
   display: flex;
-  width: fit-content;
+  width: 100%;
   height: fit-content;
   background: #1e1e1e;
   overflow-x: hidden;
