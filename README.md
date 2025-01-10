@@ -27,18 +27,6 @@ Anantam’s Custom Chart System offers an intuitive way to turn raw data into re
 - **Custom Language Support**: Use Infx—a flexible and user-friendly syntax—for seamless chart creation (coming soon).
 - **Chart Export**: Easily save charts in PNG, SVG, or JSON formats for sharing and collaboration.
 
-#### 💡 Example (Python):
-
-```python
-import pandas as pd
-
-data = {'Year': [2020, 2021, 2022], 'Revenue': [100, 150, 200]}
-df = pd.DataFrame(data)
-# Anantam automatically detects and visualizes this DataFrame
-```
-
----
-
 ### 📂 2. Global Variable System
 
 The **Global Variable System** in Anantam allows for effortless data sharing and access across your entire workspace. Variables can be globally defined and used without duplication, making data handling more efficient and less error-prone.
@@ -46,7 +34,6 @@ The **Global Variable System** in Anantam allows for effortless data sharing and
 #### ✅ Key Capabilities:
 
 - **Seamless Integration**: Effortlessly link variables to Excel, CSV, or JSON files.
-- **IDE-Wide Availability**: Access variables globally without reloading or redefining them in different parts of your project.
 - **Export to Other IDEs**: Export variables in code-ready formats for use in other development environments.
 - **Manual Variable Creation**: Create and manage variables through the Infx language for enhanced flexibility.
 - **Data Consistency**: Internal copies of data ensure consistency, stability, and version control.
@@ -62,8 +49,9 @@ json_df user_stats = json_data("path/to/users.json")
 #### 💡 Use in Python:
 
 ```python
-import pandas as pd
-df = sales_data  # Global variable linked to CSV file
+# Auto import pandas
+sales_data  # Global variable linked to CSV file and Prints a modern table for more info
+# also add placeholder line for other editors
 ```
 
 ---
@@ -73,20 +61,16 @@ df = sales_data  # Global variable linked to CSV file
 Post-beta, Anantam will introduce several cutting-edge features aimed at enhancing the development and data analysis experience:
 
 - **Auto Error Detection & Fixing**: Real-time error detection and auto-correction prompts.
-- **Advanced Debugger**: Enhanced debugging tools with breakpoints, variable tracking, and flow visualization.
-- **AI-Powered Code Suggestions**: Intelligent autocomplete and context-aware code suggestions to speed up coding.
 - **Custom Language for Charts**: Full Infx language support for predefined chart creation templates.
-- **Multi-Language Support**: Future support for JavaScript, HTML, and more programming languages.
-
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 | Milestone           | Details                                      | Timeline            |
 |---------------------|----------------------------------------------|---------------------|
-| Beta Release        | Core Python support, charting & variable system | ~1 Month            |
-| Post-Beta Expansion | Infx language support, debugger, AI tools   | Coming Soon         |
-| Future Additions    | Multi-language support, cloud tools, collaboration | Long-term Roadmap   |
+| Beta Release        | Core Python support, variable system | ~1 Month            |
+| Release        | Advanced Python support, charting system | ~5 Month            |
+| After Release Expansion | Infx language support  | ~1 year         |
 
 ---
 
