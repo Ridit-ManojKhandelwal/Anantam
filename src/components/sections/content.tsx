@@ -9,7 +9,7 @@ import {
 import { IFolderStructure, TActiveFile } from "../../shared/types";
 import { ReactComponent as TimesIcon } from "../../assets/svg/times.svg";
 import { ReactComponent as SettingsIcon } from "../../assets/svg/settings.svg";
-import { ReactComponent as LogoIcon } from "../../assets/svg/logo.svg";
+import { ReactComponent as PythonIcon } from "../../assets/svg/py.svg";
 import SettingsComponent from "../settings-section/settings";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { MainContext } from "../../shared/functions";
@@ -83,7 +83,7 @@ const ContentSection = React.memo((props: any) => {
       )}
       {Object.keys(folder_structure).length > 0 && active_files.length == 0 ? (
         <div className="no-selected-files">
-          <LogoIcon />
+          <PythonIcon />
         </div>
       ) : (
         <div className="content-inner">
