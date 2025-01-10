@@ -134,6 +134,9 @@ const MainComponent = React.memo((props: any) => {
             wrappingIndent: "indent",
             formatOnType: settings.format ? true : false,
             formatOnPaste: settings.format ? true : false,
+            fontSize: settings.fontSize,
+            fontFamily: settings.fontFamily,
+            tabSize: settings.tabSize,
           }
         );
 
@@ -290,7 +293,7 @@ const MainComponent = React.memo((props: any) => {
   return (
     <MainContext.Provider value={{ handle_set_editor, handle_remove_editor }}>
       <div
-        className="wrapper-component"
+        className={`wrapper-component ${(settings.theme === "vs-dark" && "dark-mode") || "light-mode"}`}
         style={{ height: "100vh", display: "flex", flexDirection: "column" }}
       >
         <HeaderSection />

@@ -29,6 +29,16 @@ const initialState: IMainState = {
     smoothTyping: true,
     cursorAnimation: true,
     format: true,
+    fontSize: 14,
+    fontFamily: "Monospace",
+    smoothScrolling: true,
+    quickSuggestions: true,
+    wrappingIndent: "indent",
+    linkedEditing: true,
+    links: true,
+    autoIndent: "advanced",
+    autoClosingBracket: "always",
+    tabSize: 4,
   } as TSettings,
 };
 

@@ -1,12 +1,17 @@
-import type IForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) MNovus. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import type IForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+import MonacoWebpackPlugin from "monaco-editor-webpack-plugin";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const ForkTsCheckerWebpackPlugin: typeof IForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const ForkTsCheckerWebpackPlugin: typeof IForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
 export const plugins = [
   new ForkTsCheckerWebpackPlugin({
-    logger: 'webpack-infrastructure',
+    logger: "webpack-infrastructure",
   }),
-  new MonacoWebpackPlugin()
+  new MonacoWebpackPlugin(),
 ];

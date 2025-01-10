@@ -52,11 +52,24 @@ export type TSelectedFile = {
 
 // Anantam Settings Types
 export type TSettings = {
+  // Editor Settings
+  // Editor Basic Settings
   theme: "vs-dark" | "vs-light";
   minimap: boolean;
   smoothTyping: boolean;
   cursorAnimation: boolean;
   format: boolean;
+  fontSize: number;
+  fontFamily: "Monospace";
+  // Editor Advanced Settings
+  autoClosingBracket: "always" | "languageDefined" | "never";
+  autoIndent: "advanced" | "brackets";
+  smoothScrolling: boolean;
+  links: boolean;
+  linkedEditing: boolean;
+  quickSuggestions: boolean;
+  wrappingIndent: "indent" | "none";
+  tabSize: number;
 };
 
 // Main Context Functions Type

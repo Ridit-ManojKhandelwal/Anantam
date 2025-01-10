@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) MNovus. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 {
   "compilerOptions": {
     "target": "ES6",
@@ -7,14 +12,15 @@
     "esModuleInterop": true,
     "noImplicitAny": true,
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": ".", 
     "jsx": "react-jsx",
     "outDir": "dist",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "paths": {
-      "*": ["node_modules/*"]
+      "*": ["node_modules/*"],
+      "public/*": ["public/*"] 
     }
   },
-  "include": ["src/**/*","./public/*"]
+  "include": ["src/**/*", "public/**/*"]
 }

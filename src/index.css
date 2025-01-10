@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 :root {
+  /* Dark Mode */
   --main-bg: #1e1e1e;
   --sidebar-text-color: #cccccc;
   --sidebar-icon-color: #868686;
@@ -13,6 +14,27 @@
   --border-color: #2b2b2b;
   --file-list-bg: #37373c;
   --tabs-bg: #181818;
+}
+
+.light-mode {
+  /* Light Mode */
+  --main-bg: #f5f5f5;
+  --sidebar-text-color: #333333;
+  --sidebar-icon-color: #555555;
+  --sidebar-icon-active-color: #0078d4;
+  --thumb-color: #00000068;
+  --vscode-blue: #0078d4;
+  --border-color: #dcdcdc;
+  --file-list-bg: #ffffff;
+  --tabs-bg: #f0f0f0;
+}
+
+:root,
+.light-mode {
+  -webkit-user-select: none; /* For Safari */
+  -moz-user-select: none; /* For Firefox */
+  -ms-user-select: none; /* For Internet Explorer/Edge */
+  user-select: none; /* For modern browsers */
 }
 
 .ps__rail-y,
@@ -53,8 +75,18 @@ body {
   padding: 0px;
   margin: 0px;
   background-color: var(--main-bg) !important;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif !important;
 }
 
 .wrapper-component {
@@ -674,11 +706,195 @@ body {
   visibility: hidden; /* Close icon hidden by default */
   cursor: pointer;
   margin-left: 4px;
-  transition: visibility 0.5s ease, transform 0.3s ease;
+  transition:
+    visibility 0.5s ease,
+    transform 0.3s ease;
   transform: scale(0); /* Start with a smaller scale */
 }
 
 .tab:hover .close-icon {
   visibility: visible; /* Show close icon on hover */
   transform: scale(1); /* Scale up the icon to its normal size */
+}
+
+/* Settings Container */
+.settings-container {
+  display: flex;
+  width: fit-content;
+  height: fit-content;
+  background: #1e1e1e;
+  overflow-x: hidden;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.settings-sidebar {
+  width: 300px;
+  border-right: 1px solid #333;
+  background: #252526;
+  padding: 10px;
+  overflow: hidden;
+}
+
+/* Content Area */
+.settings-content {
+  flex: 1;
+  padding: 20px;
+  background: #1e1e1e;
+  overflow: hidden;
+}
+
+/* Tree View */
+.tree-item {
+  margin-bottom: 5px;
+}
+
+.tree-node {
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  border-radius: 3px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.tree-node:hover {
+  background-color: #2d2d30;
+  color: #d7ba7d;
+}
+
+.tree-node.expanded {
+  font-weight: bold;
+  color: #d7ba7d;
+}
+
+.expand-icon {
+  margin-right: 5px;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.open {
+  color: #569cd6;
+  transform: rotate(180deg);
+}
+
+.tree-children {
+  margin-left: 20px;
+  padding-left: 10px;
+  border-left: 1px dashed #444;
+}
+
+/* Options */
+.option {
+  padding: 12px;
+  margin: 12px 0;
+  /* display: flex; */
+  align-items: center;
+  width: 100%;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.option:hover {
+  background: #333;
+}
+
+.option.active {
+  border-left: 4px solid #569cd6;
+}
+
+.option-input {
+  flex: 1;
+  width: 50%;
+  padding: 6px;
+  background: #333;
+  border: 1px solid #444;
+  color: #d4d4d4;
+  border-radius: 4px;
+}
+
+.option-input:focus {
+  border-color: #569cd6;
+  outline: none;
+}
+
+/* Dropdown */
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s ease;
+}
+.dropdown-arrow {
+  margin-left: 10px;
+  font-size: 1.2em;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(90deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #252526;
+  border: 1px solid #333;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  margin: 5px 0;
+  padding: 0;
+  list-style: none;
+  z-index: 1000;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #d4d4d4;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #555;
+  color: #569cd6;
+}
+
+.save-btn {
+  padding: 12px;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  width: 40%;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.save-btn:hover {
+  background-color: #555;
+  color: #569cd6;
 }

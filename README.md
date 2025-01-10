@@ -1,4 +1,3 @@
-
 # Anantam - Anything is Possible
 
 Anantam is an innovative, next-generation Integrated Development Environment (IDE) designed for developers and data enthusiasts. With a strong focus on efficiency, intelligence, and interactivity, Anantam empowers users to unlock the full potential of their data and code, simplifying workflows and making analysis seamless.
@@ -82,11 +81,11 @@ Post-beta, Anantam will introduce several cutting-edge features aimed at enhanci
 
 ## 🗺️ Roadmap
 
-| Milestone           | Details                                      | Timeline            |
-|---------------------|----------------------------------------------|---------------------|
-| Beta Release        | Core Python support, charting & variable system | ~1 Month            |
-| Post-Beta Expansion | Infx language support, debugger, AI tools   | Coming Soon         |
-| Future Additions    | Multi-language support, cloud tools, collaboration | Long-term Roadmap   |
+| Milestone           | Details                                            | Timeline          |
+| ------------------- | -------------------------------------------------- | ----------------- |
+| Beta Release        | Core Python support, charting & variable system    | ~1 Month          |
+| Post-Beta Expansion | Infx language support, debugger, AI tools          | Coming Soon       |
+| Future Additions    | Multi-language support, cloud tools, collaboration | Long-term Roadmap |
 
 ---
 
