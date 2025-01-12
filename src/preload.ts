@@ -29,7 +29,6 @@ ipcRenderer.on("command-create-file", (event, data) => {
       if (e.key.toLowerCase() == "enter") {
         const targetEditableEl = e.currentTarget as HTMLElement;
         const value = targetEditableEl.innerText;
-        console.log("value", value);
 
         if (value != "") {
           renderer.create_file({
@@ -48,7 +47,6 @@ ipcRenderer.on("command-create-file", (event, data) => {
   (new_file_item.querySelector(".file-name") as HTMLElement).onblur = (e) => {
     const targetEditableEl = e.currentTarget as HTMLElement;
     const value = targetEditableEl.innerText;
-    console.log("value", value);
 
     if (value != "") {
       renderer.create_file({
@@ -67,39 +65,31 @@ ipcRenderer.on("command-create-file", (event, data) => {
   const selector = sanitizeSelector(
     `#list-wrapper-${data.path.replace(/\/|\\|\./g, "-")}`
   );
-  console.log("Final selector:", selector); // This should no longer escape the `-`
 
   const targetEl = document.querySelector(selector);
   if (targetEl) {
     const contentList = targetEl.querySelector(".content-list");
     if (contentList) {
       contentList.prepend(new_file_item);
-    } else {
-      console.log("content-list not found");
     }
-  } else {
-    console.log("Target element not found");
   }
 });
 
 ipcRenderer.on("command-update-folder-structure", (event, data) => {
-  console.log("new strucutre response data", data);
+  console;
 });
 
 ipcRenderer.on("new-folder-opened", (event, data) => {
-  console.log("new folder opened");
   window.location.reload();
 });
 
 const renderer = {
   openFolder: async () => {
     const folder = await ipcRenderer.invoke("open-folder");
-    console.log("folder", folder);
     return folder;
   },
   get_folder: async () => {
     const folder = await ipcRenderer.invoke("get-folder");
-    console.log("folder", folder);
     return folder;
   },
   clear_folder: () => {
@@ -108,7 +98,6 @@ const renderer = {
   },
   get_file_content: async (path: string) => {
     const file_content = await ipcRenderer.invoke("get-file-content", path);
-    console.log("file_content", file_content);
     return file_content;
   },
   save_file: (data: { path: string; content: string }) => {
@@ -120,7 +109,6 @@ const renderer = {
     rootPath: string;
   }) => {
     const response = ipcRenderer.send("folder-contextmenu", data);
-    console.log("response");
   },
   create_file: (data: { path: string; fileName: string; rootPath: string }) => {
     ipcRenderer.send("create-file", data);
@@ -140,6 +128,9 @@ const renderer = {
   },
   set_folder: (folder: string) => {
     ipcRenderer.send("set-folder", folder);
+  },
+  reload_window: (folder: string) => {
+    ipcRenderer.send("refresh-window", folder);
   },
 };
 

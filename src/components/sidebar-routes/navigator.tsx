@@ -38,7 +38,6 @@ const ExplorerRoute = React.memo((props: any) => {
 
   const handle_set_editor = React.useCallback(
     async (branch_name: string, full_path: string) => {
-      console.log("branch", branch_name, full_path);
       const get_file_content =
         await window.electron.get_file_content(full_path);
       const active_file: TActiveFile = {

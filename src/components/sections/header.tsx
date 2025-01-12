@@ -1,8 +1,12 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../shared/hooks";
 import {
+  BarsOutlined,
+  BugOutlined,
+  CopyOutlined,
   FileOutlined,
   FolderAddOutlined,
+  ImportOutlined,
   SaveOutlined,
   SearchOutlined,
   SettingOutlined,
@@ -15,6 +19,7 @@ import {
   message,
   AutoComplete,
   Modal,
+  Tooltip,
 } from "antd";
 import PerfectScrollbar from "react-perfect-scrollbar"; // Ensure you have the correct import
 import {
@@ -31,18 +36,46 @@ const HeaderSection = React.memo((props: any) => {
   const folder_structure = useAppSelector(
     (state) => state.main.folder_structure
   );
+
   const dispatch = useAppDispatch();
   const useMainContextIn = React.useContext(MainContext);
   const [newProjectModalVisibilty, setNewProjectModalVisibilty] =
     useState<boolean>(false);
+
+  // Check if folder_structure and folder_structure.tree are defined
+  const files = folder_structure?.tree?.filter((file) => !file.is_dir) || [];
+
+  const configFile =
+    files.map((file) => (file.name === "anantam.config.infx" ? true : false)) ||
+    files.length === 0
+      ? false
+      : true;
+
+  const initializeProject = () => {
+    try {
+      window.electron.create_folder({ path: folder_structure.root + "\\.env" });
+      window.electron.create_project_anantam_config_file({
+        path: folder_structure.root + "\\anantam.config.infx",
+        interpreter_path: folder_structure.root + "\\.env",
+      });
+
+      window.electron.create_project_anantam_file({
+        path: folder_structure.root + "\\main.py",
+        content: 'print("hello world")',
+      });
+
+      message.info("Successfully initialized project.");
+      window.electron.reload_window(folder_structure.root);
+    } catch (err) {
+      message.error("Faild to initialize project ", err);
+    }
+  };
 
   // Extracted save functionality
   const handle_save_file = useCallback(
     (data: { path: string; content: string }) => {
       const fixedPath = data.path.replace(/^\/+/, "").replace(/\\/g, "/");
       data.path = fixedPath;
-
-      console.log(data.path);
 
       window.electron.save_file(data);
 
@@ -105,30 +138,47 @@ const HeaderSection = React.memo((props: any) => {
 
   // Function to generate file list for the dropdown
   const generateFileMenu = () => {
-    if (Object.keys(folder_structure).length === 0 || !folder_structure.tree)
+    if (Object.keys(folder_structure).length === 0 || !folder_structure.tree) {
       return null;
+    }
 
-    const files = folder_structure.tree.filter((content) => !content.is_dir);
+    // Filter out directories and ensure files are unique by their path (or name)
+    const files = folder_structure.tree
+      .filter((content) => !content.is_dir)
+      .reduce((acc: any[], currentFile) => {
+        // Check if file already exists in the accumulator by path
+        const isDuplicate = acc.some((file) => file.path === currentFile.path);
+        if (!isDuplicate) {
+          acc.push(currentFile);
+        }
+        return acc;
+      }, [])
+      .slice(0, 100); // Limit to 100 files
 
-    return (
-      <Menu>
-        {files.length > 0 ? (
-          files.map((file) => (
-            <Menu.Item
-              key={file.path}
-              onClick={() => handle_set_editor(file.name, file.path)}
-              style={{ display: "flex" }}
-            >
-              <span style={{ marginRight: "8px" }} className="icon-small">
-                <FileIcon type={file.name.split(".").at(-1)} />
-              </span>
-              <span>{file.name}</span>
-            </Menu.Item>
-          ))
-        ) : (
-          <Menu.Item disabled>No files available</Menu.Item>
-        )}
-      </Menu>
+    return useMemo(
+      () => (
+        <Menu>
+          {files.length > 0 ? (
+            files.map((file) => (
+              <Menu.Item
+                key={file.path}
+                onClick={() =>
+                  handle_set_editor(file.name, file.path + `\\${file.name}`)
+                }
+                style={{ display: "flex" }}
+              >
+                <span style={{ marginRight: "8px" }} className="icon-small">
+                  <FileIcon type={file.name.split(".").at(-1)} />
+                </span>
+                <span>{file.name}</span>
+              </Menu.Item>
+            ))
+          ) : (
+            <Menu.Item disabled>No files available</Menu.Item>
+          )}
+        </Menu>
+      ),
+      [folder_structure.tree]
     );
   };
 
@@ -215,7 +265,9 @@ const HeaderSection = React.memo((props: any) => {
               }}
               onClick={() => setNewProjectModalVisibilty(true)}
             >
-              <FolderAddOutlined />
+              <Tooltip title="New Project">
+                <FolderAddOutlined />
+              </Tooltip>
             </Button>
             <Button
               style={{ border: "none", padding: 0, margin: 0 }}
@@ -241,6 +293,25 @@ const HeaderSection = React.memo((props: any) => {
             >
               <SaveOutlined />
             </Button>
+            <Button style={{ border: "none", padding: 0, margin: 0 }}>
+              <BugOutlined />
+            </Button>
+            <Button style={{ border: "none", padding: 0, margin: 0 }}>
+              <BarsOutlined />
+            </Button>
+            <Button style={{ border: "none", padding: 0, margin: 0 }}>
+              <CopyOutlined />
+            </Button>
+            {!configFile && (
+              <Button
+                style={{ border: "none", padding: 0, margin: 0 }}
+                onClick={initializeProject}
+              >
+                <Tooltip title="Inilize Anantam Project">
+                  <ImportOutlined />
+                </Tooltip>
+              </Button>
+            )}
           </div>
         </div>
 

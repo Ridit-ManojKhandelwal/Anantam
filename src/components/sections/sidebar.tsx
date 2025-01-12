@@ -28,10 +28,6 @@ const SidebarSection = React.memo((props: any) => {
   };
 
   React.useEffect(() => {
-    console.log("route", route);
-  }, [route]);
-
-  React.useEffect(() => {
     // If no route is selected, navigate to the default route
     if (route.pathname === "/") {
       navigate("/main_window");

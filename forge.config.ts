@@ -12,6 +12,7 @@ import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-nati
 import { WebpackPlugin } from "@electron-forge/plugin-webpack";
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
 import { FuseV1Options, FuseVersion } from "@electron/fuses";
+import { PublisherGithub } from "@electron-forge/publisher-github";
 
 import { mainConfig } from "./webpack.main.config";
 import { rendererConfig } from "./webpack.renderer.config";
@@ -22,7 +23,17 @@ const config: ForgeConfig = {
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerSquirrel({
+      certificateFile: "./AnantamCert.pfx", // Path to your signed certificate (pfx file)
+      certificatePassword: process.env.CERTIFICATE_PASSWORD, // Password for the certificate
+      setupIcon: "./assets/icon.ico", // Path to the icon for the installer
+      authors: "MNovus",
+      owners: "MNovus",
+      version: "1.0.0",
+      name: "Anantam",
+      setupExe: "AnantamInstaller.exe", // Custom name for the installer
+      noMsi: true, // Disable creation of .msi installer
+    }),
     new MakerZIP({}, ["darwin"]),
     new MakerRpm({}),
     new MakerDeb({}),
@@ -56,6 +67,16 @@ const config: ForgeConfig = {
       [FuseV1Options.EnableNodeCliInspectArguments]: false,
       [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
+    }),
+  ],
+  publishers: [
+    new PublisherGithub({
+      repository: {
+        owner: "Ridit-ManojKhandelwal",
+        name: "Anantam",
+      },
+      prerelease: true,
+      draft: true,
     }),
   ],
 };

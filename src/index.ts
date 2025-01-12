@@ -3,7 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem } from "electron";
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  Menu,
+  MenuItem,
+  autoUpdater,
+} from "electron";
 import fs from "fs";
 import path from "path";
 import Store from "electron-store";
@@ -17,6 +25,9 @@ declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 const SELECTED_FOLDER_STORE_NAME = "selected-folder";
 const store = new Store();
+
+const server = "https://update.electronjs.org";
+const feedURL = `${server}/Ridit-ManojKhandelwal/Anantam/${process.platform}-${process.arch}`;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -37,6 +48,8 @@ const WindowsTemplate: any = [
       { label: "Open..." },
       {
         label: "Open Folder...",
+        accelerator:
+          process.platform === "darwin" ? "Ctrl + Shift + O" : "Alt+Shift+O",
         click: async () => {
           const folder = await dialog.showOpenDialog(mainWindow, {
             properties: ["openDirectory"],
@@ -344,6 +357,21 @@ ipcMain.on("set-folder", (event, folder: string) => {
   mainWindow.webContents.send("new-folder-opened");
 });
 
+ipcMain.on("refresh-window", (event, folder) => {
+  let structure = undefined;
+
+  const tree = get_files(folder);
+  structure = {
+    name: folder,
+    root: folder,
+    tree,
+  };
+
+  // @ts-ignore
+  store.set(SELECTED_FOLDER_STORE_NAME, structure);
+  mainWindow.webContents.send("new-folder-opened");
+});
+
 ipcMain.on("create-file", async (event, data) => {
   //   path: data.path,
   // fileName: string
@@ -531,6 +559,36 @@ const createWindow = (): void => {
 app.whenReady().then(() => {
   // createSplashScreen(); // Show the splash screen first
   createWindow(); // Create the main window
+
+  // Check for updates on startup
+  autoUpdater.checkForUpdates();
+
+  autoUpdater.on("update-available", () => {
+    dialog.showMessageBox({
+      type: "info",
+      title: "Update Available",
+      message:
+        "A new version of the Anantam is available. The update will be downloaded and installed automatically.",
+    });
+  });
+
+  autoUpdater.on("update-downloaded", () => {
+    dialog
+      .showMessageBox({
+        type: "info",
+        title: "Update Ready",
+        message:
+          "The update has been downloaded. Anantam will restart to apply the update.",
+      })
+      .then(() => {
+        autoUpdater.quitAndInstall();
+      });
+  });
+
+  autoUpdater.on("error", (error) => {
+    console.error("Update error:", error);
+  });
+
   startServer();
 });
 // Quit when all windows are closed, except on macOS. There, it's common

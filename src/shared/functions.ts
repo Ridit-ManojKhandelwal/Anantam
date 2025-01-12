@@ -60,7 +60,6 @@ export const path_join = (args: string[]) => {
   const os = /linux|macintosh|windows/i
     .exec(window.navigator.userAgent)[0]
     .toLowerCase();
-  console.log("os");
   return os == "windows" ? args.join("\\") : args.join("/");
 };
 
@@ -70,8 +69,6 @@ export const makeContentList = (
   tree: TFolderTree[],
   handle_set_editor: Function
 ) => {
-  console.log("was here 0000");
-
   if (branch == undefined) return;
   const sorted_tree = organize_folder(branch);
   // const sorted_tree = branch

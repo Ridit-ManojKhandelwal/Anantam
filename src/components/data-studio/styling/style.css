@@ -29,7 +29,8 @@
 .data-studio {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
   justify-content: center;
   align-items: center;
   overflow: hidden;
@@ -170,4 +171,11 @@
 .tree-node-modern.active {
   background-color: #e6f7ff;
   color: #1890ff;
+}
+
+.datatype-next-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 16px;
 }

@@ -20,6 +20,7 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron-forge/plugin-webpack": "^7.4.0",
+    "@electron-forge/publisher-github": "^7.6.0",
     "@electron/fuses": "^1.8.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -69,6 +70,7 @@
     "simplebar-react": "^3.2.6",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
+    "update-electron-app": "^3.1.0",
     "vscode-ws-jsonrpc": "^3.4.0",
     "xlsx": "^0.18.5",
     "xterm-addon-fit": "^0.8.0"

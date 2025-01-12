@@ -25,11 +25,19 @@ const MainComponent = React.memo((props: any) => {
     (state) => state.main.folder_structure
   );
 
-  // Check if folder_structure and folder_structure.tree are defined
-  const files = folder_structure?.tree?.filter((file) => !file.is_dir) || [];
+  const uniqueFiles = Array.from(
+    new Set(folder_structure?.tree?.map((file) => file.name) || [])
+  ).map((name) => folder_structure?.tree?.find((file) => file.name === name));
 
-  const configFile = files.map((file) =>
-    file.name === "anantam.config.infx" ? true : false
+  const files = uniqueFiles?.filter((file) => !file.is_dir) || [];
+
+  // Check for 'anantam.config.infx' file and remove duplicates
+  const configFile = Array.from(
+    new Set(
+      files
+        .map((file) => (file.name === "anantam.config.infx" ? true : false))
+        .filter(Boolean) // Remove false values
+    )
   );
 
   const editor_ref = React.useRef<
@@ -45,14 +53,11 @@ const MainComponent = React.memo((props: any) => {
 
   const handle_set_editor = React.useCallback(
     (selected_file: TSelectedFile) => {
-      console.log("selected_file", selected_file);
-
       // Normalize file path to ensure consistent comparison
       const normalized_path = selected_file.path.trim().replace(/\\/g, "/");
       const normalized_selected_path = normalized_path.startsWith("/")
         ? normalized_path // Keep the leading / if already there
         : "/" + normalized_path; // Add / if missing
-      console.log("Normalized Path: ", normalized_selected_path);
 
       if (editor_ref.current) {
         const current_model = editor_ref.current.getModel();
@@ -83,10 +88,8 @@ const MainComponent = React.memo((props: any) => {
         const existing_models = monaco.editor
           .getModels()
           .map((model) => model.uri.path);
-        console.log("Existing Models:", existing_models);
 
         if (!target_model) {
-          console.log("Creating new model for", normalized_selected_path);
           target_model = monaco.editor.createModel(
             selected_file.content,
             get_file_types(selected_file.name),
@@ -311,22 +314,65 @@ const MainComponent = React.memo((props: any) => {
         monaco.languages.registerCompletionItemProvider("python", {
           provideCompletionItems: (model, position) => {
             const wordUntilPosition = model.getWordUntilPosition(position);
+            const lineContent = model.getLineContent(position.lineNumber);
+            const triggerPattern = ['get_file("', "get_file('"]; // The specific text to trigger suggestions
 
-            // Dynamically generate suggestions inside provideCompletionItems
-            const suggestions = files.map((file) => ({
-              label: file.name,
-              kind: monaco.languages.CompletionItemKind.File,
-              insertText: file.path + `\\${file.name}`,
-              documentation:
-                "This is a completion provided by anantam for file path completions",
-              range: new monaco.Range(
-                position.lineNumber,
-                wordUntilPosition.startColumn,
-                position.lineNumber,
-                wordUntilPosition.endColumn
-              ),
-            }));
+            // Check if "get_file" has already been inserted in the line
+            const isGetFileInserted =
+              lineContent.includes('get_file("') ||
+              lineContent.includes("get_file('");
 
+            // Initialize an array to store suggestions
+            const suggestions = [];
+
+            // Add "get_file" suggestion if it's not inserted yet
+            if (!isGetFileInserted) {
+              suggestions.push({
+                label: "get_file",
+                kind: monaco.languages.CompletionItemKind.Function,
+                insertText: 'get_file("")',
+                documentation:
+                  "Function used to get every file path in the directory, Provided by Anantam.",
+                range: new monaco.Range(
+                  position.lineNumber,
+                  wordUntilPosition.startColumn,
+                  position.lineNumber,
+                  wordUntilPosition.endColumn
+                ),
+              });
+            }
+
+            // If the pattern is matched, add file path suggestions
+            if (
+              lineContent.includes(triggerPattern[0]) &&
+              !lineContent.includes(triggerPattern[1])
+            ) {
+              const fileSuggestions = files
+                .map((file) => ({
+                  label: file.name,
+                  kind: monaco.languages.CompletionItemKind.File,
+                  insertText: `${file.path}\\${file.name}`,
+                  documentation:
+                    "This is a completion provided by Anantam for file path completions.",
+                  range: new monaco.Range(
+                    position.lineNumber,
+                    wordUntilPosition.startColumn,
+                    position.lineNumber,
+                    wordUntilPosition.endColumn
+                  ),
+                }))
+                .filter(
+                  (suggestion, index, self) =>
+                    index ===
+                    self.findIndex(
+                      (s) => s.insertText === suggestion.insertText
+                    ) // Remove duplicates based on insertText
+                );
+
+              suggestions.push(...fileSuggestions);
+            }
+
+            // Return the suggestions
             return { suggestions };
           },
         });
@@ -343,8 +389,6 @@ const MainComponent = React.memo((props: any) => {
 
       // Update the data.path with the fixed path
       data.path = fixedPath;
-
-      console.log(data.path);
 
       // Save the file
       window.electron.save_file(data);
@@ -376,17 +420,8 @@ const MainComponent = React.memo((props: any) => {
       );
 
       monaco.editor.getModels().splice(target_model_index, 1);
-      console.log(
-        "monaco.editor.getModels().length",
-        monaco.editor.getModels().length
-      );
-
       // monaco.editor.getModels()[target_model_index].dispose();
 
-      console.log(
-        "monaco.editor.getModels().length",
-        monaco.editor.getModels().length
-      );
       if (is_current_model) {
         const new_index =
           target_model_index == 0 ? target_model_index : target_model_index - 1;
