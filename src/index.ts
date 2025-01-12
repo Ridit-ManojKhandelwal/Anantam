@@ -318,6 +318,32 @@ ipcMain.on("clear-folder", () => {
   store.delete(SELECTED_FOLDER_STORE_NAME);
 });
 
+ipcMain.on("create-project-anantam-config-file", async (event, data) => {
+  const content = `project_type: anantam\ninterpreter_path: ${data.interpreter_path}\nvariables: true`;
+  fs.writeFileSync(data.path, content);
+});
+ipcMain.on("create-project-anantam-file", async (event, data) => {
+  fs.writeFileSync(data.path, data.content);
+});
+
+ipcMain.on("create-folder", async (event, data) => {
+  fs.mkdirSync(data.path);
+});
+
+ipcMain.on("set-folder", (event, folder: string) => {
+  let structure = undefined;
+
+  const tree = get_files(folder);
+  structure = {
+    name: folder,
+    root: folder,
+    tree,
+  };
+  // @ts-ignore
+  store.set(SELECTED_FOLDER_STORE_NAME, structure);
+  mainWindow.webContents.send("new-folder-opened");
+});
+
 ipcMain.on("create-file", async (event, data) => {
   //   path: data.path,
   // fileName: string
@@ -479,6 +505,15 @@ const createWindow = (): void => {
     }
 
     return structure;
+  });
+
+  // Register the ipcMain handler for 'dialog:openFolder'
+  ipcMain.handle("open-folder-new-project", async (event, data) => {
+    const folder = await dialog.showOpenDialog(mainWindow, {
+      properties: ["openDirectory"],
+    });
+
+    return folder.filePaths[0]; // Return the selected folder pathr;
   });
 
   mainWindow.once("ready-to-show", () => {

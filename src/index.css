@@ -544,6 +544,11 @@ body {
 
 .action-bar {
   justify-content: space-between; /* Space between the two child divs */
+  align-items: center;
+}
+
+.action-bar > .project-info {
+  align-items: center;
 }
 
 .action-bar > .project-info > button {
@@ -819,6 +824,25 @@ body {
   background: #333;
 }
 
+.sub-option {
+  padding: 12px;
+  margin: 12px 0;
+  /* display: flex; */
+  align-items: center;
+  width: 100%;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+  margin-left: 3em;
+}
+
+.option:hover .sub-option {
+  background: #121212;
+}
+
+.sub-option:hover {
+  background: #555;
+}
+
 .option.active {
   border-left: 4px solid #569cd6;
 }
@@ -923,4 +947,40 @@ body {
 .tree-node.active {
   border-left: 4px solid coral; /* Add coral color for the active option */
   padding-left: 10px; /* Add some padding to make the border visible */
+}
+
+/* Customize Ant Design Modal Background */
+.ant-modal {
+  background: #121212 !important;
+}
+
+.ant-modal-content {
+  background: #121212 !important;
+  color: #ffffff; /* Optional: Ensure readable text */
+}
+
+.ant-modal-header {
+  background: #121212 !important;
+  color: #ffffff; /* Optional: Ensure readable text */
+}
+
+.ant-modal-body {
+  background: #121212 !important;
+  color: #ffffff;
+}
+
+.ant-modal-footer {
+  background: #121212 !important;
+  border-top: none; /* Optional: Clean footer styling */
+}
+
+/* Custom class to add a border below the modal title */
+.modal-title-with-border {
+  border-bottom: 1px solid gray; /* Adjust border thickness and color */
+  padding-bottom: 10px; /* Optional, to add some spacing between title and border */
+}
+
+.modal-container {
+  width: 100%;
+  height: 100%;
 }

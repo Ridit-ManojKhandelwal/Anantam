@@ -11,7 +11,7 @@ import FooterComponent from "./sections/footer";
 // import { MultiInstance } from "./terminal-section/multiInstance";
 import { MainContext } from "../shared/functions";
 import * as monaco from "monaco-editor";
-import { Splitter } from "antd";
+import { message, Splitter } from "antd";
 import { get_file_types } from "../shared/functions";
 // import { LSPClient, createConnection } from "monaco-languageclient";
 import { useAppDispatch, useAppSelector } from "../shared/hooks";
@@ -21,6 +21,17 @@ import { store } from "../shared/store";
 import HeaderSection from "./sections/header";
 
 const MainComponent = React.memo((props: any) => {
+  const folder_structure = useAppSelector(
+    (state) => state.main.folder_structure
+  );
+
+  // Check if folder_structure and folder_structure.tree are defined
+  const files = folder_structure?.tree?.filter((file) => !file.is_dir) || [];
+
+  const configFile = files.map((file) =>
+    file.name === "anantam.config.infx" ? true : false
+  );
+
   const editor_ref = React.useRef<
     monaco.editor.IStandaloneCodeEditor | undefined
   >();
@@ -294,6 +305,31 @@ const MainComponent = React.memo((props: any) => {
         monaco.editor.setTheme("dark");
       } else {
         monaco.editor.setTheme("light");
+      }
+
+      if (configFile) {
+        monaco.languages.registerCompletionItemProvider("python", {
+          provideCompletionItems: (model, position) => {
+            const wordUntilPosition = model.getWordUntilPosition(position);
+
+            // Dynamically generate suggestions inside provideCompletionItems
+            const suggestions = files.map((file) => ({
+              label: file.name,
+              kind: monaco.languages.CompletionItemKind.File,
+              insertText: file.path + `\\${file.name}`,
+              documentation:
+                "This is a completion provided by anantam for file path completions",
+              range: new monaco.Range(
+                position.lineNumber,
+                wordUntilPosition.startColumn,
+                position.lineNumber,
+                wordUntilPosition.endColumn
+              ),
+            }));
+
+            return { suggestions };
+          },
+        });
       }
     },
 

@@ -13,6 +13,7 @@ import { ReactComponent as PythonIcon } from "../../assets/svg/py.svg";
 import SettingsComponent from "../settings-section/settings";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { MainContext } from "../../shared/functions";
+import DataStudio from "../data-studio/app";
 
 const ContentSection = React.memo((props: any) => {
   const dispatch = useAppDispatch();
@@ -82,8 +83,9 @@ const ContentSection = React.memo((props: any) => {
       )}
       {Object.keys(folder_structure).length > 0 && active_files.length == 0 ? (
         <div className="no-selected-files">
-          <PythonIcon />
+          {/* <PythonIcon /> */}
           {/* <SettingsComponent /> */}
+          <DataStudio />
         </div>
       ) : (
         <div className="content-inner">

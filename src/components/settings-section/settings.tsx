@@ -6,7 +6,6 @@
 import React, { useEffect, useState } from "react";
 import { ReactComponent as AngleLeftIcon } from "../../assets/svg/d-chevron.svg";
 import { ReactComponent as AngleRightIcon } from "../../assets/svg/r-chevron.svg";
-import DropdownMenu from "../dropdown/dropdown";
 import PerfectScrollBar from "react-perfect-scrollbar";
 import { useAppSelector } from "../../shared/hooks";
 import { Dropdown, Input, message, Button, InputNumber, Menu } from "antd/es";

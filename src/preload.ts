@@ -125,6 +125,22 @@ const renderer = {
   create_file: (data: { path: string; fileName: string; rootPath: string }) => {
     ipcRenderer.send("create-file", data);
   },
+  openNewProjectFolder: () => ipcRenderer.invoke("open-folder-new-project"),
+  create_project_anantam_config_file: (data: {
+    path: string;
+    interpreter_path: string;
+  }) => {
+    ipcRenderer.send("create-project-anantam-config-file", data);
+  },
+  create_project_anantam_file: (data: { path: string; content: string }) => {
+    ipcRenderer.send("create-project-anantam-file", data);
+  },
+  create_folder: (data: { path: string }) => {
+    ipcRenderer.send("create-folder", data);
+  },
+  set_folder: (folder: string) => {
+    ipcRenderer.send("set-folder", folder);
+  },
 };
 
 contextBridge.exposeInMainWorld("electron", renderer);

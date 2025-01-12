@@ -6,6 +6,7 @@
 import React from "react";
 import { ReactComponent as FileIcon } from "../../assets/svg/files.svg";
 import { ReactComponent as SettingsIcon } from "../../assets/svg/settings.svg";
+import { ReactComponent as InformationIcon } from "../../assets/svg/extensions.svg";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../shared/hooks";
 import { set_settings_tab } from "../../shared/rdx-slice"; // Import your action
@@ -51,7 +52,18 @@ const SidebarSection = React.memo((props: any) => {
             <FileIcon />
             <div className="tooltip">Navigator</div>
           </Link>
+          <Link
+            to={"/main_window/information"} // Correct path
+            className={
+              "icon" +
+              (route.pathname == "/main_window/information" ? " active" : "")
+            }
+          >
+            <InformationIcon />
+            <div className="tooltip">Information</div>
+          </Link>
         </div>
+
         <div>
           <Link
             to=""

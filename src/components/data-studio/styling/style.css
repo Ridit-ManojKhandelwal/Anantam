@@ -1,0 +1,173 @@
+/* Hide scrollbars globally within specific containers */
+.data-studio,
+.xlsx-preview,
+.xlsx-preview-sidebar,
+.xlsx-preview-content,
+.tree-item-modern,
+.tree-node-modern,
+.tree-children-modern {
+  overflow: hidden !important;
+  width: 100% !important;
+}
+
+/* Additional rule for hiding scrollbars in Webkit browsers (Chrome, Safari) */
+.data-studio::-webkit-scrollbar,
+.xlsx-preview::-webkit-scrollbar,
+.xlsx-preview-sidebar::-webkit-scrollbar,
+.xlsx-preview-content::-webkit-scrollbar,
+.tree-item-modern::-webkit-scrollbar,
+.tree-node-modern::-webkit-scrollbar,
+.tree-children-modern::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* For Firefox and other browsers, prevent scrollbars */
+* {
+  scrollbar-width: none !important; /* For Firefox */
+}
+
+.data-studio {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.data-studio > .option-grid > .heading-area {
+  text-align: center;
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+.data-studio > .option-grid > .option-area {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  justify-content: center;
+}
+
+.datatype {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 25vh; /* Match width to .datatype-option */
+  cursor: pointer;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.datatype:hover {
+  opacity: 0.6;
+}
+
+.datatype-option {
+  display: grid;
+  width: 100%;
+  height: 15vh;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  background-color: #c8e9d6;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add shadow for modern look */
+}
+
+.datatype-option > svg {
+  width: 40px;
+  height: 40px;
+}
+
+.datatype-option-text {
+  width: 100%; /* Match parent width */
+  height: 5vh; /* Adjust height for text area */
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  text-wrap: wrap;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px; /* Visible font size */
+  font-weight: 500; /* Medium font weight */
+  color: #333; /* Dark text color for readability */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for better appearance */
+}
+
+.xlsx-preview {
+  display: flex;
+  width: 100%;
+  height: 100%; /* Ensures full height */
+  overflow: hidden;
+  background: white;
+}
+
+.xlsx-preview-sidebar {
+  width: 250px; /* Fixed width for sidebar */
+  background: #1b1b1b;
+  padding: 20px;
+  color: #fff;
+  font-family: "Roboto", sans-serif;
+  overflow-y: auto; /* Allow scrolling if content exceeds height */
+  box-sizing: border-box;
+  flex-shrink: 0; /* Prevent the sidebar from shrinking */
+}
+
+.xlsx-preview-content {
+  flex-grow: 1; /* Takes remaining space */
+  padding: 20px;
+  color: #fff;
+  font-family: "Roboto", sans-serif;
+  overflow-y: auto; /* Allow scrolling if content exceeds height */
+  box-sizing: border-box;
+}
+
+/* Tree Item Styles */
+.tree-item-modern {
+  margin: 8px 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tree-node-modern {
+  display: flex;
+  align-items: center;
+  color: #333;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.tree-node-modern:hover {
+  background-color: #f5f5f5;
+}
+
+.tree-children-modern {
+  margin-left: 20px;
+  padding-top: 8px;
+  border-left: 2px solid #ddd;
+}
+
+/* Icon Styles */
+.tree-node-modern svg {
+  width: 14px;
+  height: 14px;
+  fill: #aaa;
+  margin-right: 6px;
+  transition: transform 0.2s;
+}
+
+/* Style for when tree is expanded */
+.tree-node-modern .tree-children-modern {
+  padding-left: 20px;
+  margin-top: 8px;
+}
+
+/* Styling for the active tree node */
+.tree-node-modern.active {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}

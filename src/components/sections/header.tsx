@@ -7,7 +7,16 @@ import {
   SearchOutlined,
   SettingOutlined,
 } from "@ant-design/icons/lib";
-import { Button, Dropdown, Menu, Input, message, AutoComplete } from "antd";
+import {
+  Button,
+  Dropdown,
+  Menu,
+  Input,
+  message,
+  AutoComplete,
+  Modal,
+} from "antd";
+import PerfectScrollbar from "react-perfect-scrollbar"; // Ensure you have the correct import
 import {
   update_active_file,
   update_active_files,
@@ -16,6 +25,7 @@ import { TActiveFile } from "../../shared/types";
 import FileIcon from "../../shared/file-icon"; // Make sure FileIcon supports custom size if needed
 import { store } from "../../shared/store";
 import { MainContext } from "../../shared/functions";
+import NewProjectModal from "../new-project-section/newproject";
 
 const HeaderSection = React.memo((props: any) => {
   const folder_structure = useAppSelector(
@@ -23,6 +33,8 @@ const HeaderSection = React.memo((props: any) => {
   );
   const dispatch = useAppDispatch();
   const useMainContextIn = React.useContext(MainContext);
+  const [newProjectModalVisibilty, setNewProjectModalVisibilty] =
+    useState<boolean>(false);
 
   // Extracted save functionality
   const handle_save_file = useCallback(
@@ -120,11 +132,6 @@ const HeaderSection = React.memo((props: any) => {
     );
   };
 
-  // const files = folder_structure.tree.filter((content) => !content.is_dir);
-
-  // Prepare the options for the AutoComplete component
-  // const fileOptions = ["hello"];
-
   // Settings dropdown
   const generateSettingsMenu = () => {
     return (
@@ -167,13 +174,47 @@ const HeaderSection = React.memo((props: any) => {
 
   return (
     <div className="header-section">
+      <div className="modal">
+        <PerfectScrollbar>
+          <Modal
+            title={<div className="modal-title-with-border">New Project</div>} // Custom title with a class
+            open={newProjectModalVisibilty}
+            onCancel={() => setNewProjectModalVisibilty(false)}
+            width="70%"
+            height="70%"
+            style={{
+              background: "#121212",
+            }}
+            wrapStyle={{
+              background: "#28292D",
+            }}
+            bodyStyle={{
+              background: "#121212",
+              color: "#ffffff",
+            }}
+            footer={null}
+          >
+            <NewProjectModal
+              setModalVisibilty={() => setNewProjectModalVisibilty(false)}
+            />
+          </Modal>
+        </PerfectScrollbar>
+      </div>
+
       <div className="header-main">
         <div className="action-bar">
           <div className="icons-bar">
             <Button style={{ border: "none", padding: 0, margin: 0 }}>
               <FileOutlined />
             </Button>
-            <Button style={{ border: "none", padding: 0, margin: 0 }}>
+            <Button
+              style={{
+                border: "none",
+                padding: 0,
+                margin: 0,
+              }}
+              onClick={() => setNewProjectModalVisibilty(true)}
+            >
               <FolderAddOutlined />
             </Button>
             <Button
@@ -205,23 +246,17 @@ const HeaderSection = React.memo((props: any) => {
 
         {/* Search Bar in the middle */}
         <div className="search-bar">
-          <AutoComplete
-            // options={fileOptions}
-            style={{ width: 300 }}
-            // onChange={handleSearchChange}
-            // onSelect={handleSearchSubmit}
-            allowClear
-          >
+          <AutoComplete style={{ width: 300 }} allowClear>
             <Input
               prefix={<SearchOutlined />}
               value={searchQuery}
               placeholder="Search Files"
-              // onPressEnter={() => handleSearchSubmit(searchQuery)}
             />
           </AutoComplete>
         </div>
 
         <div className="project-info">
+          <Button>Data Studio</Button>
           <Dropdown overlay={generateFileMenu()} trigger={["click"]}>
             <Button style={{ border: "none" }}>
               {folder_structure?.name?.split(/\/|\\/).at(-1)}
