@@ -142,8 +142,8 @@ const HeaderSection = React.memo((props: any) => {
       return null;
     }
 
-    // Filter out directories and ensure files are unique by their path (or name)
-    const files = folder_structure.tree
+    // Before slice file
+    const _files = folder_structure.tree
       .filter((content) => !content.is_dir)
       .reduce((acc: any[], currentFile) => {
         // Check if file already exists in the accumulator by path
@@ -152,8 +152,9 @@ const HeaderSection = React.memo((props: any) => {
           acc.push(currentFile);
         }
         return acc;
-      }, [])
-      .slice(0, 100); // Limit to 100 files
+      }, []);
+
+    const files = _files.length > 100 ? _files.slice(0, 100) : _files;
 
     return useMemo(
       () => (

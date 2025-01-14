@@ -97,8 +97,8 @@ export default function NewProjectModal({
       if (interpreterOption === "anantam") {
         window.electron.create_folder({ path: folderPath + "\\.env" });
         window.electron.create_project_anantam_config_file({
-          path: folderPath + "\\anantam.config.infx",
-          interpreter_path: folderPath + "\\.env",
+          path: folderPath + "\\anantam.config.json",
+          interpreter_path: folderPath + "\\.env\\anantam.exe",
         });
       }
 

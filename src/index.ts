@@ -332,7 +332,7 @@ ipcMain.on("clear-folder", () => {
 });
 
 ipcMain.on("create-project-anantam-config-file", async (event, data) => {
-  const content = `project_type: anantam\ninterpreter_path: ${data.interpreter_path}\nvariables: true`;
+  const content = `{\n    "project_type": "anantam",\n    "interpreter_path": "'${data.interpreter_path}'",\n    "variables": true,\n    "file_suggestion": false\n}`;
   fs.writeFileSync(data.path, content);
 });
 ipcMain.on("create-project-anantam-file", async (event, data) => {

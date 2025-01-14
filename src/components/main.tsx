@@ -13,12 +13,12 @@ import { MainContext } from "../shared/functions";
 import * as monaco from "monaco-editor";
 import { message, Splitter } from "antd";
 import { get_file_types } from "../shared/functions";
-// import { LSPClient, createConnection } from "monaco-languageclient";
 import { useAppDispatch, useAppSelector } from "../shared/hooks";
 import { TSelectedFile } from "../shared/types";
 import { update_active_files, update_indent } from "../shared/rdx-slice";
 import { store } from "../shared/store";
 import HeaderSection from "./sections/header";
+import { json } from "stream/consumers";
 
 const MainComponent = React.memo((props: any) => {
   const folder_structure = useAppSelector(
@@ -35,7 +35,7 @@ const MainComponent = React.memo((props: any) => {
   const configFile = Array.from(
     new Set(
       files
-        .map((file) => (file.name === "anantam.config.infx" ? true : false))
+        .map((file) => (file.name === "anantam.config.json" ? true : false))
         .filter(Boolean) // Remove false values
     )
   );
@@ -457,44 +457,6 @@ const MainComponent = React.memo((props: any) => {
     window.addEventListener("blur", handle_win_blur);
     return () => window.removeEventListener("blur", handle_win_blur);
   }, []);
-
-  // useEffect(() => {
-  //   const socket: any = new WebSocket("ws://127.0.0.1:3000/python");
-
-  //   socket.onopen = () => {
-  //     const reader = new WebSocketMessageReader(socket);
-  //     const writer = new WebSocketMessageWriter(socket);
-  //     const connection = createConnection(reader, writer);
-
-  //     // Initialize LSP Client with Monaco
-  //     const client = new LSPClient(connection, editor_ref.current);
-  //     client.start();
-  //     setLspConnection(client);
-  //   };
-
-  //   return () => {
-  //     socket.close();
-  //   };
-  // }, []);
-
-  // // Handle LSP connection after Monaco is mounted
-  // useEffect(() => {
-  //   if (lspConnection) {
-  //     // Setup Monaco editor for LSP
-  //     monaco.editor.create(document.querySelector(".editor-container")!, {
-  //       theme: "vs-dark",
-  //       minimap: { enabled: false },
-  //     });
-
-  //     editor_ref.current = monaco.editor.create(
-  //       document.querySelector(".editor-container")!,
-  //       {
-  //         language: "python",
-  //         theme: "vs-dark",
-  //       }
-  //     );
-  //   }
-  // }, [lspConnection]);
 
   return (
     <MainContext.Provider
