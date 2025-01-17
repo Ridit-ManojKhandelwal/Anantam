@@ -9,7 +9,7 @@ The name Anantam, which means "anything is possible," perfectly captures the ess
 ## Project Status
 
 - **Current Stage**: In Development
-- **Beta Release**: Expected in ~1 Month
+- **Beta Release**: `
 
 ---
 
