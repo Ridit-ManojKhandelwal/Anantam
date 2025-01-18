@@ -27,6 +27,7 @@ export interface IMainState {
   settings_tab_active: boolean;
   indent: TIndent;
   settings: TSettings;
+  interpreter: TInterpreter;
 }
 
 // Active File Type
@@ -131,6 +132,11 @@ export type TSettings = {
   copyWithSyntaxHighlighting?: boolean; // Enable syntax highlighting in copied text
   suggestOnTriggerCharacters?: boolean; // Suggest completions on trigger characters
   acceptSuggestionOnEnter?: "on" | "smart" | "off"; // Accept suggestions on Enter
+};
+
+export type TInterpreter = {
+  path: string;
+  pip_path: string;
 };
 
 // Main Context Functions Type

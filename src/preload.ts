@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) MNovus. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,6 +10,7 @@ import { ipcRenderer, contextBridge } from "electron";
 import { path_join } from "./shared/functions";
 import { store } from "./shared/store";
 import { set_folder_structure } from "./shared/rdx-slice";
+import { useAppSelector } from "./shared/hooks";
 
 ipcRenderer.on("command-create-file", (event, data) => {
   const new_file_item = document.createElement("div");
@@ -75,6 +77,28 @@ ipcRenderer.on("command-create-file", (event, data) => {
   }
 });
 
+ipcRenderer.on("show-code", (event, data) => {
+  const output_document = document.querySelector(".output");
+  const info_document = document.querySelector(".info-text");
+  const done_document = document.querySelector(".done-text");
+
+  info_document.innerHTML = `<span style="color: skyblue;">[Running]</span><span style="color: lightgreen;"> ${data.command} </span>`;
+  done_document.innerHTML = `<span style="color: skyblue;">${data.isError ? "[Error]" : "[Done]"}</span><span style="color: lightgreen;"> ${data.isError ? data.error : `Exited with code=${data.exited}`}</span>`;
+
+  // If the code is about to start, clear the previous output
+  if (!data.isError && data.output === "Running code...") {
+    output_document.innerHTML = ""; // Clear the previous output before running
+  }
+
+  // Create a new div or pre element for the output
+  const outputMessage = document.createElement("div");
+  outputMessage.style.whiteSpace = "pre-wrap"; // Ensure text wraps nicely
+  outputMessage.textContent = data.output; // Use textContent to prevent HTML injection
+
+  // Append the new output message
+  output_document.appendChild(outputMessage);
+});
+
 ipcRenderer.on("command-update-folder-structure", (event, data) => {
   console;
 });
@@ -132,8 +156,22 @@ const renderer = {
   reload_window: (folder: string) => {
     ipcRenderer.send("refresh-window", folder);
   },
+  run_code: (file: string) => {
+    if (file) {
+      const data = {
+        path: file,
+      };
+      ipcRenderer.invoke("run-code", data);
+    }
+  },
 };
 
 contextBridge.exposeInMainWorld("electron", renderer);
+
+contextBridge.exposeInMainWorld("ipcRenderer", {
+  on: (channel: any, callback: any) => ipcRenderer.on(channel, callback),
+  removeListener: (channel: any, callback: any) =>
+    ipcRenderer.removeListener(channel, callback),
+});
 
 export type ERenderer = typeof renderer;

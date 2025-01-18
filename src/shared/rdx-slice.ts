@@ -11,6 +11,7 @@ import {
   TActiveFile,
   TIndent,
   TSettings,
+  TInterpreter,
 } from "./types";
 
 // Define the initial state using that type
@@ -40,6 +41,10 @@ const initialState: IMainState = {
     autoClosingBracket: "always",
     tabSize: 4,
   } as TSettings,
+  interpreter: {
+    path: "C:\\Python312\\python.exe",
+    pip_path: "C:\\Python312\\Scripts\\pip.exe",
+  } as TInterpreter,
 };
 
 export const mainSlice = createSlice({
@@ -65,6 +70,9 @@ export const mainSlice = createSlice({
     },
     set_settings: (state, action: PayloadAction<TSettings>) => {
       state.settings = action.payload;
+    },
+    set_interpreter: (state, action: PayloadAction<TInterpreter>) => {
+      state.interpreter = action.payload;
     },
   },
 });

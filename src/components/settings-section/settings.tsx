@@ -9,8 +9,10 @@ import { ReactComponent as AngleRightIcon } from "../../assets/svg/r-chevron.svg
 import PerfectScrollBar from "react-perfect-scrollbar";
 import { useAppSelector } from "../../shared/hooks";
 import { Dropdown, Input, message, Button, InputNumber, Menu } from "antd/es";
+import { set_settings } from "../../shared/rdx-slice";
 import type { MenuProps } from "antd";
 import { DownOutlined } from "@ant-design/icons/lib";
+import { TSettings } from "../../shared/types";
 
 const treeData = [
   {
@@ -56,17 +58,19 @@ const SettingsComponent = React.memo(() => {
   const [wrappingIndent, setwrappingIndent] = useState<string>(
     settings.wrappingIndent
   );
-  const [tabSize, settabSize] = useState<number>(settings.tabSize);
+  const [tabSize, setTabSize] = useState<number>(settings.tabSize);
 
   const saveBasicSettings = () => {
     try {
-      settings.cursorAnimation === cursorAnimation;
-      settings.fontFamily === fontFamily;
-      settings.fontSize === fontSize;
-      settings.format === format;
-      settings.minimap === minimap;
-      settings.smoothTyping === smoothTyping;
-      settings.theme === theme;
+      const payload = {
+        cursorAnimation: cursorAnimation,
+        theme: theme,
+        fontFamily: fontFamily,
+        format: format,
+        minimap: minimap,
+        smoothTyping: smoothTyping,
+      } as TSettings;
+      set_settings({ payload });
     } catch (err) {
       message.error(err);
     } finally {

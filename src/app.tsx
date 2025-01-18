@@ -32,7 +32,7 @@ const App = React.memo((props: any) => {
           Splitter: {
             splitBarDraggableSize: 0, // Drag and drop element size
             splitBarSize: 0.1, // Splitter bar size
-            splitTriggerSize: 0.1, // Trigger area size
+            splitTriggerSize: 3, // Trigger area size
           },
         },
       }}

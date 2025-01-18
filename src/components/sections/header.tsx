@@ -10,6 +10,7 @@ import {
   SaveOutlined,
   SearchOutlined,
   SettingOutlined,
+  CaretRightOutlined,
 } from "@ant-design/icons/lib";
 import {
   Button,
@@ -36,7 +37,7 @@ const HeaderSection = React.memo((props: any) => {
   const folder_structure = useAppSelector(
     (state) => state.main.folder_structure
   );
-
+  const active_file = useAppSelector((state) => state.main.active_file);
   const dispatch = useAppDispatch();
   const useMainContextIn = React.useContext(MainContext);
   const [newProjectModalVisibilty, setNewProjectModalVisibilty] =
@@ -255,23 +256,39 @@ const HeaderSection = React.memo((props: any) => {
       <div className="header-main">
         <div className="action-bar">
           <div className="icons-bar">
-            <Button style={{ border: "none", padding: 0, margin: 0 }}>
-              <FileOutlined />
-            </Button>
-            <Button
+            <button
               style={{
                 border: "none",
                 padding: 0,
                 margin: 0,
+                background: "transparent",
+                cursor: "pointer",
+              }}
+            >
+              <FileOutlined />
+            </button>
+            <button
+              style={{
+                border: "none",
+                padding: 0,
+                margin: 0,
+                background: "transparent",
+                cursor: "pointer",
               }}
               onClick={() => setNewProjectModalVisibilty(true)}
             >
               <Tooltip title="New Project">
                 <FolderAddOutlined />
               </Tooltip>
-            </Button>
-            <Button
-              style={{ border: "none", padding: 0, margin: 0 }}
+            </button>
+            <button
+              style={{
+                border: "none",
+                padding: 0,
+                margin: 0,
+                background: "transparent",
+                cursor: "pointer",
+              }}
               onClick={() => {
                 const current_file = store
                   .getState()
@@ -293,25 +310,55 @@ const HeaderSection = React.memo((props: any) => {
               }}
             >
               <SaveOutlined />
-            </Button>
-            <Button style={{ border: "none", padding: 0, margin: 0 }}>
+            </button>
+            <button
+              style={{
+                border: "none",
+                padding: 0,
+                margin: 0,
+                background: "transparent",
+                cursor: "pointer",
+              }}
+            >
               <BugOutlined />
-            </Button>
-            <Button style={{ border: "none", padding: 0, margin: 0 }}>
+            </button>
+            <button
+              style={{
+                border: "none",
+                padding: 0,
+                margin: 0,
+                background: "transparent",
+                cursor: "pointer",
+              }}
+            >
               <BarsOutlined />
-            </Button>
-            <Button style={{ border: "none", padding: 0, margin: 0 }}>
+            </button>
+            <button
+              style={{
+                border: "none",
+                padding: 0,
+                margin: 0,
+                background: "transparent",
+                cursor: "pointer",
+              }}
+            >
               <CopyOutlined />
-            </Button>
+            </button>
             {!configFile && (
-              <Button
-                style={{ border: "none", padding: 0, margin: 0 }}
+              <button
+                style={{
+                  border: "none",
+                  padding: 0,
+                  margin: 0,
+                  background: "transparent",
+                  cursor: "pointer",
+                }}
                 onClick={initializeProject}
               >
                 <Tooltip title="Inilize Anantam Project">
                   <ImportOutlined />
                 </Tooltip>
-              </Button>
+              </button>
             )}
           </div>
         </div>
@@ -328,18 +375,31 @@ const HeaderSection = React.memo((props: any) => {
         </div>
 
         <div className="project-info">
+          <button
+            style={{ border: "none", background: "transparent" }}
+            onClick={() => {
+              try {
+                const file = active_file.path.replace("/", "\\");
+                window.electron.run_code(file);
+              } catch {
+                return;
+              }
+            }}
+          >
+            <CaretRightOutlined />
+          </button>
+
           <Button>Data Studio</Button>
           <Dropdown overlay={generateFileMenu()} trigger={["click"]}>
-            <Button style={{ border: "none" }}>
+            <button style={{ border: "none", background: "transparent" }}>
               {folder_structure?.name?.split(/\/|\\/).at(-1)}
-            </Button>
+            </button>
           </Dropdown>
 
-          {/* Settings Dropdown */}
           <Dropdown overlay={generateSettingsMenu()} trigger={["click"]}>
-            <Button style={{ border: "none" }}>
+            <button style={{ border: "none", background: "transparent" }}>
               <SettingOutlined />
-            </Button>
+            </button>
           </Dropdown>
         </div>
       </div>

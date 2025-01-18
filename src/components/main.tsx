@@ -1,9 +1,10 @@
+/* eslint-disable import/no-duplicates */
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) MNovus. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import SidebarSection from "./sections/sidebar";
 import ContentSection from "./sections/content";
@@ -11,14 +12,14 @@ import FooterComponent from "./sections/footer";
 // import { MultiInstance } from "./terminal-section/multiInstance";
 import { MainContext } from "../shared/functions";
 import * as monaco from "monaco-editor";
-import { message, Splitter } from "antd";
+import { Splitter } from "antd";
 import { get_file_types } from "../shared/functions";
 import { useAppDispatch, useAppSelector } from "../shared/hooks";
 import { TSelectedFile } from "../shared/types";
 import { update_active_files, update_indent } from "../shared/rdx-slice";
 import { store } from "../shared/store";
 import HeaderSection from "./sections/header";
-import { json } from "stream/consumers";
+import { BottomSection } from "./sections/bottom";
 
 const MainComponent = React.memo((props: any) => {
   const folder_structure = useAppSelector(
@@ -208,7 +209,6 @@ const MainComponent = React.memo((props: any) => {
 
             // FIND & REPLACE
             find: {
-              addExtraSpaceOnTop: true, // Add extra space for the find widget
               autoFindInSelection: "always", // Auto find in selection
             },
 
@@ -483,12 +483,9 @@ const MainComponent = React.memo((props: any) => {
                 <Splitter.Panel>
                   <ContentSection />
                 </Splitter.Panel>
-
-                {/* <Splitter.Panel defaultSize="1%" min="1%" max="90%">
-                  <PerfectScrollbar className="scroller" style={{ zIndex: 9 }}>
-                    <MultiInstance />
-                  </PerfectScrollbar>
-                </Splitter.Panel> */}
+                <Splitter.Panel defaultSize="40%" min="10%" max="95%">
+                  <BottomSection />
+                </Splitter.Panel>
               </Splitter>
             </Splitter.Panel>
           </Splitter>
