@@ -726,13 +726,15 @@ body {
 }
 
 .file-actions .close-icon {
-  visibility: hidden; /* Close icon hidden by default */
   cursor: pointer;
   margin-left: 4px;
-  transition:
-    visibility 0.5s ease,
-    transform 0.3s ease;
-  transform: scale(0); /* Start with a smaller scale */
+}
+
+.dot-icon {
+  background: #fff;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
 }
 
 .tab:hover .close-icon {

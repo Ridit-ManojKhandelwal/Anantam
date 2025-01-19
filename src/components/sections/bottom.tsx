@@ -25,13 +25,12 @@ export const BottomSection = () => {
       <div className="tab-content">
         {section === 0 && (
           <div>
-            <h3>Output</h3>
             <OutputSection />
           </div>
         )}
         {section === 1 && (
           <div>
-            <h3>Terminal</h3>
+            <h3>Coming Soon...</h3>
             <Terminal />
           </div>
         )}

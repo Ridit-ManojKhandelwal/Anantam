@@ -75,9 +75,6 @@ const HeaderSection = React.memo((props: any) => {
   // Extracted save functionality
   const handle_save_file = useCallback(
     (data: { path: string; content: string }) => {
-      const fixedPath = data.path.replace(/^\/+/, "").replace(/\\/g, "/");
-      data.path = fixedPath;
-
       window.electron.save_file(data);
 
       setTimeout(() => {
@@ -100,8 +97,9 @@ const HeaderSection = React.memo((props: any) => {
   // Function to display files in the dropdown menu
   const handle_set_editor = useCallback(
     async (branch_name: string, full_path: string) => {
-      const get_file_content =
-        await window.electron.get_file_content(full_path);
+      const get_file_content = await window.electron.get_file_content(
+        full_path
+      );
       const active_file: TActiveFile = {
         icon: <FileIcon type={branch_name.split(".").at(-1)} />, // Pass a size prop
         path: full_path,
@@ -379,7 +377,7 @@ const HeaderSection = React.memo((props: any) => {
             style={{ border: "none", background: "transparent" }}
             onClick={() => {
               try {
-                const file = active_file.path.replace("/", "\\");
+                const file = active_file.path
                 window.electron.run_code(file);
               } catch {
                 return;

@@ -100,11 +100,13 @@ const ContentSection = React.memo((props: any) => {
               >
                 <span>{file.icon}</span>
                 <span>{file.name}</span>
-                <span
+                  
+                  <span
                   onClick={(e) => handleRemoveFile(e as any, file)}
                   className="file-actions"
                 >
-                  <TimesIcon className="close-icon" />
+                  {/* <TimesIcon className="close-icon" /> */}
+                  {active_file.is_touched ? <div className="dot-icon"/> :<div className="dot-icon"/> }
                 </span>
               </div>
             ))}

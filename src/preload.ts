@@ -78,25 +78,33 @@ ipcRenderer.on("command-create-file", (event, data) => {
 });
 
 ipcRenderer.on("show-code", (event, data) => {
-  const output_document = document.querySelector(".output");
-  const info_document = document.querySelector(".info-text");
-  const done_document = document.querySelector(".done-text");
+  try {
+    const output_document = document.querySelector(".output");
+    const info_document = document.querySelector(".info-text");
+    const done_document = document.querySelector(".done-text");
 
-  info_document.innerHTML = `<span style="color: skyblue;">[Running]</span><span style="color: lightgreen;"> ${data.command} </span>`;
-  done_document.innerHTML = `<span style="color: skyblue;">${data.isError ? "[Error]" : "[Done]"}</span><span style="color: lightgreen;"> ${data.isError ? data.error : `Exited with code=${data.exited}`}</span>`;
+    info_document.innerHTML = `<span style="color: skyblue;">[Running]</span><span style="color: lightgreen;"> ${data.command} </span>`;
+    done_document.innerHTML = `<span style="color: skyblue;">${
+      data.isError ? "[Error]" : "[Done]"
+    }</span><span style="color: lightgreen;"> ${
+      data.isError ? data.error : `Exited with code=${data.exited}`
+    }</span>`;
 
-  // If the code is about to start, clear the previous output
-  if (!data.isError && data.output === "Running code...") {
-    output_document.innerHTML = ""; // Clear the previous output before running
+    // If the code is about to start, clear the previous output
+    if (!data.isError && data.output === "Running code...") {
+      output_document.innerHTML = ""; // Clear the previous output before running
+    }
+
+    // Create a new div or pre element for the output
+    const outputMessage = document.createElement("div");
+    outputMessage.style.whiteSpace = "pre-wrap"; // Ensure text wraps nicely
+    outputMessage.textContent = data.output; // Use textContent to prevent HTML injection
+
+    // Append the new output message
+    output_document.appendChild(outputMessage);
+  } catch {
+    return;
   }
-
-  // Create a new div or pre element for the output
-  const outputMessage = document.createElement("div");
-  outputMessage.style.whiteSpace = "pre-wrap"; // Ensure text wraps nicely
-  outputMessage.textContent = data.output; // Use textContent to prevent HTML injection
-
-  // Append the new output message
-  output_document.appendChild(outputMessage);
 });
 
 ipcRenderer.on("command-update-folder-structure", (event, data) => {
