@@ -1,9 +1,5 @@
 import React from "react";
-import { ReactComponent as RemoteIcon } from "../../assets/svg/remote.svg";
-import { ReactComponent as SourceIcon } from "../../assets/svg/source.svg";
-import { ReactComponent as CloudUploadIcon } from "../../assets/svg/cloud-upload.svg";
 import { ReactComponent as RadioTowerIcon } from "../../assets/svg/radio-tower.svg";
-import { ReactComponent as BellDotIcon } from "../../assets/svg/bell-dot.svg";
 import { ReactComponent as BracketErrorIcon } from "../../assets/svg/bracket-error.svg";
 import { useAppSelector } from "../../shared/hooks";
 import { get_file_types } from "../../shared/functions";
@@ -15,9 +11,6 @@ const FooterComponent = React.memo((props: any) => {
   return (
     <div className="footer-section">
       <div>
-        <div className="remove-item">
-          <RemoteIcon />
-        </div>
         <div className="">
           <span>
             {active_file == undefined || "" ? "main" : active_file.name}
@@ -27,7 +20,7 @@ const FooterComponent = React.memo((props: any) => {
           <span className="bigger-icon" style={{ marginRight: 5 }}>
             <RadioTowerIcon />
           </span>
-          <div>1</div>
+          <div>Terminal</div>
         </div>
       </div>
       <div>
@@ -43,20 +36,9 @@ const FooterComponent = React.memo((props: any) => {
           <div>UTF-8</div>
         </div>
         <div className="">
-          <div>LF</div>
-        </div>
-        <div className="">
-          <span className="bigger-icon" style={{ marginRight: 5 }}>
-            <BracketErrorIcon />
-          </span>
           <div style={{ textTransform: "capitalize" }}>
             {active_file == undefined ? "" : get_file_types(active_file.name)}
           </div>
-        </div>
-        <div className="">
-          <span className="bigger-icon" style={{ marginRight: 5 }}>
-            <BellDotIcon />
-          </span>
         </div>
       </div>
     </div>

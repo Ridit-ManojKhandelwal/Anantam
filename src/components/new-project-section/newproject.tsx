@@ -17,11 +17,11 @@ const treeData = [
         key: "projects-new",
         children: [
           {
-            title: "Python Project", // Properly nested child
+            title: "Python Project",
             key: "projects-new-python",
           },
           {
-            title: "Infx Project", // Properly nested child
+            title: "Infx Project",
             key: "projects-new-infx",
           },
         ],
@@ -43,17 +43,17 @@ export default function NewProjectModal({
   const [activeOption, setActiveOption] = useState<string | null>(null);
   const [interpreterOption, setInterpreterOption] = useState<string>("python");
   const [interpreterVersion, setInterpreterVersion] = useState<number>(0);
-  const [isMainPyChecked, setIsMainPyChecked] = useState<boolean>(false); // Track main.py checkbox
-  const [code, setCode] = useState("print('hello world')"); // Default code for main.py
+  const [isMainPyChecked, setIsMainPyChecked] = useState<boolean>(false);
+  const [code, setCode] = useState("print('hello world')");
   const [edit, setEdit] = useState<boolean>(false);
   const [folderPath, setFolderPath] = useState<string>("");
 
   const openFolderDialog = () => {
     window.electron
-      .openNewProjectFolder() // Calls the openFolder method in preload.js
+      .openNewProjectFolder()
       .then((path: string) => {
         if (path) {
-          setFolderPath(path); // Set the selected folder path to the input
+          setFolderPath(path);
         }
       })
       .catch((error: any) => {
@@ -95,7 +95,7 @@ export default function NewProjectModal({
     }
     try {
       if (interpreterOption === "anantam") {
-        window.electron.create_folder({ path: folderPath + "\\.env" });
+        // window.electron.create_folder({ path: folderPath + "\\.env" });
         window.electron.create_project_anantam_config_file({
           path: folderPath + "\\anantam.config.json",
           interpreter_path: folderPath + "\\.env\\anantam.exe",
@@ -113,7 +113,7 @@ export default function NewProjectModal({
     } catch (err) {
       message.error(err);
     } finally {
-      message.info("created project");
+      message.info("Created project");
       setModalVisibilty();
     }
   };
@@ -126,38 +126,39 @@ export default function NewProjectModal({
     return (
       <div className="new-project-python">
         <div className="option">
-          <p>Location: </p>
+          <p className="label">Location: </p>
           <Input
-            placeholder="folder-path"
+            placeholder="Folder Path"
             value={folderPath}
             prefix={<FolderOpenOutlined onClick={openFolderDialog} />}
+            className="input-field"
           />
         </div>
         <div className="option">
-          <p>New Environment using: </p>
+          <p className="label">New Environment using: </p>
           <Dropdown overlay={<Menu items={envItems} />} trigger={["click"]}>
-            <Button>Select Interpreter</Button>
+            <Button className="dropdown-btn">Select Interpreter</Button>
           </Dropdown>
           <div className="sub-option">
             {(interpreterOption === "anantam" && (
               <div>
-                <p>Anantam Version: </p>
+                <p className="label">Anantam Version: </p>
                 <Dropdown
                   overlay={<Menu items={anantamVersionItems} />}
                   trigger={["click"]}
                 >
-                  <Button>Select Version</Button>
+                  <Button className="dropdown-btn">Select Version</Button>
                 </Dropdown>
               </div>
             )) ||
               (interpreterOption === "python" && (
                 <div>
-                  <p>Python Version: </p>
+                  <p className="label">Python Version: </p>
                   <Dropdown
                     overlay={<Menu items={envItems} />}
                     trigger={["click"]}
                   >
-                    <Button>Select Version</Button>
+                    <Button className="dropdown-btn">Select Version</Button>
                   </Dropdown>
                 </div>
               ))}
@@ -167,8 +168,9 @@ export default function NewProjectModal({
           <Checkbox
             checked={isMainPyChecked}
             onChange={(e) => setIsMainPyChecked(e.target.checked)}
+            className="checkbox"
           >
-            <p>Create a main.py welcome script:</p>
+            <p className="label">Create a main.py welcome script:</p>
           </Checkbox>
         </div>
         <Button
@@ -179,6 +181,7 @@ export default function NewProjectModal({
             padding: "15px",
           }}
           onClick={createProject}
+          className="create-btn"
         >
           Create Project
         </Button>
@@ -196,7 +199,9 @@ export default function NewProjectModal({
     nodes.map((node) => (
       <div key={node.key} className="tree-item">
         <div
-          className={`tree-node ${expandedKeys.includes(node.key) ? "expanded" : ""} 
+          className={`tree-node ${
+            expandedKeys.includes(node.key) ? "expanded" : ""
+          } 
               ${activeOption === node.key ? "active-option" : ""}`}
           onClick={() => {
             setSelectedKey(node.key);
@@ -206,7 +211,9 @@ export default function NewProjectModal({
         >
           {node.children && (
             <span
-              className={`expand-icon ${expandedKeys.includes(node.key) ? "open" : ""}`}
+              className={`expand-icon ${
+                expandedKeys.includes(node.key) ? "open" : ""
+              }`}
             >
               {expandedKeys.includes(node.key) ? (
                 <AngleLeftIcon />

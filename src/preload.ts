@@ -8,32 +8,82 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import { ipcRenderer, contextBridge } from "electron";
 import { path_join } from "./shared/functions";
-import { store } from "./shared/store";
-import { set_folder_structure } from "./shared/rdx-slice";
-import { useAppSelector } from "./shared/hooks";
 
 ipcRenderer.on("command-create-file", (event, data) => {
   const new_file_item = document.createElement("div");
   new_file_item.className = "content-item new-file-item";
   new_file_item.innerHTML = `
-      <div>
-          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g fill="#d2d4d3"> <path d="M1.75 3a.75.75 0 000 1.5h12.5a.75.75 0 000-1.5H1.75zM1.75 6a.75.75 0 000 1.5h9.5a.75.75 0 000-1.5h-9.5zM1 9.75A.75.75 0 011.75 9h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 9.75zM1.75 12a.75.75 0 000 1.5h9.5a.75.75 0 000-1.5h-9.5z"></path> </g> </g></svg>
-      </div>
-      <div class="file-name" contenteditable="true"></div>
-  `;
-
+        <div>
+            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g fill="#d2d4d3"> <path d="M1.75 3a.75.75 0 000 1.5h12.5a.75.75 0 000-1.5H1.75zM1.75 6a.75.75 0 000 1.5h9.5a.75.75 0 000-1.5h-9.5zM1 9.75A.75.75 0 011.75 9h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 9.75zM1.75 12a.75.75 0 000 1.5h9.5a.75.75 0 000-1.5h-9.5z"></path> </g> </g></svg>
+        </div>
+        <div class="file-name" contenteditable="true"></div>
+    `;
   setTimeout(() => {
     (new_file_item.querySelector(".file-name") as HTMLElement).focus();
   }, 0);
-
   (new_file_item.querySelector(".file-name") as HTMLElement).onkeyup = (e) => {
+    try {
+      if (e.key.toLowerCase() == "enter") {
+        const targetEditableEl = e.currentTarget as HTMLElement;
+        const value = targetEditableEl.innerText;
+        console.log("value", value);
+
+        if (value != "") {
+          renderer.create_file({
+            path: path_join([data.path, value]),
+            fileName: value.trim(),
+            rootPath: data.rootPath,
+          });
+        }
+        new_file_item?.remove();
+      }
+    } catch (error) {}
+  };
+  (new_file_item.querySelector(".file-name") as HTMLElement).onblur = (e) => {
+    const targetEditableEl = e.currentTarget as HTMLElement;
+    const value = targetEditableEl.innerText;
+    console.log("value", value);
+
+    if (value != "") {
+      renderer.create_file({
+        path: path_join([data.path, value]),
+        fileName: value,
+        rootPath: data.rootPath,
+      });
+    }
+    new_file_item.remove();
+  };
+
+  const targetEl = document
+    .querySelector(`#list-wrapper-${data.path.replace(/\/|\\|\./g, "-")}`)
+    .querySelector(".content-list");
+  targetEl.prepend(new_file_item);
+});
+
+ipcRenderer.on("command-create-folder", (event, data) => {
+  const new_file_item = document.createElement("div");
+  new_file_item.className = "content-item new-file-item";
+  new_file_item.innerHTML = `
+      <div>
+          
+      </div>
+      <div class="content-item" contenteditable="true"></div>
+  `;
+
+  setTimeout(() => {
+    (new_file_item.querySelector(".content-item") as HTMLElement).focus();
+  }, 0);
+
+  (new_file_item.querySelector(".content-item") as HTMLElement).onkeyup = (
+    e
+  ) => {
     try {
       if (e.key.toLowerCase() == "enter") {
         const targetEditableEl = e.currentTarget as HTMLElement;
         const value = targetEditableEl.innerText;
 
         if (value != "") {
-          renderer.create_file({
+          renderer.create_folder({
             path: path_join([data.path, value]),
             fileName: value.trim(),
             rootPath: data.rootPath,
@@ -46,12 +96,14 @@ ipcRenderer.on("command-create-file", (event, data) => {
     }
   };
 
-  (new_file_item.querySelector(".file-name") as HTMLElement).onblur = (e) => {
+  (new_file_item.querySelector(".content-item") as HTMLElement).onblur = (
+    e
+  ) => {
     const targetEditableEl = e.currentTarget as HTMLElement;
     const value = targetEditableEl.innerText;
 
     if (value != "") {
-      renderer.create_file({
+      renderer.create_folder({
         path: path_join([data.path, value]),
         fileName: value,
         rootPath: data.rootPath,
@@ -60,13 +112,7 @@ ipcRenderer.on("command-create-file", (event, data) => {
     new_file_item.remove();
   };
 
-  function sanitizeSelector(selector: string): string {
-    return selector.replace(/([^\w-])/g, "\\$1"); // Only escape invalid characters like spaces, colons, etc.
-  }
-
-  const selector = sanitizeSelector(
-    `#list-wrapper-${data.path.replace(/\/|\\|\./g, "-")}`
-  );
+  const selector = `#list-wrapper-${data.path.replace(/\/|\\|\./g, "-")}`;
 
   const targetEl = document.querySelector(selector);
   if (targetEl) {
@@ -86,7 +132,7 @@ ipcRenderer.on("show-code", (event, data) => {
     info_document.innerHTML = `<span style="color: skyblue;">[Running]</span><span style="color: lightgreen;"> ${data.command} </span>`;
     done_document.innerHTML = `<span style="color: skyblue;">${
       data.isError ? "[Error]" : "[Done]"
-    }</span><span style="color: lightgreen;"> ${
+    }</span><span style="color: ${data.isError ? "orange" : "lightgreen"};"> ${
       data.isError ? data.error : `Exited with code=${data.exited}`
     }</span>`;
 
@@ -108,7 +154,7 @@ ipcRenderer.on("show-code", (event, data) => {
 });
 
 ipcRenderer.on("command-update-folder-structure", (event, data) => {
-  console;
+  window.location.reload();
 });
 
 ipcRenderer.on("new-folder-opened", (event, data) => {
@@ -129,8 +175,12 @@ const renderer = {
     ipcRenderer.send("clear-folder");
   },
   get_file_content: async (path: string) => {
-    const file_content = await ipcRenderer.invoke("get-file-content", path);
-    return file_content;
+    try {
+      const file_content = await ipcRenderer.invoke("get-file-content", path);
+      return file_content;
+    } catch {
+      return "error fetching file content";
+    }
   },
   save_file: (data: { path: string; content: string }) => {
     ipcRenderer.send("save-file", data);
@@ -155,7 +205,11 @@ const renderer = {
   create_project_anantam_file: (data: { path: string; content: string }) => {
     ipcRenderer.send("create-project-anantam-file", data);
   },
-  create_folder: (data: { path: string }) => {
+  create_folder: (data: {
+    path: string;
+    fileName: string;
+    rootPath: string;
+  }) => {
     ipcRenderer.send("create-folder", data);
   },
   set_folder: (folder: string) => {
@@ -172,14 +226,22 @@ const renderer = {
       ipcRenderer.invoke("run-code", data);
     }
   },
+  ipcRenderer: {
+    send: (channel: any, data: any) => {
+      ipcRenderer.send(channel, data);
+    },
+    on: (channel: any, func: any) => {
+      ipcRenderer.on(channel, (event, ...args) => func(event, ...args));
+    },
+    removeAllListeners: (channel: any) => {
+      ipcRenderer.removeAllListeners(channel);
+    },
+    removeListener: (channel: any, listener: any) => {
+      ipcRenderer.removeListener(channel, listener);
+    },
+  },
 };
 
 contextBridge.exposeInMainWorld("electron", renderer);
-
-contextBridge.exposeInMainWorld("ipcRenderer", {
-  on: (channel: any, callback: any) => ipcRenderer.on(channel, callback),
-  removeListener: (channel: any, callback: any) =>
-    ipcRenderer.removeListener(channel, callback),
-});
 
 export type ERenderer = typeof renderer;

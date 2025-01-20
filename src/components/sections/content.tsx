@@ -1,4 +1,4 @@
-import React, { act } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../shared/hooks";
 import {
   set_folder_structure,
@@ -14,16 +14,23 @@ import SettingsComponent from "../settings-section/settings";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { MainContext } from "../../shared/functions";
 import DataStudio from "../data-studio/app";
+import { store } from "../../shared/store";
+import FileIcon from "../../shared/file-icon";
 
 const ContentSection = React.memo((props: any) => {
   const dispatch = useAppDispatch();
   const folder_structure = useAppSelector(
     (state) => state.main.folder_structure
   );
+
+  const settings = useAppSelector((state) => state.main.settings_tab_active);
+  const data_studio_active = useAppSelector(
+    (state) => state.main.data_studio_active.active
+  );
+
   const active_files = useAppSelector((state) => state.main.active_files);
   const active_file = useAppSelector((state) => state.main.active_file);
-  const settings = useAppSelector((state) => state.main.settings_tab_active);
-
+  // const editor_container_ref = React.useRef<HTMLDivElement | undefined>()
   const useMainContextIn = React.useContext(MainContext);
 
   const handle_open_folder = React.useCallback(async () => {
@@ -33,46 +40,28 @@ const ContentSection = React.memo((props: any) => {
 
   const handle_set_selected_file = React.useCallback(
     (active_file: TActiveFile) => {
-      if (active_file) {
-        dispatch(update_active_file(active_file));
-        useMainContextIn.handle_set_editor(active_file);
-      }
+      dispatch(update_active_file(active_file));
+      useMainContextIn.handle_set_editor(active_file);
     },
     [active_files]
   );
 
   const handleRemoveFile = React.useCallback(
-    (e: React.MouseEvent, file: TActiveFile) => {
-      e.stopPropagation(); // Prevent click event propagation to parent tab
-
+    (e: MouseEvent, file: TActiveFile) => {
+      e.stopPropagation();
       const _clone = [...active_files];
-      const index_to_remove = _clone.findIndex((_t) => _t.path === file.path);
-
-      if (index_to_remove > -1) {
-        const wasActive = active_file?.path === file.path;
-
-        // Remove file from active files
-        const targetFile = _clone[index_to_remove];
-        _clone.splice(index_to_remove, 1);
-
-        // If the removed file was active, set the next file as active
-        if (wasActive && _clone.length > 0) {
-          const nextActiveFile =
-            index_to_remove === 0 ? _clone[0] : _clone[index_to_remove - 1];
-          dispatch(update_active_file(nextActiveFile));
-        } else if (_clone.length === 0) {
-          dispatch(update_active_file(null)); // No tabs left
-        }
-        dispatch(update_active_files(_clone));
-        useMainContextIn.handle_remove_editor(targetFile);
-      }
+      const index_to_remove = _clone.findIndex((_t) => _t.path == file.path);
+      const targetFile = _clone[index_to_remove];
+      _clone.splice(index_to_remove, 1);
+      const next_index =
+        index_to_remove == 0 ? index_to_remove : index_to_remove - 1;
+      active_file.path == file.path &&
+        dispatch(update_active_file(_clone[next_index]));
+      dispatch(update_active_files(_clone));
+      useMainContextIn.handle_remove_editor(targetFile);
     },
     [active_files, active_file]
   );
-
-  const handleRemoveSettings = React.useCallback(() => {
-    set_settings_tab(false);
-  }, []);
 
   return (
     <div className="content-section">
@@ -83,64 +72,50 @@ const ContentSection = React.memo((props: any) => {
       )}
       {Object.keys(folder_structure).length > 0 && active_files.length == 0 ? (
         <div className="no-selected-files">
-          {/* <PythonIcon /> */}
-          {/* <SettingsComponent /> */}
-          <DataStudio />
+          {data_studio_active ? (
+            <DataStudio />
+          ) : settings ? (
+            <SettingsComponent />
+          ) : (
+            <div>
+              <h1> Possibilities are endless!</h1>
+            </div>
+          )}
         </div>
       ) : (
         <div className="content-inner">
           <PerfectScrollbar className="page-tabs-cont" style={{ zIndex: 9 }}>
-            {active_files.map((file) => (
-              <div
-                key={file.path}
-                onClick={() => handle_set_selected_file(file)}
-                className={
-                  "tab" + (active_file?.path == file.path ? " active" : "")
-                }
-              >
-                <span>{file.icon}</span>
-                <span>{file.name}</span>
-                  
-                  <span
-                  onClick={(e) => handleRemoveFile(e as any, file)}
-                  className="file-actions"
+            {active_files.map((file) => {
+              return (
+                <div
+                  key={file.path}
+                  onClick={() => handle_set_selected_file(file)}
+                  className={
+                    "tab" + (active_file?.path === file.path ? " active" : "")
+                  }
                 >
-                  {/* <TimesIcon className="close-icon" /> */}
-                  {active_file.is_touched ? <div className="dot-icon"/> :<div className="dot-icon"/> }
-                </span>
-              </div>
-            ))}
+                  <span>
+                    <FileIcon type={file.icon} />
+                  </span>
+                  <span>{file.name}</span>
 
-            {settings && (
-              <div
-                onClick={() =>
-                  handle_set_selected_file({
-                    name: "settings",
-                    icon: <SettingsIcon />,
-                    path: "settings",
-                    is_touched: false,
-                  })
-                }
-                className={
-                  "tab" + (active_file?.path === "settings" ? " active" : "")
-                }
-              >
-                <span>
-                  <SettingsIcon />
-                </span>
-                <span>Settings</span>
-                <span onClick={handleRemoveSettings} className="file-actions">
-                  <TimesIcon className="close-icon" />
-                </span>
-              </div>
-            )}
+                  <span
+                    onClick={(e) => handleRemoveFile(e as any, file)}
+                    className="file-actions"
+                  >
+                    {active_file?.path === file.path &&
+                    active_file.is_touched ? (
+                      <div className="dot-icon" />
+                    ) : (
+                      <TimesIcon className="close-icon" />
+                    )}
+                  </span>
+                </div>
+              );
+            })}
           </PerfectScrollbar>
 
-          {active_file?.path === "settings" ? (
-            <SettingsComponent />
-          ) : (
-            <div className="editor-container"></div>
-          )}
+          <div className="editor-container"></div>
         </div>
       )}
     </div>

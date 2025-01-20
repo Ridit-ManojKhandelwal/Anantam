@@ -24,8 +24,6 @@ const config: ForgeConfig = {
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({
-      certificateFile: "./AnantamCert.pfx", // Path to your signed certificate (pfx file)
-      certificatePassword: process.env.CERTIFICATE_PASSWORD, // Password for the certificate
       setupIcon: "./assets/icon.ico", // Path to the icon for the installer
       authors: "MNovus",
       owners: "MNovus",
@@ -69,16 +67,16 @@ const config: ForgeConfig = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
-  publishers: [
-    new PublisherGithub({
-      repository: {
-        owner: "Ridit-ManojKhandelwal",
-        name: "Anantam",
-      },
-      prerelease: true,
-      draft: true,
-    }),
-  ],
+  // publishers: [
+  //   new PublisherGithub({
+  //     repository: {
+  //       owner: "Ridit-ManojKhandelwal",
+  //       name: "Anantam",
+  //     },
+  //     prerelease: true,
+  //     draft: true,
+  //   }),
+  // ],
 };
 
 export default config;

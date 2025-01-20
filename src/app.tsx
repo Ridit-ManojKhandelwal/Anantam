@@ -10,7 +10,6 @@ import { useAppDispatch } from "./shared/hooks";
 import { IFolderStructure } from "./shared/types";
 import { set_folder_structure } from "./shared/rdx-slice";
 import { ConfigProvider, theme } from "antd/es";
-import { ipcRenderer } from "electron";
 
 const App = React.memo((props: any) => {
   const dispatch = useAppDispatch();

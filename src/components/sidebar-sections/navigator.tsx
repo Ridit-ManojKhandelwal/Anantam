@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../shared/hooks";
 import { MainContext, makeContentList } from "../../shared/functions";
 import PerfectScrollbar from "react-perfect-scrollbar";
@@ -12,7 +12,7 @@ import { store } from "../../shared/store";
 import { ReactComponent as AngleRightIcon } from "../../assets/svg/r-chevron.svg";
 import { ReactComponent as AngleLeftIcon } from "../../assets/svg/d-chevron.svg";
 
-const ExplorerRoute = React.memo((props: any) => {
+const Navigator = React.memo((props: any) => {
   const folder_structure = useAppSelector(
     (state) => state.main.folder_structure
   );
@@ -25,23 +25,34 @@ const ExplorerRoute = React.memo((props: any) => {
 
   const handle_display_file_list = React.useCallback(() => {
     if (Object.keys(folder_structure).length == 0) return;
+
+    // Clear existing content in the list
+    if (content_main_div_ref.current) {
+      content_main_div_ref.current.innerHTML = ""; // Clear the content
+    }
+
     const files = folder_structure.tree.filter(
       (content) => content.parentPath == folder_structure.root
     );
-    makeContentList(
-      content_main_div_ref.current,
-      files,
-      folder_structure.tree,
-      handle_set_editor
-    );
-  }, [folder_structure, content_main_div_ref.current]);
+
+    // Only render the files if there's any
+    if (files.length > 0) {
+      makeContentList(
+        content_main_div_ref.current,
+        files,
+        folder_structure.tree,
+        handle_set_editor
+      );
+    }
+  }, [folder_structure]);
 
   const handle_set_editor = React.useCallback(
     async (branch_name: string, full_path: string) => {
-      const get_file_content =
-        await window.electron.get_file_content(full_path);
+      const get_file_content = await window.electron.get_file_content(
+        full_path
+      );
       const active_file: TActiveFile = {
-        icon: <FileIcon type={branch_name.split(".").at(-1)} />,
+        icon: branch_name.split(".").at(-1) || "unknown",
         path: full_path,
         name: branch_name,
         is_touched: false,
@@ -78,11 +89,10 @@ const ExplorerRoute = React.memo((props: any) => {
 
   React.useLayoutEffect(() => {
     handle_display_file_list();
-  }, [folder_structure, content_main_div_ref.current]);
+  }, [folder_structure]);
 
   return (
     <div className="folder-tree">
-      <div className="title">Navigator</div>
       <div className="explorer-content-wrapper">
         <div className="content-list-outer-container">
           <div>
@@ -98,4 +108,4 @@ const ExplorerRoute = React.memo((props: any) => {
   );
 });
 
-export default ExplorerRoute;
+export default Navigator;

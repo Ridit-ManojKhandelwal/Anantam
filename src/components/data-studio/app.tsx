@@ -18,8 +18,7 @@ const DataStudio = () => {
   const [currentExcelSteps, setCurrentExcelSteps] = useState<number>(0);
 
   const handleOptionClick = (type: string) => {
-    setDataType(type);
-    setStep(3);
+    window.electron.ipcRenderer.send("coming-soon-dialog", []);
   };
 
   return (
@@ -33,7 +32,13 @@ const DataStudio = () => {
         {step === 1 && (
           <DataTypesSection handleOptionClick={handleOptionClick} />
         )}
-        {step === 2 && <ViewDataSection setStep={setStep} />}
+        {step === 2 && (
+          <ViewDataSection
+            setStep={() =>
+              window.electron.ipcRenderer.send("coming-soon-dialog", [])
+            }
+          />
+        )}
 
         {dataType === "Excel" && (
           <ExcelSection

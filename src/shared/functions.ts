@@ -71,11 +71,11 @@ export const makeContentList = (
 ) => {
   if (branch == undefined) return;
   const sorted_tree = organize_folder(branch);
-  // const sorted_tree = branch
+
   sorted_tree.map((branch) => {
     if (branch.is_dir) {
       const wrapper_cont = document.createElement("div");
-      wrapper_cont.className = "content-list-wrapper ";
+      wrapper_cont.className = "content-list-wrapper";
       wrapper_cont.id =
         "list-wrapper-" +
         path_join([branch.parentPath, branch.name]).replace(/\/|\\|\./g, "-");
@@ -91,7 +91,6 @@ export const makeContentList = (
           `;
       const content_list = document.createElement("div");
       content_list.className = "content-list";
-      // content_item.onauxclick = (e) => {window.electron.folderContext()}
 
       content_item.oncontextmenu = (e) => {
         window.electron.show_contextmenu({
@@ -102,11 +101,21 @@ export const makeContentList = (
       };
 
       content_item.onclick = (e) => {
+        // Remove 'active-node' class from all other nodes
+        document
+          .querySelectorAll(".content-item.active-node")
+          .forEach((node) => {
+            node.classList.remove("active-node");
+          });
+
+        // Add 'active-node' class to the clicked item
+        content_item.classList.add("active-node");
+
         if (content_list.classList.contains("shown")) {
           content_item.classList.remove("shown");
           content_list.classList.remove("shown");
           content_list.style.display = "none";
-          return (content_list.innerHTML = "");
+          content_list.innerHTML = "";
         } else {
           content_list.classList.add("shown");
           content_item.classList.add("shown");
@@ -115,34 +124,50 @@ export const makeContentList = (
         makeContentList(
           content_list,
           tree?.filter(
-            (cbranch) => cbranch.parentPath == branch.path + "/" + branch.name
+            (cbranch) => cbranch.parentPath === branch.path + "/" + branch.name
           ),
           tree,
           handle_set_editor
         );
       };
-      // wrapper_cont.appendChild(new_file_item);
+
       wrapper_cont.appendChild(content_item);
       wrapper_cont.appendChild(content_list);
       targetEl.append(wrapper_cont);
     } else {
       const content_item = document.createElement("div");
       content_item.className = "content-item";
+
       content_item.onauxclick = (e) => {
         window.electron.show_contextmenu({
-          path: branch.parentPath,
+          path: path_join([branch.path, branch.name]),
           type: "file",
           rootPath: store.getState().main.folder_structure.root,
         });
       };
+
       content_item.innerHTML = `
               <div>${renderToStaticMarkup(
                 FileIcon({ type: branch.name.split(".").at(-1) })
               )}</div>
               <div class="file-name">${branch.name}</div>
           `;
-      content_item.onclick = (e) =>
+
+      content_item.onclick = (e) => {
+        // Remove 'active-node' class from all other nodes
+        document
+          .querySelectorAll(".content-item.active-node")
+          .forEach((node) => {
+            node.classList.remove("active-node");
+          });
+
+        // Add 'active-node' class to the clicked item
+        content_item.classList.add("active-node");
+
+        // Call the editor handler for the file
         handle_set_editor(branch.name, branch.parentPath + "/" + branch.name);
+      };
+
       targetEl.append(content_item);
     }
   });

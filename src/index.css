@@ -12,7 +12,7 @@
   --sidebar-icon-color: #868686;
   --sidebar-icon-active-color: #d7d7d7;
   --thumb-color: #ffffff68;
-  --vscode-blue: #0078d4;
+  --blue: #0078d4;
   --border-color: #2b2b2b;
   --file-list-bg: #37373c;
   --tabs-bg: #181818;
@@ -25,7 +25,7 @@
   --sidebar-icon-color: #555555;
   --sidebar-icon-active-color: #0078d4;
   --thumb-color: #00000068;
-  --vscode-blue: #0078d4;
+  --blue: #0078d4;
   --border-color: #dcdcdc;
   --file-list-bg: #ffffff;
   --tabs-bg: #f0f0f0;
@@ -77,18 +77,8 @@ body {
   padding: 0px;
   margin: 0px;
   background-color: var(--main-bg) !important;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    "Open Sans",
-    "Helvetica Neue",
-    sans-serif !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;
 }
 
 .wrapper-component {
@@ -135,7 +125,7 @@ body {
 .wrapper-component > .footer-section .remove-item {
   width: 20px;
   height: 100%;
-  background-color: var(--vscode-blue);
+  background-color: var(--blue);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,7 +195,7 @@ body {
   top: 0px;
   height: 100%;
   width: 2px;
-  background-color: var(--vscode-blue);
+  background-color: var(--blue);
 }
 
 .wrapper-component
@@ -296,7 +286,7 @@ body {
 .wrapper-component > div:nth-child(2) .content-section .default-screen button {
   outline: none;
   border: none;
-  background-color: var(--vscode-blue);
+  background-color: var(--blue);
   color: white;
   font-size: 90%;
   padding: 6px 12px;
@@ -315,17 +305,6 @@ body {
   justify-content: center;
   align-items: center;
   height: 100%;
-}
-
-/* General styling */
-.editor-container {
-  flex: 1;
-  scrollbar-gutter: stable;
-  height: calc(100% - 5px);
-  width: auto;
-  background-color: #1e1e1e;
-  overflow-x: hidden; /* Ensures scrollbars appear when content overflows */
-  box-sizing: border-box; /* Ensures padding is included in the element's total width/height */
 }
 
 .content-inner {
@@ -390,12 +369,13 @@ body {
 .content-item svg {
   width: 14px !important;
   height: 14px !important;
-  margin-right: 5px;
 }
 
 .content-item > .file-name {
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-left: 8px;
 }
 
 .content-inner {
@@ -422,7 +402,7 @@ body {
   border-right: 0.3px solid var(--border-color);
   border-bottom: 0.3px solid var(--border-color);
   color: var(--sidebar-text-color);
-  padding: 0px 15px;
+  padding: 0px 20px;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -498,10 +478,11 @@ body {
   content: " ";
   position: absolute;
   top: 0px;
-  height: 1px;
-  width: 100%;
+  left: 0px;
+  height: 100%;
+  width: 3px;
   left: 0 !important;
-  background-color: coral;
+  background-color: var(--blue);
 }
 
 .no-selected-files {
@@ -631,7 +612,7 @@ body {
 }
 
 .route {
-  color: var(--vscode-blue);
+  color: var(--blue);
   font-size: 90%;
   text-align: center;
 }
@@ -665,7 +646,7 @@ body {
 .folder-tree .explorer-content-wrapper > div:not(:first-child),
 .content-list-outer-container > div:first-child {
   color: var(--sidebar-text-color);
-  font-size: 11px;
+  font-size: 16px;
   text-transform: uppercase;
   display: flex;
   align-items: center;
@@ -726,20 +707,17 @@ body {
 }
 
 .file-actions .close-icon {
+  visibility: visible;
   cursor: pointer;
   margin-left: 4px;
 }
 
 .dot-icon {
+  visibility: visible;
   background: #fff;
-  width: 13px;
-  height: 13px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-}
-
-.tab:hover .close-icon {
-  visibility: visible; /* Show close icon on hover */
-  transform: scale(1); /* Scale up the icon to its normal size */
 }
 
 /* Settings Container */
@@ -756,7 +734,7 @@ body {
 .settings-sidebar {
   width: 300px;
   border-right: 1px solid #333;
-  background: #121212;
+  background: var(--main-bg);
   padding: 10px;
   overflow: hidden;
 }
@@ -765,7 +743,7 @@ body {
 .settings-content {
   flex: 1;
   padding: 20px;
-  background: #121212;
+  background: var(--main-bg);
   overflow: hidden;
 }
 
@@ -781,9 +759,7 @@ body {
   align-items: center;
   font-size: 14px;
   border-radius: 3px;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .tree-node:hover {
@@ -840,7 +816,7 @@ body {
 }
 
 .option:hover .sub-option {
-  background: #121212;
+  background: var(--main-bg);
 }
 
 .sub-option:hover {
@@ -915,9 +891,7 @@ body {
   cursor: pointer;
   font-size: 14px;
   color: #d4d4d4;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .dropdown-item:hover {
@@ -933,9 +907,7 @@ body {
   border-radius: 4px;
   width: 40%;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .save-btn:hover {
@@ -955,26 +927,26 @@ body {
 
 /* Customize Ant Design Modal Background */
 .ant-modal {
-  background: #121212 !important;
+  background: var(--main-bg) !important;
 }
 
 .ant-modal-content {
-  background: #121212 !important;
+  background: var(--main-bg) !important;
   color: #ffffff; /* Optional: Ensure readable text */
 }
 
 .ant-modal-header {
-  background: #121212 !important;
+  background: var(--main-bg) !important;
   color: #ffffff; /* Optional: Ensure readable text */
 }
 
 .ant-modal-body {
-  background: #121212 !important;
+  background: var(--main-bg) !important;
   color: #ffffff;
 }
 
 .ant-modal-footer {
-  background: #121212 !important;
+  background: var(--main-bg) !important;
   border-top: none; /* Optional: Clean footer styling */
 }
 
@@ -998,7 +970,7 @@ body {
 }
 
 .output-container:hover {
-  border-left: 4px solid var(--vscode-blue); /* Bluish left border when clicked */
+  border-left: 4px solid var(--blue); /* Bluish left border when clicked */
 }
 
 p.info-text {
@@ -1020,4 +992,126 @@ code.output {
   color: #f8f8f2;
   padding: 10px;
   border-radius: 4px;
+}
+
+.bottom-section .tabs {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--main-bg);
+}
+
+.bottom-section .tabs .tab {
+  color: gray;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.bottom-section .tabs .tab:hover {
+  color: #fff;
+}
+
+.bottom-section .tab-content h3 {
+  padding: 15px;
+}
+
+.bottom-section .active {
+  color: #fff;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #fff;
+}
+
+.active-node {
+  outline: 1px solid var(--blue);
+}
+
+.modal-container {
+  background-color: var(--main-bg);
+  color: #e0e0e0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-container {
+  display: flex;
+  height: 100%;
+  width: 80%;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #1e1e1e;
+}
+
+.settings-sidebar {
+  width: 250px;
+  background-color: #2a2a2a;
+  padding: 20px;
+}
+
+.settings-content {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+.tree-item {
+  margin: 10px 0;
+  padding: 5px;
+}
+
+.tree-node {
+  font-size: 16px;
+  color: #c1c1c1;
+  cursor: pointer;
+}
+
+.tree-node:hover {
+  background-color: #444;
+  border-radius: 5px;
+}
+
+.expand-icon {
+  margin-right: 10px;
+}
+
+.active-option {
+  color: #ffbf00;
+}
+
+.option {
+  margin: 15px 0;
+}
+
+.label {
+  color: #fff;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.input-field,
+.dropdown-btn {
+  width: 100%;
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  margin-top: 5px;
+}
+
+.checkbox {
+  color: #fff;
+}
+
+.create-btn {
+  background-color: #0066cc;
+  color: white;
+  width: 150px;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+.create-btn:hover {
+  background-color: #005bb5;
 }

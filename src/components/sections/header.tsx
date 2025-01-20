@@ -9,8 +9,8 @@ import {
   ImportOutlined,
   SaveOutlined,
   SearchOutlined,
-  SettingOutlined,
   CaretRightOutlined,
+  SettingOutlined,
 } from "@ant-design/icons/lib";
 import {
   Button,
@@ -24,24 +24,34 @@ import {
 } from "antd";
 import PerfectScrollbar from "react-perfect-scrollbar"; // Ensure you have the correct import
 import {
+  set_settings_tab,
   update_active_file,
   update_active_files,
+  update_data_studio_active,
 } from "../../shared/rdx-slice";
 import { TActiveFile } from "../../shared/types";
 import FileIcon from "../../shared/file-icon"; // Make sure FileIcon supports custom size if needed
 import { store } from "../../shared/store";
-import { MainContext } from "../../shared/functions";
+import { MainContext, path_join } from "../../shared/functions";
 import NewProjectModal from "../new-project-section/newproject";
+import update_active_tab from "./bottom";
+import { dialog, ipcRenderer } from "electron";
 
 const HeaderSection = React.memo((props: any) => {
   const folder_structure = useAppSelector(
     (state) => state.main.folder_structure
   );
   const active_file = useAppSelector((state) => state.main.active_file);
+  const data_studio_active = useAppSelector(
+    (state) => state.main.data_studio_active.active
+  );
+  const settings = useAppSelector((state) => state.main.settings_tab_active);
+
   const dispatch = useAppDispatch();
   const useMainContextIn = React.useContext(MainContext);
   const [newProjectModalVisibilty, setNewProjectModalVisibilty] =
     useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Check if folder_structure and folder_structure.tree are defined
   const files = folder_structure?.tree?.filter((file) => !file.is_dir) || [];
@@ -54,7 +64,7 @@ const HeaderSection = React.memo((props: any) => {
 
   const initializeProject = () => {
     try {
-      window.electron.create_folder({ path: folder_structure.root + "\\.env" });
+      // window.electron.create_folder({ path: folder_structure.root + "\\.env" });
       window.electron.create_project_anantam_config_file({
         path: folder_structure.root + "\\anantam.config.infx",
         interpreter_path: folder_structure.root + "\\.env",
@@ -72,28 +82,6 @@ const HeaderSection = React.memo((props: any) => {
     }
   };
 
-  // Extracted save functionality
-  const handle_save_file = useCallback(
-    (data: { path: string; content: string }) => {
-      window.electron.save_file(data);
-
-      setTimeout(() => {
-        const model_editing_index = store
-          .getState()
-          .main.active_files.findIndex((file) => file.path === data.path);
-        const model_editing = {
-          ...store.getState().main.active_files[model_editing_index],
-        };
-        const _active_file = [...store.getState().main.active_files];
-
-        model_editing.is_touched = false;
-        _active_file[model_editing_index] = model_editing;
-        dispatch(update_active_files(_active_file));
-      }, 0);
-    },
-    [dispatch]
-  );
-
   // Function to display files in the dropdown menu
   const handle_set_editor = useCallback(
     async (branch_name: string, full_path: string) => {
@@ -101,7 +89,7 @@ const HeaderSection = React.memo((props: any) => {
         full_path
       );
       const active_file: TActiveFile = {
-        icon: <FileIcon type={branch_name.split(".").at(-1)} />, // Pass a size prop
+        icon: branch_name.split(".").at(-1) || "unknown", // Store the file type as a string
         path: full_path,
         name: branch_name,
         is_touched: false,
@@ -163,7 +151,10 @@ const HeaderSection = React.memo((props: any) => {
               <Menu.Item
                 key={file.path}
                 onClick={() =>
-                  handle_set_editor(file.name, file.path + `\\${file.name}`)
+                  handle_set_editor(
+                    file.name,
+                    path_join([file.path, file.name])
+                  )
                 }
                 style={{ display: "flex" }}
               >
@@ -182,28 +173,7 @@ const HeaderSection = React.memo((props: any) => {
     );
   };
 
-  // Settings dropdown
-  const generateSettingsMenu = () => {
-    return (
-      <Menu>
-        <Menu.Item key="theme" onClick={() => console.log("Change Theme")}>
-          Change Theme
-        </Menu.Item>
-        <Menu.Item
-          key="editor-settings"
-          onClick={() => console.log("Editor Settings")}
-        >
-          Editor Settings
-        </Menu.Item>
-        <Menu.Item key="preferences" onClick={() => console.log("Preferences")}>
-          Preferences
-        </Menu.Item>
-      </Menu>
-    );
-  };
-
   // Search handler
-  const [searchQuery, setSearchQuery] = useState("");
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
@@ -220,6 +190,10 @@ const HeaderSection = React.memo((props: any) => {
     } else {
       message.error("No files found.");
     }
+  };
+
+  const comingSoon = () => {
+    window.electron.ipcRenderer.send("coming-soon-dialog", []);
   };
 
   return (
@@ -262,6 +236,7 @@ const HeaderSection = React.memo((props: any) => {
                 background: "transparent",
                 cursor: "pointer",
               }}
+              onClick={comingSoon}
             >
               <FileOutlined />
             </button>
@@ -288,21 +263,14 @@ const HeaderSection = React.memo((props: any) => {
                 cursor: "pointer",
               }}
               onClick={() => {
-                const current_file = store
-                  .getState()
-                  .main.active_files.find((file) => file.is_touched);
-                if (current_file) {
+                const currentFile = active_file;
+                if (active_file) {
                   try {
-                    handle_save_file({
-                      path: current_file.path,
-                      content: `${window.electron.get_file_content(
-                        current_file.path
-                      )}`,
-                    });
+                    // useMainContextIn.handle_save_file(active_file);
                   } catch (err) {
                     message.error(err);
                   } finally {
-                    message.info("saved successfully");
+                    // message.info("saved successfully");
                   }
                 }
               }}
@@ -317,6 +285,7 @@ const HeaderSection = React.memo((props: any) => {
                 background: "transparent",
                 cursor: "pointer",
               }}
+              onClick={comingSoon}
             >
               <BugOutlined />
             </button>
@@ -328,6 +297,7 @@ const HeaderSection = React.memo((props: any) => {
                 background: "transparent",
                 cursor: "pointer",
               }}
+              onClick={comingSoon}
             >
               <BarsOutlined />
             </button>
@@ -339,6 +309,7 @@ const HeaderSection = React.memo((props: any) => {
                 background: "transparent",
                 cursor: "pointer",
               }}
+              onClick={comingSoon}
             >
               <CopyOutlined />
             </button>
@@ -364,41 +335,76 @@ const HeaderSection = React.memo((props: any) => {
         {/* Search Bar in the middle */}
         <div className="search-bar">
           <AutoComplete style={{ width: 300 }} allowClear>
-            <Input
-              prefix={<SearchOutlined />}
-              value={searchQuery}
-              placeholder="Search Files"
-            />
+            <Input prefix={<SearchOutlined />} value={searchQuery} />
           </AutoComplete>
         </div>
 
         <div className="project-info">
-          <button
-            style={{ border: "none", background: "transparent" }}
+          <Tooltip title="Run">
+            <button
+              style={{
+                border: "none",
+                background: "transparent",
+              }}
+              onClick={() => {
+                try {
+                  const file = active_file.path;
+                  window.electron.run_code(file);
+                } catch (err) {
+                  console.error(err);
+                }
+              }}
+            >
+              <CaretRightOutlined />
+            </button>
+          </Tooltip>
+
+          <Button
             onClick={() => {
-              try {
-                const file = active_file.path
-                window.electron.run_code(file);
-              } catch {
-                return;
+              if (data_studio_active) {
+                dispatch(
+                  update_data_studio_active({
+                    active: false,
+                  })
+                );
+              } else {
+                dispatch(
+                  update_data_studio_active({
+                    active: true,
+                  })
+                );
               }
             }}
           >
-            <CaretRightOutlined />
-          </button>
-
-          <Button>Data Studio</Button>
+            Data Studio
+          </Button>
           <Dropdown overlay={generateFileMenu()} trigger={["click"]}>
-            <button style={{ border: "none", background: "transparent" }}>
+            <button
+              style={{
+                border: "none",
+                background: "transparent",
+                color: "#fff",
+              }}
+            >
               {folder_structure?.name?.split(/\/|\\/).at(-1)}
             </button>
           </Dropdown>
-
-          <Dropdown overlay={generateSettingsMenu()} trigger={["click"]}>
-            <button style={{ border: "none", background: "transparent" }}>
-              <SettingOutlined />
-            </button>
-          </Dropdown>
+          <button
+            style={{
+              border: "none",
+              background: "transparent",
+              color: "#fff",
+            }}
+            onClick={() => {
+              if (settings) {
+                dispatch(set_settings_tab(false));
+              } else {
+                dispatch(set_settings_tab(true));
+              }
+            }}
+          >
+            <SettingOutlined />
+          </button>
         </div>
       </div>
     </div>

@@ -1,8 +1,8 @@
 import { createBrowserRouter, createHashRouter } from "react-router-dom";
 import MainComponent from "../components/main";
-import ExplorerRoute from "../components/sidebar-routes/navigator";
-import SidebarIndexRoute from "../components/sidebar-routes/sidebarIndex";
-import InformationRoute from "../components/sidebar-routes/information";
+import Navigator from "../components/sidebar-sections/navigator";
+import InformationRoute from "../components/sidebar-sections/information";
+import { SplashSection } from "../components/splash-screen/splash";
 
 export default createHashRouter([
   {
@@ -12,7 +12,7 @@ export default createHashRouter([
     children: [
       {
         path: "", // Default route for /main_window
-        element: <ExplorerRoute />,
+        element: <Navigator />,
         index: true,
       },
       {

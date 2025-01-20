@@ -17,22 +17,24 @@ import { ReactComponent as UnknownFileIcon } from "../assets/svg/unknown.svg";
 
 const FileIcon = ({ type }: { type: string }) => {
   const typeIcon = {
-    gitignore: <GitFileIcon />,
-    html: <HTMLFileIcon />,
-    css: <CSSFileIcon />,
-    js: <JSFileIcon />,
-    jsx: <JSFileIcon />,
-    json: <JSONFileIcon />,
-    md: <MarkdownFileIcon />,
-    ts: <TSFileIcon />,
-    tsx: <TSFileIcon />,
-    ttf: <TTFFileIcon />,
-    svg: <SVGFileIcon />,
-    py: <PythonFileIcon />,
-    unknown: <UnknownFileIcon />,
+    gitignore: GitFileIcon,
+    html: HTMLFileIcon,
+    css: CSSFileIcon,
+    js: JSFileIcon,
+    jsx: JSFileIcon,
+    json: JSONFileIcon,
+    md: MarkdownFileIcon,
+    ts: TSFileIcon,
+    tsx: TSFileIcon,
+    ttf: TTFFileIcon,
+    svg: SVGFileIcon,
+    py: PythonFileIcon,
+    unknown: UnknownFileIcon,
   };
 
-  return typeIcon[type as keyof typeof typeIcon] || typeIcon["unknown"];
+  const IconComponent =
+    typeIcon[type as keyof typeof typeIcon] || typeIcon["unknown"];
+  return <IconComponent />;
 };
 
 export default FileIcon;

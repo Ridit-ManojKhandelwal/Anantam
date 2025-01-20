@@ -10,8 +10,8 @@ import {
   IMainState,
   TActiveFile,
   TIndent,
-  TSettings,
   TInterpreter,
+  TDataStudioActive,
 } from "./types";
 
 // Define the initial state using that type
@@ -24,27 +24,12 @@ const initialState: IMainState = {
     line: 0,
   } as TIndent,
   settings_tab_active: false,
-  settings: {
-    theme: "vs-dark",
-    minimap: false,
-    smoothTyping: true,
-    cursorAnimation: true,
-    format: true,
-    fontSize: 14,
-    fontFamily: "Monospace",
-    smoothScrolling: true,
-    quickSuggestions: true,
-    wrappingIndent: "indent",
-    linkedEditing: true,
-    links: true,
-    autoIndent: "advanced",
-    autoClosingBracket: "always",
-    tabSize: 4,
-  } as TSettings,
+
   interpreter: {
     path: "C:\\Python312\\python.exe",
     pip_path: "C:\\Python312\\Scripts\\pip.exe",
   } as TInterpreter,
+  data_studio_active: { active: false } as TDataStudioActive,
 };
 
 export const mainSlice = createSlice({
@@ -68,11 +53,15 @@ export const mainSlice = createSlice({
     set_settings_tab: (state, action: PayloadAction<boolean>) => {
       state.settings_tab_active = action.payload;
     },
-    set_settings: (state, action: PayloadAction<TSettings>) => {
-      state.settings = action.payload;
-    },
+
     set_interpreter: (state, action: PayloadAction<TInterpreter>) => {
       state.interpreter = action.payload;
+    },
+    update_data_studio_active: (
+      state,
+      action: PayloadAction<TDataStudioActive>
+    ) => {
+      state.data_studio_active = action.payload;
     },
   },
 });
@@ -83,7 +72,8 @@ export const {
   update_active_file,
   update_indent,
   set_settings_tab,
-  set_settings,
+
+  update_data_studio_active,
 } = mainSlice.actions;
 
 export default mainSlice.reducer;
