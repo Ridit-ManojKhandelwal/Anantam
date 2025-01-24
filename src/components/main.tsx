@@ -119,6 +119,8 @@ const MainComponent = React.memo((props: any) => {
             lineHeight: 22, // Adjust line height for smoother rendering
             renderLineHighlight: "none", // Reduces visual effects, improving performance
             renderWhitespace: "none", // Avoids rendering whitespace characters
+            scrollBeyondLastLine: false,
+            scrollBeyondLastColumn: 0,
             hover: {
               enabled: false, // Disables hover tooltips for a better experience
             },
@@ -313,6 +315,14 @@ const MainComponent = React.memo((props: any) => {
               <Splitter layout="vertical">
                 <Splitter.Panel>
                   <ContentSection />
+                </Splitter.Panel>
+                <Splitter.Panel
+                  defaultSize="30%"
+                  min="10%"
+                  max="95%"
+                  className="terminal"
+                >
+                  <Terminal />
                 </Splitter.Panel>
               </Splitter>
             </Splitter.Panel>

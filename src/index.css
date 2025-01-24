@@ -1220,4 +1220,5 @@ code.output {
 
 .editor-container {
   height: 100vh;
+  overflow-x: hidden;
 }

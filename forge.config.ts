@@ -19,8 +19,8 @@ import { rendererConfig } from "./webpack.renderer.config";
 
 const config: ForgeConfig = {
   packagerConfig: {
-    asar: true,
     executableName: "Anantam",
+    asar: true,
     name: "Anantam",
     icon: "./assets/icon.ico",
     appVersion: "1.0.0",
@@ -28,16 +28,17 @@ const config: ForgeConfig = {
   },
   rebuildConfig: {},
   makers: [
-    // new MakerSquirrel({
-    //   setupIcon: "./assets/icon.ico",
-    //   authors: "MNovus",
-    //   owners: "MNovus",
-    //   version: "1.0.0",
-    //   name: "Anantam",
-    //   setupExe: "AnantamInstaller.exe",
-    //   noMsi: true,
-    // }),
+    new MakerSquirrel({
+      setupIcon: "./assets/icon.ico",
+      authors: "MNovus",
+      owners: "MNovus",
+      version: "1.0.0",
+      name: "Anantam",
+      setupExe: "AnantamInstaller.exe",
+      noMsi: true,
+    }),
     new MakerZIP({}),
+    // new MakerDeb({}),
   ],
   plugins: [
     new AutoUnpackNativesPlugin({}),

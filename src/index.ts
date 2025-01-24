@@ -15,6 +15,7 @@ import {
   MenuItem,
   autoUpdater,
   ipcRenderer,
+  globalShortcut,
 } from "electron";
 import fs from "fs";
 import path from "path";
@@ -449,7 +450,7 @@ const createWindow = (): void => {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       nodeIntegration: true,
     },
-    zoomToPageWidth: true,
+    // zoomToPageWidth: true,
   });
 
   mainWindow.setMenuBarVisibility(false);
