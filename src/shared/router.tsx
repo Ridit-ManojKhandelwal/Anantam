@@ -2,7 +2,6 @@ import { createBrowserRouter, createHashRouter } from "react-router-dom";
 import MainComponent from "../components/main";
 import Navigator from "../components/sidebar-sections/navigator";
 import InformationRoute from "../components/sidebar-sections/information";
-import { SplashSection } from "../components/splash-screen/splash";
 
 export default createHashRouter([
   {

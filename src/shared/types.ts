@@ -26,8 +26,8 @@ export interface IMainState {
   active_file: TActiveFile;
   settings_tab_active: boolean;
   indent: TIndent;
-  interpreter: TInterpreter;
   data_studio_active: TDataStudioActive;
+  file_cache: { [filePath: string]: string };
 }
 
 export type TDataStudioActive = {
@@ -53,11 +53,6 @@ export type TSelectedFile = {
   name: string;
   path: string;
   content: string;
-};
-
-export type TInterpreter = {
-  path: string;
-  pip_path: string;
 };
 
 // Main Context Functions Type

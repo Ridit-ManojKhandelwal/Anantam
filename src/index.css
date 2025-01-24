@@ -1,25 +1,30 @@
-/*---------------------------------------------------------------------------------------------
+/* 
  *  Copyright (c) MNovus. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/src/assets/fonts/JetBrainsMono-Regular.ttf") format("ttf");
+  font-weight: 100 800;
+  font-style: normal;
+}
 
 :root {
-  /* Dark Mode */
-  --main-bg: #121212;
-  --sidebar-text-color: #cccccc;
+  --main-bg: #21252bff;
+  --main-text-color: #abb2bfff;
+  --sidebar-bg: #21252bff;
+  --sidebar-text-color: #abb2bfff;
   --sidebar-icon-color: #868686;
   --sidebar-icon-active-color: #d7d7d7;
   --thumb-color: #ffffff68;
   --blue: #0078d4;
-  --border-color: #2b2b2b;
+  --border-color: #181a1fff;
   --file-list-bg: #37373c;
-  --tabs-bg: #181818;
+  --tabs-bg: #323842ff;
 }
 
 .light-mode {
-  /* Light Mode */
   --main-bg: #f5f5f5;
   --sidebar-text-color: #333333;
   --sidebar-icon-color: #555555;
@@ -33,10 +38,10 @@
 
 :root,
 .light-mode {
-  -webkit-user-select: none; /* For Safari */
-  -moz-user-select: none; /* For Firefox */
-  -ms-user-select: none; /* For Internet Explorer/Edge */
-  user-select: none; /* For modern browsers */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .ps__rail-y,
@@ -86,11 +91,6 @@ body {
   grid-template-rows: 35px 1fr 22px;
   height: 100vh;
   overflow: hidden;
-}
-
-.wrapper-component > .header-section {
-  -webkit-app-region: drag;
-  border-bottom: 0.3px solid var(--border-color);
 }
 
 .wrapper-component > .footer-section {
@@ -215,7 +215,7 @@ body {
   padding: 3px 6px;
   border-radius: 3px;
   display: none;
-  z-index: +9; /*Added after the tutorial*/
+  z-index: +9;
 }
 
 .wrapper-component > div:nth-child(2) .sidebar-section > .icon-list .icon svg {
@@ -270,7 +270,7 @@ body {
 
 .wrapper-component > div:nth-child(2) .content-section {
   display: flex;
-  flex: 1; /* Makes the section take the remaining space */
+  flex: 1;
   flex-direction: column;
   height: 100%;
 }
@@ -287,7 +287,7 @@ body {
   outline: none;
   border: none;
   background-color: var(--blue);
-  color: white;
+  color: #abb2bfff;
   font-size: 90%;
   padding: 6px 12px;
   border-radius: 2px;
@@ -390,23 +390,35 @@ body {
   background-color: var(--tabs-bg);
   flex-wrap: nowrap;
   flex: 1;
-  overflow: auto; /* Make sure the tab container is scrollable if needed */
-  max-height: calc(
-    100vh - 50px
-  ); /* Adjust the height depending on your header or other elements */
+  overflow: auto;
+  max-height: calc(100vh - 50px);
 }
 
 .content-inner .page-tabs-cont .tab {
   flex-shrink: 0;
-  font-size: 13px;
-  border-right: 0.3px solid var(--border-color);
-  border-bottom: 0.3px solid var(--border-color);
+  font-size: 16px;
   color: var(--sidebar-text-color);
   padding: 0px 20px;
   display: flex;
   align-items: center;
   cursor: pointer;
   position: relative;
+  border: 1px solid var(--border-color);
+  border-bottom: 0;
+}
+
+.content-inner .page-tabs-cont .tab:first-child {
+  flex-shrink: 0;
+  font-size: 16px;
+  color: var(--sidebar-text-color);
+  padding: 0px 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  border: 1px solid var(--border-color);
+  border-right: none;
+  border-bottom: 0;
 }
 
 .content-inner .page-tabs-cont .tab > span:first-child {
@@ -471,18 +483,7 @@ body {
 
 .content-inner .page-tabs-cont .tab:hover,
 .content-inner .page-tabs-cont .tab.active {
-  background-color: #1e1e1e;
-}
-
-.content-inner .page-tabs-cont .tab.active::after {
-  content: " ";
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  height: 100%;
-  width: 3px;
-  left: 0 !important;
-  background-color: var(--blue);
+  background-color: #21252bff;
 }
 
 .no-selected-files {
@@ -500,101 +501,6 @@ body {
 
 .no-selected-files svg path {
   fill: #161616;
-}
-
-.header-section {
-  display: flex;
-  position: relative;
-}
-
-.header-section svg {
-  width: 16px !important;
-  height: 16px !important;
-  cursor: pointer;
-}
-
-.header-section svg path {
-  fill: var(--sidebar-icon-color);
-}
-
-.header-section .header-main {
-  display: flex;
-  padding: 4px;
-  padding-left: 8px;
-  width: 100%;
-  justify-content: space-between; /* This ensures space between the icons-bar and project-info */
-}
-
-.action-bar {
-  justify-content: space-between; /* Space between the two child divs */
-  align-items: center;
-}
-
-.action-bar > .project-info {
-  align-items: center;
-}
-
-.action-bar > .project-info > button {
-  background: transparent;
-  border: none;
-  color: gray;
-}
-
-.icons-bar {
-  display: flex;
-  gap: 16px; /* Adjust spacing between icons */
-  align-items: center; /* Center align icons vertically */
-}
-
-.header-section .header-main .action-bar .icons-bar {
-  display: flex;
-  align-items: center;
-}
-
-.header-section .header-main .action-bar .icons-bar button {
-  border: none; /* Remove border for buttons */
-  padding: 0; /* Remove padding from the buttons */
-}
-
-.header-section .header-main .action-bar .icons-bar svg {
-  margin-right: 4px; /* Ensure there is space between the icon and button edge */
-}
-
-/* Apply border only between icons (not after the last one) */
-.header-section .header-main .action-bar .icons-bar button:not(:last-child) {
-  border-right: 1px solid gray;
-  margin-right: 8px; /* Space between icons */
-}
-
-.header-section .header-main > div:first-child {
-  display: flex;
-  align-items: center;
-}
-
-.header-main .header-main .header-section .header-main > div:first-child svg {
-  width: 18px !important;
-  height: 18px !important;
-}
-
-.header-section .header-main > div:first-child svg:first-child {
-  margin-right: 10px !important;
-}
-
-.header-section .header-main > div:first-child svg path {
-  stroke: var(--sidebar-icon-color) !important;
-}
-
-.header-section .header-main > div:first-child {
-  margin-right: 10px;
-}
-
-.header-section .icons-container {
-  position: absolute;
-  right: 6px;
-}
-
-.header-section .icons-container svg {
-  margin-right: 8px;
 }
 
 .new-file-item .file-name {
@@ -619,7 +525,9 @@ body {
 
 .folder-tree {
   display: block !important;
-  /* flex-direction: column; */
+  background: var(--sidebar-bg);
+  border-right: 0.3px solid var(--border-color);
+
   height: 100%;
 }
 
@@ -646,13 +554,12 @@ body {
 .folder-tree .explorer-content-wrapper > div:not(:first-child),
 .content-list-outer-container > div:first-child {
   color: var(--sidebar-text-color);
-  font-size: 16px;
+  font-size: 12px;
   text-transform: uppercase;
   display: flex;
   align-items: center;
   font-weight: bold;
-  padding: 4px 6px;
-  border: 0.3px solid var(--border-color);
+  padding: 10px 6px;
 }
 
 .folder-tree .explorer-content-wrapper > div:not(:first-child) > svg,
@@ -672,7 +579,7 @@ body {
 }
 
 .heading {
-  color: #fff;
+  color: #abb2bfff;
   font-size: 14px;
   margin: 12px;
 }
@@ -683,7 +590,7 @@ body {
   font-size: 14px;
   justify-content: space-between;
   padding: 5px;
-  color: #fff;
+  color: #abb2bfff;
   cursor: pointer;
   height: fit-content;
   align-items: center;
@@ -720,7 +627,6 @@ body {
   border-radius: 50%;
 }
 
-/* Settings Container */
 .settings-container {
   display: flex;
   width: 100%;
@@ -730,7 +636,6 @@ body {
   overflow: hidden;
 }
 
-/* Sidebar */
 .settings-sidebar {
   width: 300px;
   border-right: 1px solid #333;
@@ -739,7 +644,6 @@ body {
   overflow: hidden;
 }
 
-/* Content Area */
 .settings-content {
   flex: 1;
   padding: 20px;
@@ -747,7 +651,6 @@ body {
   overflow: hidden;
 }
 
-/* Tree View */
 .tree-item {
   margin-bottom: 5px;
 }
@@ -789,11 +692,10 @@ body {
   border-left: 1px dashed #444;
 }
 
-/* Options */
 .option {
   padding: 12px;
   margin: 12px 0;
-  /* display: flex; */
+
   align-items: center;
   width: 100%;
   border-radius: 4px;
@@ -807,7 +709,7 @@ body {
 .sub-option {
   padding: 12px;
   margin: 12px 0;
-  /* display: flex; */
+
   align-items: center;
   width: 100%;
   border-radius: 4px;
@@ -833,7 +735,7 @@ body {
   padding: 6px;
   background: #333;
   border: 1px solid #444;
-  color: #d4d4d4;
+  color: #abb2bfff;
   border-radius: 4px;
 }
 
@@ -842,7 +744,6 @@ body {
   outline: none;
 }
 
-/* Dropdown */
 .dropdown-container {
   position: relative;
   display: inline-block;
@@ -850,7 +751,7 @@ body {
 
 .dropdown-button {
   background-color: #333;
-  color: white;
+  color: #abb2bfff;
   border: none;
   padding: 8px 12px;
   font-size: 12px;
@@ -890,7 +791,7 @@ body {
   padding: 10px 15px;
   cursor: pointer;
   font-size: 14px;
-  color: #d4d4d4;
+  color: #abb2bfff;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -902,7 +803,7 @@ body {
 .save-btn {
   padding: 12px;
   background: #333;
-  color: #fff;
+  color: #abb2bfff;
   border: none;
   border-radius: 4px;
   width: 40%;
@@ -921,39 +822,37 @@ body {
 }
 
 .tree-node.active {
-  border-left: 4px solid coral; /* Add coral color for the active option */
-  padding-left: 10px; /* Add some padding to make the border visible */
+  border-left: 4px solid coral;
+  padding-left: 10px;
 }
 
-/* Customize Ant Design Modal Background */
 .ant-modal {
   background: var(--main-bg) !important;
 }
 
 .ant-modal-content {
   background: var(--main-bg) !important;
-  color: #ffffff; /* Optional: Ensure readable text */
+  color: #abb2bfff;
 }
 
 .ant-modal-header {
   background: var(--main-bg) !important;
-  color: #ffffff; /* Optional: Ensure readable text */
+  color: #abb2bfff;
 }
 
 .ant-modal-body {
   background: var(--main-bg) !important;
-  color: #ffffff;
+  color: #abb2bfff;
 }
 
 .ant-modal-footer {
   background: var(--main-bg) !important;
-  border-top: none; /* Optional: Clean footer styling */
+  border-top: none;
 }
 
-/* Custom class to add a border below the modal title */
 .modal-title-with-border {
-  border-bottom: 1px solid gray; /* Adjust border thickness and color */
-  padding-bottom: 10px; /* Optional, to add some spacing between title and border */
+  border-bottom: 1px solid gray;
+  padding-bottom: 10px;
 }
 
 .modal-container {
@@ -964,23 +863,23 @@ body {
 .output-container {
   padding: 10px;
   border-radius: 8px;
-  border: 2px solid transparent; /* Default border */
+  border: 2px solid transparent;
   transition: border 0.3s ease;
   height: 95%;
 }
 
 .output-container:hover {
-  border-left: 4px solid var(--blue); /* Bluish left border when clicked */
+  border-left: 4px solid var(--blue);
 }
 
 p.info-text {
   font-size: 14px;
-  color: #888;
+  color: #abb2bfff;
 }
 
 p.done-text {
   font-size: 14px;
-  color: #888;
+  color: #abb2bfff;
 }
 
 code.output {
@@ -989,7 +888,7 @@ code.output {
   font-size: 14px;
   white-space: pre-wrap;
   word-wrap: break-word;
-  color: #f8f8f2;
+  color: #abb2bfff;
   padding: 10px;
   border-radius: 4px;
 }
@@ -1003,13 +902,13 @@ code.output {
 }
 
 .bottom-section .tabs .tab {
-  color: gray;
+  color: #abb2bfff;
   cursor: pointer;
   padding: 10px;
 }
 
 .bottom-section .tabs .tab:hover {
-  color: #fff;
+  color: #abb2bfff;
 }
 
 .bottom-section .tab-content h3 {
@@ -1017,18 +916,18 @@ code.output {
 }
 
 .bottom-section .active {
-  color: #fff;
+  color: #abb2bfff;
   margin-bottom: 5px;
   border-bottom: 1px solid #fff;
 }
 
 .active-node {
-  outline: 1px solid var(--blue);
+  background: #3a3f4bff;
 }
 
 .modal-container {
   background-color: var(--main-bg);
-  color: #e0e0e0;
+  color: #abb2bfff;
   height: 100%;
   display: flex;
   align-items: center;
@@ -1054,7 +953,7 @@ code.output {
   flex-grow: 1;
   padding: 20px;
   background-color: #1e1e1e;
-  color: #e0e0e0;
+  color: #abb2bfff;
 }
 
 .tree-item {
@@ -1064,7 +963,7 @@ code.output {
 
 .tree-node {
   font-size: 16px;
-  color: #c1c1c1;
+  color: #abb2bfff;
   cursor: pointer;
 }
 
@@ -1086,7 +985,7 @@ code.output {
 }
 
 .label {
-  color: #fff;
+  color: #abb2bfff;
   font-size: 14px;
   margin-bottom: 5px;
 }
@@ -1095,18 +994,18 @@ code.output {
 .dropdown-btn {
   width: 100%;
   background-color: #333;
-  color: #e0e0e0;
+  color: #abb2bfff;
   border: 1px solid #444;
   margin-top: 5px;
 }
 
 .checkbox {
-  color: #fff;
+  color: #abb2bfff;
 }
 
 .create-btn {
   background-color: #0066cc;
-  color: white;
+  color: #abb2bfff;
   width: 150px;
   margin-top: 20px;
   border-radius: 5px;
@@ -1114,4 +1013,211 @@ code.output {
 
 .create-btn:hover {
   background-color: #005bb5;
+}
+
+.header-wrapper {
+  display: flex;
+
+  align-items: center;
+  color: var(--main-text-color);
+  background: #21252b;
+  border: 1px solid #2c2c2c;
+}
+
+.header {
+  height: 35px;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+}
+
+.drag-area {
+  -webkit-app-region: drag;
+  width: 100%;
+  height: 100%;
+}
+
+#title {
+  user-select: none;
+  font-size: 15px;
+  margin-left: 10px;
+  color: #abb2bfff;
+  -webkit-app-region: drag;
+}
+
+.nav-buttons {
+  margin-left: auto;
+  height: 100%;
+  display: flex;
+}
+
+.nav-buttons > button {
+  transition: background 0.2s ease;
+  background: transparent;
+  border: none;
+  height: 100%;
+  margin: 0;
+  aspect-ratio: 1;
+  cursor: pointer;
+  color: #abb2bfff;
+  font-size: 24px;
+}
+.nav-buttons > button:hover {
+  transition: 0.2s ease;
+  background: #2c2c2c;
+  cursor: pointer;
+}
+.nav-buttons > button:active {
+  background: #4c4c4c;
+}
+
+.menu {
+  display: flex;
+  list-style: none;
+}
+
+.menu-item {
+  position: relative;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.menu-item li {
+  list-style: none;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.menu-sub-item {
+  position: absolute;
+  left: 0;
+  background-color: var(--main-bg);
+  color: var(--main-text-color);
+  padding: 10px;
+  border-radius: 5px;
+  width: 200px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.menu-sub-item ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-sub-item p {
+  font-weight: bold;
+}
+
+#minimize,
+#maximize,
+#close {
+  margin-left: 10px;
+  font-size: 18px;
+}
+
+.toolbar {
+  height: fit-content;
+  padding-left: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--main-bg);
+}
+
+.toolbar .tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toolbar .tools .tool button:first-child {
+  background: transparent;
+  color: #abb2bfff;
+  cursor: pointer;
+  border: none;
+}
+
+.toolbar .tools .tool button {
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+}
+
+.toolbar .tools .path p {
+  font-size: 16px;
+  color: var(--main-text-color);
+}
+
+.runTool {
+  width: fit-content;
+  background: var(--main-bg);
+  border-left: 2px solid #3d4350ff;
+  display: flex;
+  align-items: center;
+}
+
+.runTool svg {
+  font-size: 16px;
+}
+
+.runTool button {
+  height: auto;
+  padding: 10px 15px;
+  position: fixed;
+  right: 0;
+
+  border: none;
+  color: #fff;
+  background: var(--main-bg);
+  cursor: pointer;
+}
+
+.interpreter-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.interpreter-menu {
+  position: absolute;
+  width: 40vh;
+  right: 0;
+  background: var(--main-bg);
+  color: var(--main-text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.interpreter-menu ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border-bottom: 1px solid #3d4350ff;
+}
+
+.interpreter-menu li {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.add-interpreter {
+  width: 100%;
+  margin: 6px;
+  padding: 6px;
+  font-size: 14px;
+}
+
+.interpreter-menu li:hover {
+  background: var(--file-list-bg);
+}
+
+.terminal {
+  border-top: 1px solid var(--border-color);
+  width: "100%";
+  height: "100%";
+}
+
+.editor-container {
+  height: 100vh;
 }

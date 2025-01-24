@@ -1,4 +1,3 @@
-/* eslint-disable import/no-duplicates */
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) MNovus. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,24 +5,21 @@
 
 import React from "react";
 
-import ContentSection from "./sections/content";
-import FooterComponent from "./sections/footer";
-// import { MultiInstance } from "./terminal-section/multiInstance";
 import { MainContext } from "../shared/functions";
 import * as monaco from "monaco-editor";
-import { Splitter } from "antd";
 import { get_file_types } from "../shared/functions";
 import { useAppDispatch, useAppSelector } from "../shared/hooks";
-import { TActiveFile, TSelectedFile } from "../shared/types";
-import {
-  update_active_file,
-  update_active_files,
-  update_indent,
-} from "../shared/rdx-slice";
+import { TSelectedFile } from "../shared/types";
+import { update_active_files, update_indent } from "../shared/rdx-slice";
+import { throttle } from "lodash";
 import { store } from "../shared/store";
-import HeaderSection from "./sections/header";
-import { BottomSection } from "./sections/bottom";
+import { Splitter } from "antd";
+import FooterComponent from "./sections/footer";
+import ContentSection from "./sections/content";
+import { HeaderSection } from "./sections/header";
+import { Terminal } from "./terminal-section/terminal";
 import Navigator from "./sidebar-sections/navigator";
+
 const MainComponent = React.memo((props: any) => {
   const folder_structure = useAppSelector(
     (state) => state.main.folder_structure
@@ -109,7 +105,22 @@ const MainComponent = React.memo((props: any) => {
           {
             theme: "vs-dark",
             minimap: {
-              enabled: false,
+              enabled: false, // Disables the minimap for better performance
+            },
+            automaticLayout: true, // Ensures automatic resizing of the editor
+            scrollbar: {
+              vertical: "auto", // Lazy loading for vertical scrollbar
+              horizontal: "auto", // Lazy loading for horizontal scrollbar
+            },
+            mouseWheelZoom: false, // Disables zooming via mouse wheel for smooth scrolling
+            smoothScrolling: true, // Smoothens the scrolling experience
+            wrappingIndent: "same", // Optimizes word wrapping performance
+            fontSize: 14, // Adjust font size for better readability
+            lineHeight: 22, // Adjust line height for smoother rendering
+            renderLineHighlight: "none", // Reduces visual effects, improving performance
+            renderWhitespace: "none", // Avoids rendering whitespace characters
+            hover: {
+              enabled: false, // Disables hover tooltips for a better experience
             },
           }
         );
@@ -118,44 +129,61 @@ const MainComponent = React.memo((props: any) => {
 
       editor_ref.current.onKeyUp((e) => {
         try {
-          if (e.ctrlKey && e.keyCode == 49) {
+          if (e.ctrlKey && e.keyCode === 49) {
+            // Ctrl+1 keyCode is 49
+            const editorModel = editor_ref.current.getModel();
+            if (!editorModel) return;
+
             return handle_save_file({
-              path: editor_ref.current.getModel().uri.path,
-              content: editor_ref.current.getValue(),
+              path: editorModel.uri.path,
+              content: editorModel.getValue(),
             });
           }
-        } catch {}
+        } catch (error) {
+          console.error("Error in onKeyUp:", error);
+        }
       });
 
-      // Update active file is_touched on content change
-      editor_ref.current.onDidChangeModelContent(async () => {
-        try {
-          const activeFile = store.getState().main.active_file;
-          const currentContent = editor_ref.current.getModel()?.getValue();
-          const fileContent = await window.electron.get_file_content(
-            activeFile.path
-          );
+      // // Debounce function to delay handling changes
+      // const handleModelChange = debounce(async () => {
+      //   try {
+      //     const state = store.getState(); // Cache state
+      //     const activeFile = state.main.active_file;
+      //     // If the file is already touched, skip further checks
+      //     if (activeFile.is_touched) return;
 
-          let active_file_data = {
-            path: activeFile.path,
-            name: activeFile.name,
-            icon: activeFile.icon,
-            is_touched: true,
-          };
+      //     // Check if content has changed only when file is untouched
 
-          if (currentContent === fileContent) {
-            active_file_data = {
-              path: activeFile.path,
-              name: activeFile.name,
-              icon: activeFile.icon,
-              is_touched: false,
-            };
-          }
+      //     dispatch(
+      //       update_active_file({
+      //         ...activeFile,
+      //         is_touched: true, // Mark file as touched
+      //       })
+      //     );
+      //   } catch (error) {
+      //     console.error("Error in handleModelChange:", error);
+      //   }
+      // }, 300); // Adjust debounce delay as needed
 
-          // Update is_touched flag based on content comparison
-          dispatch(update_active_file(active_file_data));
-        } catch {}
-      });
+      // // Bind the debounced handler to the model change event
+      // editor_ref.current.onDidChangeModelContent(() => {
+      //   handleModelChange();
+      // });
+
+      const handleContentChange = throttle(() => {
+        const state = store.getState().main;
+        const editorPath = editor_ref.current.getModel().uri.path;
+        const activeFiles = state.active_files;
+        const index = activeFiles.findIndex((file) => file.path === editorPath);
+
+        if (index !== -1 && !activeFiles[index].is_touched) {
+          const updatedFiles = [...activeFiles];
+          updatedFiles[index] = { ...activeFiles[index], is_touched: true };
+          dispatch(update_active_files(updatedFiles));
+        }
+      }, 500);
+
+      editor_ref.current.onDidChangeModelContent(handleContentChange);
 
       // Define a custom dark theme
       monaco.editor.defineTheme("dark", {
@@ -163,13 +191,13 @@ const MainComponent = React.memo((props: any) => {
         inherit: true, // Inherit from the base theme
         rules: [],
         colors: {
-          "editor.background": "#121212", // Set the background color
-          "editor.foreground": "#d4d4d4", // Set default text color
-          "editor.lineHighlightBackground": "#2a2a2a", // Highlighted line color
+          "editor.background": "#282c34ff", // Set the background color
+          "editor.foreground": "#abb2bfff",
+          "editor.lineHighlightBackground": "#2c313aff", // Highlighted line color
           "editorCursor.foreground": "#ffffff", // Cursor color
           "editor.selectionBackground": "#264f78", // Selection background
           "editor.inactiveSelectionBackground": "#3a3d41", // Inactive selection
-          "editorLineNumber.foreground": "#858585", // Line numbers
+          "editorLineNumber.foreground": "#495162ff", // Line numbers
           "editorLineNumber.activeForeground": "#ffffff", // Active line number
           "editorWhitespace.foreground": "#3e3e3e", // Whitespace markers
           "editorIndentGuide.background": "#3a3a3a", // Indent guides
@@ -178,23 +206,6 @@ const MainComponent = React.memo((props: any) => {
       });
 
       monaco.editor.setTheme("dark");
-
-      editor_ref.current.onDidChangeModelContent((e) => {
-        const model_editing_index = store
-          .getState()
-          .main.active_files.findIndex(
-            (file) => file.path == editor_ref.current.getModel().uri.path
-          );
-        const model_editing = {
-          ...store.getState().main.active_files[model_editing_index],
-        };
-        const _active_file = [...store.getState().main.active_files];
-
-        _active_file.splice(model_editing_index, 1);
-        model_editing.is_touched = true;
-        _active_file[model_editing_index] = model_editing;
-        dispatch(update_active_files(_active_file));
-      });
 
       editor_ref.current.onDidChangeCursorPosition((e) => {
         dispatch(
@@ -210,27 +221,21 @@ const MainComponent = React.memo((props: any) => {
 
   const handle_save_file = React.useCallback(
     (data: { path: string; content: string }) => {
-      // Save the file using the Electron API
       window.electron.save_file(data);
 
       setTimeout(() => {
-        const state = store.getState();
-        const model_editing_index = state.main.active_files.findIndex(
-          (file) => file.path === data.path
-        );
+        const model_editing_index = store
+          .getState()
+          .main.active_files.findIndex((file) => file.path == data.path);
+        const model_editing = {
+          ...store.getState().main.active_files[model_editing_index],
+        };
+        const _active_file = [...store.getState().main.active_files];
 
-        if (model_editing_index !== -1) {
-          const model_editing = {
-            ...state.main.active_files[model_editing_index],
-            is_touched: false, // Mark file as not touched
-          };
-
-          const _active_files = [...state.main.active_files];
-          _active_files[model_editing_index] = model_editing;
-
-          // Update the active file correctly without affecting other properties
-          dispatch(update_active_file(model_editing));
-        }
+        _active_file.splice(model_editing_index, 1);
+        model_editing.is_touched = false;
+        _active_file[model_editing_index] = model_editing;
+        dispatch(update_active_files(_active_file));
       }, 0);
     },
     []
@@ -308,9 +313,6 @@ const MainComponent = React.memo((props: any) => {
               <Splitter layout="vertical">
                 <Splitter.Panel>
                   <ContentSection />
-                </Splitter.Panel>
-                <Splitter.Panel defaultSize="40%" min="10%" max="95%">
-                  <BottomSection />
                 </Splitter.Panel>
               </Splitter>
             </Splitter.Panel>

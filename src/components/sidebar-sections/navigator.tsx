@@ -23,29 +23,34 @@ const Navigator = React.memo((props: any) => {
   const active_files = useAppSelector((state) => state.main.active_files);
   const useMainContextIn = React.useContext(MainContext);
 
+  // This function will be called to display the file list
   const handle_display_file_list = React.useCallback(() => {
-    if (Object.keys(folder_structure).length == 0) return;
+    if (Object.keys(folder_structure).length === 0) return;
 
     // Clear existing content in the list
     if (content_main_div_ref.current) {
       content_main_div_ref.current.innerHTML = ""; // Clear the content
     }
 
-    const files = folder_structure.tree.filter(
-      (content) => content.parentPath == folder_structure.root
+    // Check for multiple root folders
+    const rootFolders = folder_structure.tree.filter(
+      (content) => content.parentPath === folder_structure.root
     );
 
-    // Only render the files if there's any
-    if (files.length > 0) {
-      makeContentList(
-        content_main_div_ref.current,
-        files,
-        folder_structure.tree,
-        handle_set_editor
-      );
+    // Only render if there's at least one root folder
+    if (rootFolders.length > 0) {
+      rootFolders.forEach((rootFolder) => {
+        makeContentList(
+          content_main_div_ref.current,
+          [rootFolder],
+          folder_structure.tree,
+          handle_set_editor
+        );
+      });
     }
   }, [folder_structure]);
 
+  // Function to handle setting the editor
   const handle_set_editor = React.useCallback(
     async (branch_name: string, full_path: string) => {
       const get_file_content = await window.electron.get_file_content(
@@ -67,7 +72,7 @@ const Navigator = React.memo((props: any) => {
       if (
         store
           .getState()
-          .main.active_files.findIndex((file) => file.path == full_path) == -1
+          .main.active_files.findIndex((file) => file.path === full_path) === -1
       ) {
         store.dispatch(
           update_active_files([
@@ -79,7 +84,6 @@ const Navigator = React.memo((props: any) => {
 
       dispatch(update_active_file(active_file));
 
-      // dispatch(set_selected_file(selected_file))
       setTimeout(() => {
         useMainContextIn.handle_set_editor(selected_file);
       }, 0);
@@ -87,6 +91,7 @@ const Navigator = React.memo((props: any) => {
     [active_files]
   );
 
+  // On mount, display the file list
   React.useLayoutEffect(() => {
     handle_display_file_list();
   }, [folder_structure]);

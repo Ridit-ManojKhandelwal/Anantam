@@ -1,68 +1,84 @@
 import { useEffect, useRef, useState } from "react";
+import { ReactComponent as TimesIcon } from "../../assets/svg/times.svg";
+import PerfectScrollbar from "react-perfect-scrollbar";
 import { Terminal as XTerminal } from "xterm";
-import "@xterm/xterm/css/xterm.css";
 import { FitAddon } from "xterm-addon-fit";
+import "@xterm/xterm/css/xterm.css";
+import { PlusOutlined } from "@ant-design/icons/lib";
 
 export const Terminal = () => {
   const terminalRef = useRef<HTMLDivElement | null>(null);
   const terminalInstance = useRef<XTerminal | null>(null);
-  const fitAddonRef = useRef<FitAddon | null>(null);
-  const [containerReady, setContainerReady] = useState(false);
+  const fitAddon = useRef<FitAddon | null>(null);
+  const [tabs, setTabs] = useState([
+    {
+      key: 0,
+      name: "name",
+    },
+  ]);
+  const [activeTab, setActiveTab] = useState(0);
+
+  const addTab = () => {
+    setTabs((prevTabs) => {
+      const newTab = {
+        key: prevTabs.length,
+        name: Date.now().toString(),
+      };
+      return [...prevTabs, newTab];
+    });
+
+    setActiveTab(tabs.length);
+    window.electron.ipcRenderer.on("terminal.create", tabs.length);
+  };
+
+  const removeTab = (key: number) => {
+    setActiveTab(tabs.length - 1);
+    setTabs(tabs.filter((tab) => tab.key !== key));
+  };
 
   useEffect(() => {
     if (!terminalRef.current || terminalInstance.current) return;
 
-    // Initialize terminal
     const term = new XTerminal({
-      cols: 80,
-      rows: 24,
       cursorBlink: true,
       theme: {
-        background: "#121212",
+        background: "#282c34ff",
       },
     });
 
-    const fitAddon = new FitAddon();
-    fitAddonRef.current = fitAddon;
-    term.loadAddon(fitAddon);
+    const fit = new FitAddon();
+    fitAddon.current = fit;
+    term.loadAddon(fit);
 
     term.open(terminalRef.current);
-
-    // Wait for DOM to fully render before fitting
-    const checkContainerSize = () => {
-      if (
-        terminalRef.current &&
-        terminalRef.current.offsetWidth > 0 &&
-        terminalRef.current.offsetHeight > 0
-      ) {
-        fitAddon.fit();
-        setContainerReady(true); // Set the state when the container is ready
-      }
-    };
-
-    // Trigger size check after initial render
-    setTimeout(checkContainerSize, 0);
+    fit.fit(); // Initial fit
 
     term.write(">>");
     terminalInstance.current = term;
 
-    // Handle terminal resizing dynamically
-    const resizeObserver = new ResizeObserver(() => {
-      if (fitAddonRef.current) {
-        fitAddonRef.current.fit();
+    const adjustHeight = () => {
+      if (terminalRef.current) {
+        const parentHeight = document.querySelector(".terminal").clientHeight; // Adjust this if you have specific parent height logic
+        terminalRef.current.style.height = `${parentHeight - 100}px`; // Example: Leave 100px for other UI elements
       }
-    });
-    resizeObserver.observe(terminalRef.current);
+    };
 
-    // Handle Electron IPC communication
+    const handleResize = () => {
+      adjustHeight();
+      fit.fit();
+      const rows = term.rows;
+      const cols = term.cols;
+      window.electron.ipcRenderer.send("terminal.resize", { rows, cols });
+    };
+
+    // Initial adjustment
+    adjustHeight();
+
+    window.addEventListener("resize", handleResize);
+
     const handleIncomingData = (_event: any, data: string) => {
       term.write(data);
     };
-
-    window.electron.ipcRenderer.send("terminal.resize", {
-      rows: term.rows,
-      cols: term.cols,
-    });
 
     window.electron.ipcRenderer.on("terminal.incomingData", handleIncomingData);
 
@@ -70,19 +86,51 @@ export const Terminal = () => {
       window.electron.ipcRenderer.send("terminal.keystroke", data);
     });
 
-    // Cleanup
     return () => {
+      window.removeEventListener("resize", handleResize);
       term.dispose();
-      resizeObserver.disconnect();
+
       window.electron.ipcRenderer.removeListener(
         "terminal.incomingData",
         handleIncomingData
       );
       terminalInstance.current = null;
-      fitAddonRef.current = null;
     };
   }, []);
 
-  // Render terminal container only when it's ready
-  return <div ref={terminalRef} style={{ width: "100%", height: "100%" }} />;
+  return (
+    <div className="content-inner">
+      <PerfectScrollbar className="page-tabs-cont" style={{ zIndex: 9 }}>
+        {tabs.map((tab: any) => {
+          return (
+            <div
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={"tab" + (tab.key === activeTab ? " active" : "")}
+              style={{
+                borderBottom: "none",
+              }}
+            >
+              <span>{tab.name}</span>
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeTab(tab.key);
+                }}
+                className="file-actions"
+              >
+                <TimesIcon className="close-icon" />
+              </span>
+            </div>
+          );
+        })}
+        <div className="runTool">
+          <button onClick={addTab}>
+            <PlusOutlined />
+          </button>
+        </div>
+      </PerfectScrollbar>
+      <div ref={terminalRef} className="terminal" />
+    </div>
+  );
 };

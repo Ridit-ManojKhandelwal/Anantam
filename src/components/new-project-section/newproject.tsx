@@ -95,18 +95,6 @@ export default function NewProjectModal({
     }
     try {
       if (interpreterOption === "anantam") {
-        // window.electron.create_folder({ path: folderPath + "\\.env" });
-        window.electron.create_project_anantam_config_file({
-          path: folderPath + "\\anantam.config.json",
-          interpreter_path: folderPath + "\\.env\\anantam.exe",
-        });
-      }
-
-      if (isMainPyChecked) {
-        window.electron.create_project_anantam_file({
-          path: folderPath + "\\main.py",
-          content: code,
-        });
       }
 
       window.electron.set_folder(folderPath);

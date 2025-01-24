@@ -20,21 +20,24 @@ import { rendererConfig } from "./webpack.renderer.config";
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    executableName: "Anantam",
+    name: "Anantam",
+    icon: "./assets/icon.ico",
+    appVersion: "1.0.0",
+    buildVersion: "1.0.0",
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({
-      setupIcon: "./assets/icon.ico", // Path to the icon for the installer
-      authors: "MNovus",
-      owners: "MNovus",
-      version: "1.0.0",
-      name: "Anantam",
-      setupExe: "AnantamInstaller.exe", // Custom name for the installer
-      noMsi: true, // Disable creation of .msi installer
-    }),
-    new MakerZIP({}, ["darwin"]),
-    new MakerRpm({}),
-    new MakerDeb({}),
+    // new MakerSquirrel({
+    //   setupIcon: "./assets/icon.ico",
+    //   authors: "MNovus",
+    //   owners: "MNovus",
+    //   version: "1.0.0",
+    //   name: "Anantam",
+    //   setupExe: "AnantamInstaller.exe",
+    //   noMsi: true,
+    // }),
+    new MakerZIP({}),
   ],
   plugins: [
     new AutoUnpackNativesPlugin({}),
@@ -67,16 +70,16 @@ const config: ForgeConfig = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
-  // publishers: [
-  //   new PublisherGithub({
-  //     repository: {
-  //       owner: "Ridit-ManojKhandelwal",
-  //       name: "Anantam",
-  //     },
-  //     prerelease: true,
-  //     draft: true,
-  //   }),
-  // ],
+  publishers: [
+    new PublisherGithub({
+      repository: {
+        owner: "Ridit-ManojKhandelwal",
+        name: "Anantam",
+      },
+      prerelease: true,
+      draft: true,
+    }),
+  ],
 };
 
 export default config;

@@ -6,7 +6,7 @@
 import { IMainContext, TFolderTree } from "./types";
 import { renderToStaticMarkup } from "react-dom/server";
 import FileIcon from "./file-icon";
-import React from "react";
+import React, { useEffect } from "react";
 import { store } from "./store";
 
 export const MainContext = React.createContext({} as IMainContext);
@@ -70,6 +70,57 @@ export const makeContentList = (
   handle_set_editor: Function
 ) => {
   if (branch == undefined) return;
+
+  // Debugging: Log the branch data
+  console.log("Branch data:", branch);
+
+  // Creating buttons for root folder
+  if (branch.length === 1 && branch[0].parentPath === "") {
+    const rootButtonsWrapper = document.createElement("div");
+    rootButtonsWrapper.className = "root-buttons-wrapper";
+
+    // New File Button
+    const newFileButton = document.createElement("button");
+    newFileButton.innerText = "New File...";
+    newFileButton.onclick = () => {
+      console.log("Creating a new file..."); // Debugging
+      window.electron.new_file_input({
+        path: path_join([branch[0].path, branch[0].name]),
+        type: "file",
+        rootPath: store.getState().main.folder_structure.root,
+      });
+    };
+
+    // New Folder Button
+    const newFolderButton = document.createElement("button");
+    newFolderButton.innerText = "New Folder...";
+    newFolderButton.onclick = () => {
+      console.log("Creating a new folder..."); // Debugging
+      window.electron.new_folder_input({
+        path: path_join([branch[0].path, branch[0].name]),
+        type: "file",
+        rootPath: store.getState().main.folder_structure.root,
+      });
+    };
+
+    // Reload Button
+    const reloadButton = document.createElement("button");
+    reloadButton.innerText = "Reload";
+    reloadButton.onclick = () => {
+      console.log("Reloading content list..."); // Debugging
+      makeContentList(targetEl, branch, tree, handle_set_editor); // Reload the folder structure
+    };
+
+    // Append buttons to the wrapper and then to the target element
+    rootButtonsWrapper.appendChild(newFileButton);
+    rootButtonsWrapper.appendChild(newFolderButton);
+    rootButtonsWrapper.appendChild(reloadButton);
+    targetEl.appendChild(rootButtonsWrapper);
+  } else {
+    console.log("Root folder not found or multiple root folders detected."); // Debugging
+  }
+
+  // Proceed with the current content rendering logic for files and folders
   const sorted_tree = organize_folder(branch);
 
   sorted_tree.map((branch) => {
