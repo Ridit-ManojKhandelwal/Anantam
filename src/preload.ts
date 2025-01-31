@@ -313,6 +313,8 @@ const renderer = {
   hide_tools: () => {
     ipcRenderer.invoke("hide-tools");
   },
+  readExcelFile: (filePath: string, skipRows: number) =>
+    ipcRenderer.invoke("read-excel-file", filePath, skipRows),
 };
 
 contextBridge.exposeInMainWorld("electron", renderer);

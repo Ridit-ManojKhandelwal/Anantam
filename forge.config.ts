@@ -53,6 +53,14 @@ const config: ForgeConfig = {
               js: "./src/preload.ts",
             },
           },
+          {
+            html: "./src/toolsWindow.html",
+            js: "./src/toolsRenderer.ts",
+            name: "tools_window",
+            preload: {
+              js: "./src/preload.ts",
+            },
+          },
         ],
       },
     }),

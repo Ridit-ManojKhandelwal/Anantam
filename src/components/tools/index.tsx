@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 
-import { Table } from "./sections/table";
-import { BarChart } from "./sections/bar-chart";
-import { PieChart } from "./sections/pie-chart";
-import { LineChart } from "./sections/line-chart";
+import { Table } from "./chart-engines/table";
+import { BarChart } from "./chart-engines/bar-chart";
+import { PieChart } from "./chart-engines/pie-chart";
+import { LineChart } from "./chart-engines/line-chart";
 
 import { useAppDispatch, useAppSelector } from "../../shared/hooks";
 import {
@@ -14,10 +14,31 @@ import {
 
 import "./styling/index.css";
 import "./styling/table.css";
+import { ImportOutlined } from "@ant-design/icons/lib";
 
 export const Tools = () => {
-  const data = useAppSelector((state) => state.main.toolsdata);
+  let data = [
+    {
+      name: "Three",
+      type: "excel",
+      path: "/home/ridit/Downloads/Financial Sample.xlsx",
+      skip_rows: 24,
+      sheet: "sheet1",
+    },
+  ];
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(
+      update_tools_data({
+        name: "Three",
+        type: "excel",
+        path: "/home/ridit/Downloads/Financial Sample.xlsx",
+        skip_rows: 24,
+        sheet: "sheet1",
+      })
+    );
+  }, []);
 
   const [tools, setTools] = useState<any[]>([
     "table",
