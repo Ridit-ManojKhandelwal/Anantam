@@ -1,8 +1,8 @@
 {
   "name": "@ridit-manojkhandelwal/anantam",
   "productName": "Anantam",
-  "version": "2.2.0",
-  "description": "Powerful Python IDE",
+  "version": "1.0.11",
+  "description": "Powerfull Python IDE",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
@@ -52,8 +52,7 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "typescript": "~4.5.4",
-    "url-loader": "^4.1.1",
-    "webpack": "^5.74.0"
+    "url-loader": "^4.1.1"
   },
   "keywords": [],
   "author": {
