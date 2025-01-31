@@ -6,6 +6,8 @@ import {
   TActiveFile,
   TIndent,
   TDataStudioActive,
+  TEnvVars,
+  DataPreviewToolsTab,
 } from "./types";
 
 // Define the initial state using that type
@@ -18,9 +20,15 @@ const initialState: IMainState = {
     line: 0,
   } as TIndent,
   settings_tab_active: false,
-
+  env_vars: {
+    vars: [],
+  } as TEnvVars,
   data_studio_active: { active: false } as TDataStudioActive,
-  file_cache: {}, // Initialize file_cache as an empty object
+  set_data_tool_type_tab: { active: true, data: [] } as DataPreviewToolsTab,
+  sidebar_active: true,
+  terminal_active: true,
+  toolsdata: null,
+  tools_in_a_window: false,
 };
 
 export const mainSlice = createSlice({
@@ -50,15 +58,23 @@ export const mainSlice = createSlice({
     ) => {
       state.data_studio_active = action.payload;
     },
-    // New reducer for caching file content
-    cache_file_content: (
-      state,
-      action: PayloadAction<{ [filePath: string]: string }>
-    ) => {
-      state.file_cache = {
-        ...state.file_cache,
-        ...action.payload, // Merge new content into file_cache
-      };
+    update_env_vars: (state, action: PayloadAction<TEnvVars>) => {
+      state.env_vars = action.payload;
+    },
+    set_data_tool_tab: (state, action: PayloadAction<DataPreviewToolsTab>) => {
+      state.set_data_tool_type_tab = action.payload;
+    },
+    update_sidebar_active: (state, action: PayloadAction<boolean>) => {
+      state.sidebar_active = action.payload;
+    },
+    update_terminal_active: (state, action: PayloadAction<boolean>) => {
+      state.terminal_active = action.payload;
+    },
+    update_tools_data: (state, action: PayloadAction<any>) => {
+      state.toolsdata = action.payload;
+    },
+    update_tools_window_state: (state, action: PayloadAction<boolean>) => {
+      state.tools_in_a_window = action.payload;
     },
   },
 });
@@ -70,7 +86,12 @@ export const {
   update_indent,
   set_settings_tab,
   update_data_studio_active,
-  cache_file_content, // Export new action
+  update_env_vars,
+  set_data_tool_tab,
+  update_sidebar_active,
+  update_terminal_active,
+  update_tools_data,
+  update_tools_window_state,
 } = mainSlice.actions;
 
 export default mainSlice.reducer;

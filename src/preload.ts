@@ -7,6 +7,7 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import { ipcRenderer, contextBridge } from "electron";
+import * as XLSX from "xlsx";
 import { MainContext, makeContentList, path_join } from "./shared/functions";
 
 const validateName = (name: string): string | null => {
@@ -135,6 +136,16 @@ ipcRenderer.on("command-create-folder", (event, data) => {
   targetEl.prepend(new_folder_item);
 });
 
+ipcRenderer.on("show-tools", async (event, data) => {
+  console.log("Data received:", data);
+
+  event.sender.send("send-tools-data", data);
+});
+
+ipcRenderer.on("send-tools-data", (event, parsedData) => {
+  console.log("Parsed Data:", parsedData);
+});
+
 ipcRenderer.on("show-code", (event, data) => {
   try {
     const output_document = document.querySelector(".output");
@@ -210,6 +221,9 @@ const renderer = {
   }) => {
     const response = ipcRenderer.send("folder-contextmenu", data);
   },
+  varinfo_contextmenu: (data: { name: string; path: string }) => {
+    const response = ipcRenderer.send("datavarinfotitle-contextmenu", data);
+  },
   create_file: (data: { path: string; fileName: string; rootPath: string }) => {
     ipcRenderer.send("create-file", data);
   },
@@ -233,6 +247,9 @@ const renderer = {
   ipcRenderer: {
     send: (channel: any, data: any) => {
       ipcRenderer.send(channel, data);
+    },
+    invoke: (channel: any, data: any) => {
+      ipcRenderer.invoke(channel, data);
     },
     on: (channel: any, func: any) => {
       ipcRenderer.on(channel, (event, ...args) => func(event, ...args));
@@ -279,6 +296,23 @@ const renderer = {
   },
   selectInterpreter: async () =>
     ipcRenderer.invoke("dialog:select-interpreter"),
+  get_variables: async (path: string) => {
+    const vars = await ipcRenderer.invoke("get-variables", path);
+    return vars;
+  },
+  get_data_studio_variables: async () => {
+    const vars = await ipcRenderer.invoke("get-data-studio-variables");
+    return vars;
+  },
+  set_data_studio_variables: async (vars: any[]) => {
+    ipcRenderer.send("set-data-studio-variables", vars);
+  },
+  show_tools: () => {
+    ipcRenderer.invoke("show-tools");
+  },
+  hide_tools: () => {
+    ipcRenderer.invoke("hide-tools");
+  },
 };
 
 contextBridge.exposeInMainWorld("electron", renderer);

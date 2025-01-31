@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../shared/hooks";
 import {
+  set_data_tool_tab,
   set_folder_structure,
   set_settings_tab,
   update_active_file,
   update_active_files,
+  update_env_vars,
+  update_terminal_active,
 } from "../../shared/rdx-slice";
 import { IFolderStructure, TActiveFile } from "../../shared/types";
 import { ReactComponent as TimesIcon } from "../../assets/svg/times.svg";
@@ -16,6 +19,8 @@ const SettingsComponent = React.lazy(
 const DataStudio = React.lazy(() => import("../data-studio/app"));
 
 import { CaretRightFilled, SettingOutlined } from "@ant-design/icons/lib";
+import { Tools } from "../tools";
+import { Splitter } from "antd/es";
 
 const ContentSection = React.memo((props: any) => {
   const dispatch = useAppDispatch();
@@ -25,14 +30,16 @@ const ContentSection = React.memo((props: any) => {
     data_studio_active,
     active_files,
     active_file,
+    data_tab,
   } = useAppSelector((state) => ({
     folder_structure: state.main.folder_structure,
     settings: state.main.settings_tab_active,
     data_studio_active: state.main.data_studio_active.active,
     active_files: state.main.active_files,
     active_file: state.main.active_file,
+    data_tab: state.main.set_data_tool_type_tab,
   }));
-  // const editor_container_ref = React.useRef<HTMLDivElement | undefined>()
+
   const useMainContextIn = React.useContext(MainContext);
 
   const [interpreterMenuOpen, setInterpreterMenuOpen] = useState(false);
@@ -41,7 +48,6 @@ const ContentSection = React.memo((props: any) => {
 
   useEffect(() => {
     const getInterpreter = async () => {
-      // Fetch the saved interpreter on load
       const savedInterpreter = await window.electron.get_interpreter();
       if (savedInterpreter?.path) {
         setInterpreters((prev) =>
@@ -63,28 +69,22 @@ const ContentSection = React.memo((props: any) => {
   const handleSelectInterpreter = (selectedInterpreter: string) => {
     setInterpreter(selectedInterpreter);
     setInterpreterMenuOpen(false);
-
-    // // Save the selected interpreter to the store
-    // window.electron.set_interpreter({ path: selectedInterpreter });
   };
 
   const handleAddInterpreter = async () => {
     try {
-      const selectedFiles = await window.electron.selectInterpreter(); // Trigger the dialog
+      const selectedFiles = await window.electron.selectInterpreter();
       if (selectedFiles && selectedFiles.length > 0) {
-        const newInterpreter = selectedFiles; // Get the selected file path
+        const newInterpreter = selectedFiles;
 
-        // Fetch previously saved interpreters
         const prevInterpreter = await window.electron.get_interpreter();
 
-        // Ensure `prevInterpreter` is an array, or convert it to an array
         const prevInterpreterArray = Array.isArray(prevInterpreter)
           ? prevInterpreter
           : prevInterpreter?.path
           ? [prevInterpreter]
           : [];
 
-        // Add the new interpreter
         const interpreters = {
           ...prevInterpreterArray.map((interpreter) => ({
             path: interpreter.path,
@@ -92,10 +92,8 @@ const ContentSection = React.memo((props: any) => {
           path: newInterpreter,
         };
 
-        // Update the UI state
         setInterpreters((prev) => [...prev, newInterpreter.path]);
 
-        // Save the updated list of interpreters
         await window.electron.set_interpreter(interpreters);
       }
     } catch (error) {
@@ -135,6 +133,9 @@ const ContentSection = React.memo((props: any) => {
 
   const handleRun = async () => {
     const settings = await window.electron.get_settings();
+    const vars = await window.electron.get_variables(active_file.path);
+    dispatch(update_terminal_active(true));
+    dispatch(update_env_vars(vars));
     window.electron.run_code({
       path: active_file.path,
       script: "python3",
@@ -248,8 +249,8 @@ const ContentSection = React.memo((props: any) => {
                 </div>
               </div>
             </div>
-            <div className="editor-container"></div>
           </div>
+          <div className="editor-container"></div>
         </div>
       )}
     </div>

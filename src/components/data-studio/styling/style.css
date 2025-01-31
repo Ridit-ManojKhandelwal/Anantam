@@ -1,35 +1,12 @@
-/* Hide scrollbars globally within specific containers */
-.data-studio,
-.xlsx-preview,
-.xlsx-preview-sidebar,
-.xlsx-preview-content,
-.tree-item-modern,
-.tree-node-modern,
-.tree-children-modern {
-  overflow: hidden !important;
-  width: 100% !important;
-}
-
-/* Additional rule for hiding scrollbars in Webkit browsers (Chrome, Safari) */
-.data-studio::-webkit-scrollbar,
-.xlsx-preview::-webkit-scrollbar,
-.xlsx-preview-sidebar::-webkit-scrollbar,
-.xlsx-preview-content::-webkit-scrollbar,
-.tree-item-modern::-webkit-scrollbar,
-.tree-node-modern::-webkit-scrollbar,
-.tree-children-modern::-webkit-scrollbar {
-  display: none !important;
-}
-
-/* For Firefox and other browsers, prevent scrollbars */
 * {
-  scrollbar-width: none !important; /* For Firefox */
+  scrollbar-width: none !important;
 }
 
 .data-studio {
+  color: var(--main-text-color);
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: fit-content;
   width: 100%;
   justify-content: center;
   align-items: center;
@@ -38,13 +15,13 @@
 
 .data-studio > .option-grid > .heading-area {
   text-align: center;
-  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  flex-wrap: wrap;
 }
 
 .data-studio > .option-grid > .option-area {
   display: flex;
   gap: 20px;
-  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  flex-wrap: wrap;
   justify-content: center;
 }
 
@@ -53,7 +30,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 25vh; /* Match width to .datatype-option */
+  width: 25vh;
   cursor: pointer;
   transition: opacity 0.3s ease-in-out;
 }
@@ -71,7 +48,7 @@
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   background-color: #c8e9d6;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add shadow for modern look */
+  box-shadow: 0 2px 5px rgba(0 0 0 0.1);
 }
 
 .datatype-option > svg {
@@ -80,8 +57,8 @@
 }
 
 .datatype-option-text {
-  width: 100%; /* Match parent width */
-  height: 5vh; /* Adjust height for text area */
+  width: 100%;
+  height: 5vh;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   text-wrap: wrap;
@@ -89,88 +66,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px; /* Visible font size */
-  font-weight: 500; /* Medium font weight */
-  color: #333; /* Dark text color for readability */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for better appearance */
-}
-
-.xlsx-preview {
-  display: flex;
-  width: 100%;
-  height: 100%; /* Ensures full height */
-  overflow: hidden;
-  background: white;
-}
-
-.xlsx-preview-sidebar {
-  width: 250px; /* Fixed width for sidebar */
-  background: #1b1b1b;
-  padding: 20px;
-  color: #fff;
-  font-family: "Roboto", sans-serif;
-  overflow-y: auto; /* Allow scrolling if content exceeds height */
-  box-sizing: border-box;
-  flex-shrink: 0; /* Prevent the sidebar from shrinking */
-}
-
-.xlsx-preview-content {
-  flex-grow: 1; /* Takes remaining space */
-  padding: 20px;
-  color: #fff;
-  font-family: "Roboto", sans-serif;
-  overflow-y: auto; /* Allow scrolling if content exceeds height */
-  box-sizing: border-box;
-}
-
-/* Tree Item Styles */
-.tree-item-modern {
-  margin: 8px 0;
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-.tree-node-modern {
-  display: flex;
-  align-items: center;
-  color: #333;
+  font-size: 14px;
   font-weight: 500;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.tree-node-modern:hover {
-  background-color: #f5f5f5;
-}
-
-.tree-children-modern {
-  margin-left: 20px;
-  padding-top: 8px;
-  border-left: 2px solid #ddd;
-}
-
-/* Icon Styles */
-.tree-node-modern svg {
-  width: 14px;
-  height: 14px;
-  fill: #aaa;
-  margin-right: 6px;
-  transition: transform 0.2s;
-}
-
-/* Style for when tree is expanded */
-.tree-node-modern .tree-children-modern {
-  padding-left: 20px;
-  margin-top: 8px;
-}
-
-/* Styling for the active tree node */
-.tree-node-modern.active {
-  background-color: #e6f7ff;
-  color: #1890ff;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0 0 0 0.1);
 }
 
 .datatype-next-button {
@@ -178,4 +77,211 @@
   bottom: 0;
   right: 0;
   margin: 16px;
+}
+
+.tag {
+  width: 8vh;
+  height: 20px;
+  padding: 0 20px 0 20px;
+  border: none;
+  border-radius: 4px;
+}
+
+.tag p {
+  text-align: center;
+  font-family: Jetbrains Mono serif;
+  font-size: 8px;
+}
+
+.large-descriptions .ant-descriptions-title {
+  font-family: Jetbrains Mono serif;
+  font-size: 24px;
+}
+
+.large-descriptions .ant-descriptions-item-label {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.large-descriptions .ant-descriptions-item-content {
+  font-size: 18px;
+}
+
+.large-descriptions .ant-descriptions-item {
+  padding: 16px;
+}
+
+.large-descriptions .ant-descriptions-view {
+  border-width: 2px;
+}
+
+.view-datatype {
+  display: flex;
+  padding: 10px;
+  margin: 0;
+  background: #282c34ff;
+  border: none;
+  border-bottom: 2px solid var(--border-color);
+  border-radius: 8px;
+  width: 100%;
+  height: fit-content;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.view-datatype div span svg {
+  width: 40px;
+  height: 40px;
+  background: var(--file-list-bg);
+  padding: 5px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.view-datatype:hover {
+  background: var(--file-list-bg);
+}
+
+.view-datatype:hover span svg {
+  background: var(--main-bg);
+}
+
+.view-datatype p {
+  font-size: 24px;
+}
+
+.view-datatype div {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search svg {
+  width: 20px;
+  height: 20px;
+  rotate: -90deg;
+  margin: 10px;
+  fill: var(--main-text-color);
+  cursor: pointer;
+}
+
+.search svg path {
+  fill: var(--main-text-color);
+}
+
+.view ul li {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--file-list-bg);
+  color: var(--main-text-color);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.view ul li:hover {
+  outline: 1px solid var(--file-list-bg);
+  background: var(--main-bg);
+}
+
+.types ul li {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--file-list-bg);
+  color: var(--main-text-color);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.types ul li:hover {
+  outline: 1px solid var(--file-list-bg);
+  background: var(--main-bg);
+}
+
+.var-info-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.var-info-wrapper div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  outline: 1px solid var(--file-list-bg);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.var-info-wrapper div nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.var-info-wrapper div:first-child:hover {
+  background: var(--file-list-bg);
+  outline: 1px solid var(--main-bg);
+}
+
+.var-info-wrapper div:first-child:hover span svg {
+  background: var(--main-bg);
+}
+
+.var-info-wrapper div:first-child p:last-child {
+  font-family: monospace;
+  color: var(--main-text-color);
+  opacity: 0.8;
+  font-size: 18px;
+}
+
+.var-info-wrapper div:first-child span svg {
+  width: 60px;
+  height: 60px;
+  background: var(--file-list-bg);
+  outline: 1px solid var(--border-color);
+  padding: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.var-info-wrapper div:nth-child(2) {
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--main-bg);
+  outline: 1px solid var(--file-list-bg);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.var-info-wrapper div:nth-child(2):hover {
+  background: var(--file-list-bg);
+  outline: 1px solid var(--border-color);
+}
+
+.var-info-wrapper div:nth-child(2) ul {
+  display: flex;
+  gap: 16px;
+  list-style: none;
+}
+
+.var-info-wrapper div:nth-child(2) ul li p {
+  color: var(--main-text-color);
+}
+
+.var-info-wrapper div:nth-child(2) ul li p:first-child {
+  font-family: monospace;
+  border-right: 2px solid var(--file-list-bg);
+  padding-right: 10px;
+}
+
+.var-info-wrapper div:nth-child(2) ul li p:last-child {
+  font-family: "Jetbrains Mono", monospace;
+}
+
+.var-info-wrapper div:last-child h2 {
+  font-family: monospace;
 }

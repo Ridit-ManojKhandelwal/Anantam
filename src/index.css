@@ -120,6 +120,12 @@ body {
 .wrapper-component > .footer-section > div > div > span {
   display: flex;
   align-items: center;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.wrapper-component > .footer-section > div > div > span:hover {
+  background: var(--file-list-bg);
 }
 
 .wrapper-component > .footer-section .remove-item {
@@ -539,10 +545,9 @@ body {
 }
 
 .folder-tree .explorer-content-wrapper {
-  height: calc(100% - 30px);
+  height: 100%;
   overflow: hidden;
   display: grid !important;
-  grid-template-rows: 1fr 20px 20px !important;
 }
 
 .folder-tree .explorer-content-wrapper .content-list-outer-container {
@@ -584,16 +589,42 @@ body {
   margin: 12px;
 }
 
-.tabs > .tab {
+.tabs {
+  justify-content: space-between;
+}
+
+.tabs div {
   display: flex;
   position: sticky;
-  font-size: 14px;
   justify-content: space-between;
+  align-items: center;
+  width: fit-content;
+}
+
+.tabs > div:first-child > .tab {
+  font-size: 14px;
   padding: 5px;
   color: #abb2bfff;
   cursor: pointer;
   height: fit-content;
-  align-items: center;
+}
+
+.tabs button {
+  background: transparent;
+  padding: 8px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+
+.tabs button svg {
+  fill: var(--main-text-color);
+  width: 15px;
+  height: 15px;
+}
+
+.tabs button:hover {
+  background: var(--file-list-bg);
 }
 
 .tab p {
@@ -1219,6 +1250,56 @@ code.output {
 }
 
 .editor-container {
-  height: 100vh;
-  overflow-x: hidden;
+  height: 83vh;
+}
+
+.bottom-wrapper {
+  overflow: hidden;
+}
+
+.bottom-wrapper .tabs {
+  display: flex;
+  position: sticky;
+  top: 0;
+  background: var(--background-color);
+  z-index: 10;
+}
+
+.bottom-wrapper .tabs .tab {
+  padding: 12px;
+  width: 20%;
+  transition: background 0.2s;
+  color: var(--main-text-color);
+  cursor: pointer;
+}
+
+.bottom-wrapper .tabs .tab:hover {
+  color: #fff;
+}
+
+.bottom-wrapper .active {
+  border-bottom: 2px solid var(--main-text-color);
+}
+
+.xterm-viewport::-webkit-scrollbar {
+  width: 8px;
+}
+
+.xterm-viewport::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 4px;
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb:hover {
+  background: #6a6a6a;
+}
+
+.xterm-viewport::-webkit-scrollbar-corner {
+  background: #1e1e1e;
 }

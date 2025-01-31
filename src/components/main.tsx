@@ -1,9 +1,9 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) MNovus. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+// /*---------------------------------------------------------------------------------------------
+//  *  Copyright (c) MNovus. All rights reserved.
+//  *  Licensed under the MIT License. See License.txt in the project root for license information.
+//  *--------------------------------------------------------------------------------------------*/
 
-import React from "react";
+import React, { useState } from "react";
 
 import { MainContext } from "../shared/functions";
 import * as monaco from "monaco-editor";
@@ -11,14 +11,14 @@ import { get_file_types } from "../shared/functions";
 import { useAppDispatch, useAppSelector } from "../shared/hooks";
 import { TSelectedFile } from "../shared/types";
 import { update_active_files, update_indent } from "../shared/rdx-slice";
-import { throttle } from "lodash";
 import { store } from "../shared/store";
 import { Splitter } from "antd";
 import FooterComponent from "./sections/footer";
 import ContentSection from "./sections/content";
 import { HeaderSection } from "./sections/header";
-import { Terminal } from "./terminal-section/terminal";
+import { BottomTabs } from "./bottom-section/tab";
 import Navigator from "./sidebar-sections/navigator";
+import Enviornment from "./sidebar-sections/enviornment";
 
 const MainComponent = React.memo((props: any) => {
   const folder_structure = useAppSelector(
@@ -34,7 +34,7 @@ const MainComponent = React.memo((props: any) => {
   const editor_ref = React.useRef<
     monaco.editor.IStandaloneCodeEditor | undefined
   >();
-  // const [lspConnection, setLspConnection] = useState<LSPClient | null>(null);
+
   const editor_files_ref = React.useRef<
     { editor_id: string; editor_state: monaco.editor.ICodeEditorViewState }[]
   >([]);
@@ -43,8 +43,13 @@ const MainComponent = React.memo((props: any) => {
 
   const active_file = useAppSelector((state) => state.main.active_file);
 
+  const sidebarActive = useAppSelector((state) => state.main.sidebar_active);
+  const terminalActive = useAppSelector((state) => state.main.terminal_active);
+
   const handle_set_editor = React.useCallback(
     (selected_file: TSelectedFile) => {
+      console.log("selected_file", selected_file);
+
       if (editor_ref.current != undefined) {
         const current_model = editor_ref.current.getModel();
 
@@ -74,6 +79,13 @@ const MainComponent = React.memo((props: any) => {
             (editor) => editor.editor_id == selected_file.path
           );
           editor_ref.current.setModel(target_model[0]);
+          console.log(
+            "target_model",
+            target_model,
+            _model_index,
+            editor_files_ref.current[_model_index],
+            editor_files_ref.current
+          );
 
           return (
             _model_index > -1 &&
@@ -105,109 +117,71 @@ const MainComponent = React.memo((props: any) => {
           {
             theme: "vs-dark",
             minimap: {
-              enabled: false, // Disables the minimap for better performance
+              enabled: false,
             },
-            automaticLayout: true, // Ensures automatic resizing of the editor
-            scrollbar: {
-              vertical: "auto", // Lazy loading for vertical scrollbar
-              horizontal: "auto", // Lazy loading for horizontal scrollbar
-            },
-            mouseWheelZoom: false, // Disables zooming via mouse wheel for smooth scrolling
-            smoothScrolling: true, // Smoothens the scrolling experience
-            wrappingIndent: "same", // Optimizes word wrapping performance
-            fontSize: 14, // Adjust font size for better readability
-            lineHeight: 22, // Adjust line height for smoother rendering
-            renderLineHighlight: "none", // Reduces visual effects, improving performance
-            renderWhitespace: "none", // Avoids rendering whitespace characters
+            mouseWheelZoom: false,
+            smoothScrolling: true,
+            wrappingIndent: "same",
+            fontSize: 14,
+            fontFamily: "monospace",
+            lineHeight: 22,
+            renderLineHighlight: "none",
+            renderWhitespace: "none",
             scrollBeyondLastLine: false,
             scrollBeyondLastColumn: 0,
             hover: {
-              enabled: false, // Disables hover tooltips for a better experience
+              enabled: false,
             },
           }
         );
       }
-      editor_ref.current.setModel(new_model);
 
-      editor_ref.current.onKeyUp((e) => {
-        try {
-          if (e.ctrlKey && e.keyCode === 49) {
-            // Ctrl+1 keyCode is 49
-            const editorModel = editor_ref.current.getModel();
-            if (!editorModel) return;
-
-            return handle_save_file({
-              path: editorModel.uri.path,
-              content: editorModel.getValue(),
-            });
-          }
-        } catch (error) {
-          console.error("Error in onKeyUp:", error);
-        }
-      });
-
-      // // Debounce function to delay handling changes
-      // const handleModelChange = debounce(async () => {
-      //   try {
-      //     const state = store.getState(); // Cache state
-      //     const activeFile = state.main.active_file;
-      //     // If the file is already touched, skip further checks
-      //     if (activeFile.is_touched) return;
-
-      //     // Check if content has changed only when file is untouched
-
-      //     dispatch(
-      //       update_active_file({
-      //         ...activeFile,
-      //         is_touched: true, // Mark file as touched
-      //       })
-      //     );
-      //   } catch (error) {
-      //     console.error("Error in handleModelChange:", error);
-      //   }
-      // }, 300); // Adjust debounce delay as needed
-
-      // // Bind the debounced handler to the model change event
-      // editor_ref.current.onDidChangeModelContent(() => {
-      //   handleModelChange();
-      // });
-
-      const handleContentChange = throttle(() => {
-        const state = store.getState().main;
-        const editorPath = editor_ref.current.getModel().uri.path;
-        const activeFiles = state.active_files;
-        const index = activeFiles.findIndex((file) => file.path === editorPath);
-
-        if (index !== -1 && !activeFiles[index].is_touched) {
-          const updatedFiles = [...activeFiles];
-          updatedFiles[index] = { ...activeFiles[index], is_touched: true };
-          dispatch(update_active_files(updatedFiles));
-        }
-      }, 500);
-
-      editor_ref.current.onDidChangeModelContent(handleContentChange);
-
-      // Define a custom dark theme
       monaco.editor.defineTheme("dark", {
-        base: "vs-dark", // Use the base dark theme
-        inherit: true, // Inherit from the base theme
+        base: "vs-dark",
+        inherit: true,
         rules: [],
         colors: {
-          "editor.background": "#282c34ff", // Set the background color
+          "editor.background": "#282c34ff",
           "editor.foreground": "#abb2bfff",
-          "editor.lineHighlightBackground": "#2c313aff", // Highlighted line color
-          "editorCursor.foreground": "#ffffff", // Cursor color
-          "editor.selectionBackground": "#264f78", // Selection background
-          "editor.inactiveSelectionBackground": "#3a3d41", // Inactive selection
-          "editorLineNumber.foreground": "#495162ff", // Line numbers
-          "editorLineNumber.activeForeground": "#ffffff", // Active line number
-          "editorWhitespace.foreground": "#3e3e3e", // Whitespace markers
-          "editorIndentGuide.background": "#3a3a3a", // Indent guides
-          "editorIndentGuide.activeBackground": "#7a7a7a", // Active indent guides
+          "editor.lineHighlightBackground": "#2c313aff",
+          "editorCursor.foreground": "#ffffff",
+          "editor.selectionBackground": "#264f78",
+          "editor.inactiveSelectionBackground": "#3a3d41",
+          "editorLineNumber.foreground": "#495162ff",
+          "editorLineNumber.activeForeground": "#ffffff",
+          "editorWhitespace.foreground": "#3e3e3e",
+          "editorIndentGuide.background": "#3a3a3a",
+          "editorIndentGuide.activeBackground": "#7a7a7a",
         },
       });
 
       monaco.editor.setTheme("dark");
+
+      editor_ref.current.setModel(new_model);
+
+      editor_ref.current.onKeyUp((e) => {
+        if (e.ctrlKey && e.keyCode == 49) {
+          console.log("will save");
+
+          return handle_save_file({
+            path: editor_ref.current.getModel().uri.path,
+            content: editor_ref.current.getValue(),
+          });
+        }
+      });
+
+      editor_ref.current.onDidChangeModelContent(() => {
+        const state = store.getState().main;
+        const index = state.active_files.findIndex(
+          (file) => file.path === editor_ref.current.getModel().uri.path
+        );
+
+        if (index !== -1) {
+          const updated_files = [...state.active_files];
+          updated_files[index] = { ...updated_files[index], is_touched: true };
+          dispatch(update_active_files(updated_files));
+        }
+      });
 
       editor_ref.current.onDidChangeCursorPosition((e) => {
         dispatch(
@@ -245,6 +219,8 @@ const MainComponent = React.memo((props: any) => {
 
   const handle_remove_editor = React.useCallback(
     (selected_file: TSelectedFile) => {
+      console.log("selected_file", selected_file);
+
       const is_current_model =
         editor_ref.current.getModel().uri.path == selected_file.path;
       const allModels = monaco.editor.getModels();
@@ -253,9 +229,16 @@ const MainComponent = React.memo((props: any) => {
       );
       // monaco.editor.add
       // monaco.editor.getModels().splice(target_model_index, 1)
-
+      console.log(
+        "monaco.editor.getModels().length",
+        monaco.editor.getModels().length
+      );
       monaco.editor.getModels()[target_model_index].dispose();
 
+      console.log(
+        "monaco.editor.getModels().length",
+        monaco.editor.getModels().length
+      );
       if (is_current_model) {
         const new_index =
           target_model_index == 0 ? target_model_index : target_model_index - 1;
@@ -272,6 +255,8 @@ const MainComponent = React.memo((props: any) => {
   );
 
   const handle_win_blur = React.useCallback(() => {
+    console.log("win is blur");
+
     const blurred_active_files = store
       .getState()
       .main.active_files.filter((file) => file.is_touched == true);
@@ -308,22 +293,44 @@ const MainComponent = React.memo((props: any) => {
               flexDirection: "row",
             }}
           >
-            <Splitter.Panel defaultSize="20%" min="10%" max="95%">
-              <Navigator />
-            </Splitter.Panel>
+            {sidebarActive ? (
+              <Splitter.Panel defaultSize="20%" min="10%" max="95%">
+                <Splitter
+                  layout="vertical"
+                  style={{
+                    height: "100vh",
+                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  <Splitter.Panel>
+                    <Navigator />
+                  </Splitter.Panel>
+
+                  <Splitter.Panel>
+                    <Enviornment />
+                  </Splitter.Panel>
+                </Splitter>
+              </Splitter.Panel>
+            ) : (
+              ""
+            )}
             <Splitter.Panel>
               <Splitter layout="vertical">
                 <Splitter.Panel>
                   <ContentSection />
                 </Splitter.Panel>
-                <Splitter.Panel
-                  defaultSize="30%"
-                  min="10%"
-                  max="95%"
-                  className="terminal"
-                >
-                  <Terminal />
-                </Splitter.Panel>
+                {terminalActive ? (
+                  <Splitter.Panel
+                    defaultSize="30%"
+                    min="10%"
+                    max="95%"
+                    className="terminal"
+                  >
+                    <BottomTabs />
+                  </Splitter.Panel>
+                ) : (
+                  ""
+                )}
               </Splitter>
             </Splitter.Panel>
           </Splitter>

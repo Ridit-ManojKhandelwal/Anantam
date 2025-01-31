@@ -27,7 +27,12 @@ export interface IMainState {
   settings_tab_active: boolean;
   indent: TIndent;
   data_studio_active: TDataStudioActive;
-  file_cache: { [filePath: string]: string };
+  env_vars: TEnvVars;
+  set_data_tool_type_tab: DataPreviewToolsTab;
+  sidebar_active: boolean;
+  terminal_active: boolean;
+  toolsdata: any;
+  tools_in_a_window: boolean;
 }
 
 export type TDataStudioActive = {
@@ -53,6 +58,21 @@ export type TSelectedFile = {
   name: string;
   path: string;
   content: string;
+};
+
+export type TEnvVars = {
+  vars: TEnvVar[];
+};
+
+export type TEnvVar = {
+  name: string;
+  type: string;
+  value: any;
+};
+
+export type DataPreviewToolsTab = {
+  active: boolean;
+  data: any[];
 };
 
 // Main Context Functions Type

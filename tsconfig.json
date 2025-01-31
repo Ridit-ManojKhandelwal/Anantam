@@ -12,15 +12,15 @@
     "esModuleInterop": true,
     "noImplicitAny": true,
     "sourceMap": true,
-    "baseUrl": ".", 
+    "baseUrl": ".",
     "jsx": "react-jsx",
     "outDir": "dist",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "paths": {
       "*": ["node_modules/*"],
-      "public/*": ["public/*"] 
+      "public/*": ["public/*"]
     }
   },
-  "include": ["src/**/*", "public/**/*"]
+  "include": ["src/**/*", "public/**/*", "static/readExcel.ts"]
 }

@@ -1,12 +1,23 @@
 import { CloseOutlined, MinusOutlined } from "@ant-design/icons/lib";
 import { useState } from "react";
-import { useAppSelector } from "../../shared/hooks";
+import { useAppDispatch, useAppSelector } from "../../shared/hooks";
+import {
+  update_data_studio_active,
+  update_env_vars,
+  update_sidebar_active,
+  update_terminal_active,
+} from "../../shared/rdx-slice";
 
 export const HeaderSection = () => {
   const [activeMenu, setActiveMenu] = useState(null);
-  const { active_file } = useAppSelector((state) => ({
-    active_file: state.main.active_file,
-  }));
+  const { active_file, data_studio_active, terminal_active } = useAppSelector(
+    (state) => ({
+      active_file: state.main.active_file,
+      data_studio_active: state.main.data_studio_active,
+      terminal_active: state.main.terminal_active,
+    })
+  );
+  const dispatch = useAppDispatch();
 
   const toggleMenu = (menu: string) => {
     setActiveMenu(activeMenu === menu ? null : menu);
@@ -14,6 +25,9 @@ export const HeaderSection = () => {
 
   const handleRun = async () => {
     const settings = await window.electron.get_settings();
+    const vars = await window.electron.get_variables(active_file.path);
+    dispatch(update_terminal_active(true));
+    dispatch(update_env_vars(vars));
     if (!active_file.path) {
       alert("No file found.");
       return;
@@ -22,6 +36,26 @@ export const HeaderSection = () => {
       path: active_file.path,
       script: "python3",
     });
+  };
+
+  const openCloseDataStudio = () => {
+    if (data_studio_active.active) {
+      dispatch(
+        update_data_studio_active({
+          active: false,
+        })
+      );
+      dispatch(update_terminal_active(terminal_active ? true : false));
+      dispatch(update_sidebar_active(true));
+    } else {
+      dispatch(
+        update_data_studio_active({
+          active: true,
+        })
+      );
+      dispatch(update_terminal_active(false));
+      dispatch(update_sidebar_active(false));
+    }
   };
 
   return (
@@ -95,15 +129,11 @@ export const HeaderSection = () => {
               onMouseEnter={() => toggleMenu("importData")}
               onMouseLeave={() => toggleMenu(null)}
             >
-              <li>Import</li>
+              <li>Studio</li>
               {activeMenu === "importData" && (
                 <div className="menu-sub-item">
                   <ul>
-                    <p>Import</p>
-                    <li>Data Studio</li>
-                    <hr />
-                    <p>Export</p>
-                    <li>Data Studio</li>
+                    <li onClick={openCloseDataStudio}>Data Studio</li>
                   </ul>
                 </div>
               )}

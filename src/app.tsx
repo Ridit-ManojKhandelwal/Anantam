@@ -10,6 +10,7 @@ import { useAppDispatch } from "./shared/hooks";
 import { IFolderStructure } from "./shared/types";
 import { set_folder_structure } from "./shared/rdx-slice";
 import { ConfigProvider, theme } from "antd/es";
+import { PrimeReactProvider } from "primereact/api";
 
 const App = React.memo((props: any) => {
   const dispatch = useAppDispatch();
@@ -24,20 +25,15 @@ const App = React.memo((props: any) => {
   }, []);
 
   return (
-    <ConfigProvider
-      theme={{
-        algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
-        components: {
-          Splitter: {
-            splitBarDraggableSize: 0, // Drag and drop element size
-            splitBarSize: 0.1, // Splitter bar size
-            splitTriggerSize: 3, // Trigger area size
-          },
-        },
-      }}
-    >
-      <RouterProvider router={router} />
-    </ConfigProvider>
+    <PrimeReactProvider>
+      <ConfigProvider
+        theme={{
+          algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
+        }}
+      >
+        <RouterProvider router={router} />
+      </ConfigProvider>
+    </PrimeReactProvider>
   );
 });
 

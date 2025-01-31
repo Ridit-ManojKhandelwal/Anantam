@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import PerfectScrollBar from "react-perfect-scrollbar";
 
-import "./styling/style.css";
 import { DataTypesSection } from "./components/sections/datatypes-section";
 import { ChooseStepSection } from "./components/sections/choose-step-section";
 import { ViewDataSection } from "./components/sections/view-data-section";
 import { ExcelSection } from "./components/data-type-section/excel-section";
 import { CSVSection } from "./components/data-type-section/csv-section";
 import { JSONSection } from "./components/data-type-section/json-section";
+import { VarInfo } from "./components/sections/data-var-info-section";
+
+import "./styling/style.css";
 
 const DataStudio = () => {
   const [step, setStep] = useState<number>(0);
@@ -16,6 +18,7 @@ const DataStudio = () => {
   const [skipRows, setSkipRows] = useState<number>(0);
   const [dataType, setDataType] = useState<string>("");
   const [currentExcelSteps, setCurrentExcelSteps] = useState<number>(0);
+  const [data, setData] = useState<any[]>();
 
   const handleOptionClick = (type: string) => {
     window.electron.ipcRenderer.send("coming-soon-dialog", []);
@@ -34,9 +37,8 @@ const DataStudio = () => {
         )}
         {step === 2 && (
           <ViewDataSection
-            setStep={() =>
-              window.electron.ipcRenderer.send("coming-soon-dialog", [])
-            }
+            setStep={(number) => setStep(number)}
+            setData={(data) => setData(data)}
           />
         )}
 
@@ -66,6 +68,7 @@ const DataStudio = () => {
           </div>
         )}
         {dataType === "MySQL" && <h3>MySQL Data Import</h3>}
+        {step === 3 && <VarInfo data={data} />}
       </div>
     </PerfectScrollBar>
   );

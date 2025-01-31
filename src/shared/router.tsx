@@ -1,7 +1,8 @@
 import { createBrowserRouter, createHashRouter } from "react-router-dom";
 import MainComponent from "../components/main";
 import Navigator from "../components/sidebar-sections/navigator";
-import InformationRoute from "../components/sidebar-sections/information";
+import Enviornment from "../components/sidebar-sections/enviornment";
+import { Tools } from "../components/tools/index";
 
 export default createHashRouter([
   {
@@ -15,9 +16,19 @@ export default createHashRouter([
         index: true,
       },
       {
-        path: "information", // Relative path for /main_window/information
-        element: <InformationRoute />,
+        path: "Enviornment", // Relative path for /main_window/information
+        element: <Enviornment />,
       },
     ],
+  },
+  {
+    path: "/toolswindow",
+    element: <Tools />,
+    errorElement: <Tools />,
+  },
+  // Add the root route (or default route) to fix the error
+  {
+    path: "/",
+    element: <MainComponent />, // or any other component you want to display at root
   },
 ]);
