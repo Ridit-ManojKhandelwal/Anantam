@@ -20,5 +20,5 @@ multithreading / processing power of the browser.
 
 ### -- Developer Note
 
-# Pyodide is used to make Language Server for normal python suggestions and commands.
-## In future there will be a optimized and powerful Language server for Anantam.
+### Pyodide is used to make Language Server for normal python suggestions and commands.
+### In future there will be a optimized and powerful Language server for Anantam.
