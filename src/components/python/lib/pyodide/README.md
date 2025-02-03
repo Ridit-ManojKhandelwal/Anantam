@@ -17,3 +17,8 @@ are included although only one package is necessary for running a language serve
 However both packages were tested, with the result that `jedi-language-server` is faster,
 yet none of both are really usable in production, because they are really slow due to missing
 multithreading / processing power of the browser.
+
+### -- Developer Note
+
+# Pyodide is used to make Language Server for normal python suggestions and commands.
+## In future there will be a optimized and powerful Language server for Anantam.
