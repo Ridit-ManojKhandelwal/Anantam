@@ -105,6 +105,7 @@ const sampleData = [
 ];
 
 export const Table = ({ data }: any) => {
+  console.log("table data", data);
   const dynamicColumns =
     sampleData && sampleData.length > 0
       ? Object.keys(sampleData[0]).map((key) => (

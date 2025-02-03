@@ -7,134 +7,12 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import { ipcRenderer, contextBridge } from "electron";
-import * as XLSX from "xlsx";
-import { MainContext, makeContentList, path_join } from "./shared/functions";
+import { MainContext, path_join } from "./shared/functions";
 
 const validateName = (name: string): string | null => {
   const invalidChars = /[\/:*?"<>|]/g;
   return null;
 };
-
-const handleNameInput = (name: string) => {
-  const error = validateName(name.trim());
-  if (error) {
-    console.error(error);
-    return false;
-  }
-  return true;
-};
-
-ipcRenderer.on("command-create-file", (event, data) => {
-  const new_file_item = document.createElement("div");
-  new_file_item.className = "content-item new-file-item";
-  new_file_item.innerHTML = `
-        <div>
-            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g fill="#d2d4d3"> <path d="M1.75 3a.75.75 0 000 1.5h12.5a.75.75 0 000-1.5H1.75zM1.75 6a.75.75 0 000 1.5h9.5a.75.75 0 000-1.5h-9.5zM1 9.75A.75.75 0 011.75 9h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 9.75zM1.75 12a.75.75 0 000 1.5h9.5a.75.75 0 000-1.5h-9.5z"></path> </g> </g></svg>
-        </div>
-        <div class="file-name" contenteditable="true"></div>
-    `;
-  setTimeout(() => {
-    (new_file_item.querySelector(".file-name") as HTMLElement).focus();
-  }, 0);
-
-  (new_file_item.querySelector(".file-name") as HTMLElement).onkeyup = (e) => {
-    try {
-      if (e.key.toLowerCase() === "enter") {
-        const targetEditableEl = e.currentTarget as HTMLElement;
-        const value = targetEditableEl.innerText.trim();
-
-        if (handleNameInput(value)) {
-          renderer.create_file({
-            path: path_join([data.path, value]),
-            fileName: value,
-            rootPath: data.rootPath,
-          });
-          new_file_item?.remove();
-        }
-      }
-    } catch (error) {
-      console.error("Error handling file name input:", error);
-    }
-  };
-
-  (new_file_item.querySelector(".file-name") as HTMLElement).onblur = (e) => {
-    const targetEditableEl = e.currentTarget as HTMLElement;
-    const value = targetEditableEl.innerText.trim();
-
-    if (handleNameInput(value)) {
-      renderer.create_file({
-        path: path_join([data.path, value]),
-        fileName: value,
-        rootPath: data.rootPath,
-      });
-      new_file_item.remove();
-    }
-  };
-
-  const targetEl = document
-    .querySelector(`#list-wrapper-${data.path.replace(/\/|\\|\./g, "-")}`)
-    .querySelector(".content-list");
-  targetEl.prepend(new_file_item);
-});
-
-ipcRenderer.on("command-create-folder", (event, data) => {
-  const new_folder_item = document.createElement("div");
-  new_folder_item.className = "content-item";
-  new_folder_item.innerHTML = `
-      <div>
-          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none">
-            <path fill="#FFD700" d="M2 4a1 1 0 011-1h4l1 1h5a1 1 0 011 1v7a1 1 0 01-1 1H3a1 1 0 01-1-1V4z"/>
-          </svg>
-      </div>
-      <div class="content-item" contenteditable="true"></div>
-  `;
-  setTimeout(() => {
-    (new_folder_item.querySelector(".content-item") as HTMLElement).focus();
-  }, 0);
-
-  (new_folder_item.querySelector(".content-item") as HTMLElement).onkeyup = (
-    e
-  ) => {
-    try {
-      if (e.key.toLowerCase() === "enter") {
-        const targetEditableEl = e.currentTarget as HTMLElement;
-        const value = targetEditableEl.innerText.trim();
-
-        if (handleNameInput(value)) {
-          renderer.create_folder({
-            path: path_join([data.path, value]),
-            fileName: value,
-            rootPath: data.rootPath,
-          });
-          new_folder_item?.remove();
-        }
-      }
-    } catch (error) {
-      console.error("Error handling folder name input:", error);
-    }
-  };
-
-  (new_folder_item.querySelector(".content-item") as HTMLElement).onblur = (
-    e
-  ) => {
-    const targetEditableEl = e.currentTarget as HTMLElement;
-    const value = targetEditableEl.innerText.trim();
-
-    if (handleNameInput(value)) {
-      renderer.create_folder({
-        path: path_join([data.path, value]),
-        fileName: value,
-        rootPath: data.rootPath,
-      });
-      new_folder_item.remove();
-    }
-  };
-
-  const targetEl = document
-    .querySelector(`#list-wrapper-${data.path.replace(/\/|\\|\./g, "-")}`)
-    .querySelector(".content-list");
-  targetEl.prepend(new_folder_item);
-});
 
 ipcRenderer.on("show-tools", async (event, data) => {
   console.log("Data received:", data);
@@ -313,7 +191,7 @@ const renderer = {
   hide_tools: () => {
     ipcRenderer.invoke("hide-tools");
   },
-  readExcelFile: (filePath: string, skipRows: number) =>
+  readExcelFile: ({ filePath, skipRows }: any) =>
     ipcRenderer.invoke("read-excel-file", filePath, skipRows),
 };
 

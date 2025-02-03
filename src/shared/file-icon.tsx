@@ -14,6 +14,8 @@ import { ReactComponent as TTFFileIcon } from "../assets/svg/ttf.svg";
 import { ReactComponent as SVGFileIcon } from "../assets/svg/svg.svg";
 import { ReactComponent as PythonFileIcon } from "../assets/svg/py.svg";
 import { ReactComponent as UnknownFileIcon } from "../assets/svg/unknown.svg";
+import { ReactComponent as ExcelFileIcon } from "../assets/svg/excel.svg";
+import { ReactComponent as CSVFileIcon } from "../assets/svg/csv.svg";
 
 const FileIcon = ({ type }: { type: string }) => {
   const typeIcon = {
@@ -30,6 +32,8 @@ const FileIcon = ({ type }: { type: string }) => {
     svg: SVGFileIcon,
     py: PythonFileIcon,
     unknown: UnknownFileIcon,
+    excel: ExcelFileIcon,
+    csv: CSVFileIcon,
   };
 
   const IconComponent =

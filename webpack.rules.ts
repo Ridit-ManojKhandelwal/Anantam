@@ -31,4 +31,8 @@ export const rules: Required<ModuleOptions>["rules"] = [
       },
     },
   },
+  {
+    test: /\.mjs$/,
+    type: "javascript/auto",
+  },
 ];

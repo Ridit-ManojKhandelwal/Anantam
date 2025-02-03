@@ -16,11 +16,13 @@
     "jsx": "react-jsx",
     "outDir": "dist",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
+    // "resolveJsonModule": true,
+    // "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["DOM", "ESNext"],
     "paths": {
-      "*": ["node_modules/*"],
-      "public/*": ["public/*"]
+      "*": ["node_modules/*"]
     }
   },
-  "include": ["src/**/*", "public/**/*", "static/readExcel.ts"]
+  "include": ["src/**/*"]
 }

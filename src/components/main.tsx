@@ -3,7 +3,7 @@
 //  *  Licensed under the MIT License. See License.txt in the project root for license information.
 //  *--------------------------------------------------------------------------------------------*/
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { MainContext } from "../shared/functions";
 import * as monaco from "monaco-editor";
@@ -15,21 +15,25 @@ import { store } from "../shared/store";
 import { Splitter } from "antd";
 import FooterComponent from "./sections/footer";
 import ContentSection from "./sections/content";
-import { HeaderSection } from "./sections/header";
 import { BottomTabs } from "./bottom-section/tab";
 import Navigator from "./sidebar-sections/navigator";
 import Enviornment from "./sidebar-sections/enviornment";
+
+import "monaco-languages";
+import {
+  CloseAction,
+  createConnection,
+  ErrorAction,
+  MonacoLanguageClient,
+  MonacoServices,
+} from "monaco-languageclient";
+import { listen } from "@codingame/monaco-jsonrpc";
+import { WorkerLanguageClient } from "./python/WorkerLanguageClient";
 
 const MainComponent = React.memo((props: any) => {
   const folder_structure = useAppSelector(
     (state) => state.main.folder_structure
   );
-
-  const uniqueFiles = Array.from(
-    new Set(folder_structure?.tree?.map((file) => file.name) || [])
-  ).map((name) => folder_structure?.tree?.find((file) => file.name === name));
-
-  const files = uniqueFiles?.filter((file) => !file.is_dir) || [];
 
   const editor_ref = React.useRef<
     monaco.editor.IStandaloneCodeEditor | undefined
@@ -45,6 +49,30 @@ const MainComponent = React.memo((props: any) => {
 
   const sidebarActive = useAppSelector((state) => state.main.sidebar_active);
   const terminalActive = useAppSelector((state) => state.main.terminal_active);
+
+  useEffect(() => {
+    Object.assign(window, {
+      MonacoEnvironment: {
+        getWorker(moduleId: string, label: string) {
+          switch (label) {
+            case "editorWorkerService":
+              return new Worker(
+                new URL(
+                  "monaco-editor/esm/vs/editor/editor.worker",
+                  import.meta.url
+                )
+              );
+            default:
+              throw new Error(`Unknown label ${label}`);
+          }
+        },
+      },
+    });
+
+    MonacoServices.install(monaco as any);
+  }, []);
+
+  const langClient = new WorkerLanguageClient("/python.ls.worker.min.js");
 
   const handle_set_editor = React.useCallback(
     (selected_file: TSelectedFile) => {
@@ -132,6 +160,7 @@ const MainComponent = React.memo((props: any) => {
             hover: {
               enabled: false,
             },
+            readOnly: true,
           }
         );
       }
@@ -170,18 +199,18 @@ const MainComponent = React.memo((props: any) => {
         }
       });
 
-      editor_ref.current.onDidChangeModelContent(() => {
-        const state = store.getState().main;
-        const index = state.active_files.findIndex(
-          (file) => file.path === editor_ref.current.getModel().uri.path
-        );
+      // editor_ref.current.onDidChangeModelContent(() => {
+      //   const state = store.getState().main;
+      //   const index = state.active_files.findIndex(
+      //     (file) => file.path === editor_ref.current.getModel().uri.path
+      //   );
 
-        if (index !== -1) {
-          const updated_files = [...state.active_files];
-          updated_files[index] = { ...updated_files[index], is_touched: true };
-          dispatch(update_active_files(updated_files));
-        }
-      });
+      //   if (index !== -1) {
+      //     const updated_files = [...state.active_files];
+      //     updated_files[index] = { ...updated_files[index], is_touched: true };
+      //     dispatch(update_active_files(updated_files));
+      //   }
+      // });
 
       editor_ref.current.onDidChangeCursorPosition((e) => {
         dispatch(
@@ -191,7 +220,39 @@ const MainComponent = React.memo((props: any) => {
           })
         );
       });
+
+      listen({
+        webSocket: langClient.toFakeWebSocket(),
+        onConnection: (connection) => {
+          console.log("connected");
+          // create and start the language client
+          const languageClient = new MonacoLanguageClient({
+            name: "Worker Language Client",
+            clientOptions: {
+              documentSelector: ["python"],
+              errorHandler: {
+                error: () => ErrorAction.Continue,
+                closed: () => CloseAction.DoNotRestart,
+              },
+            },
+            // create a language client connection from the JSON RPC connection on demand
+            connectionProvider: {
+              get: (errorHandler, closeHandler) => {
+                return Promise.resolve(
+                  createConnection(connection, errorHandler, closeHandler)
+                );
+              },
+            },
+          });
+
+          const disposable: any = languageClient.start();
+          connection.onClose(() => {
+            disposable.dispose();
+          });
+        },
+      });
     },
+
     [editor_ref.current, editor_files_ref.current, active_files]
   );
 
@@ -284,7 +345,7 @@ const MainComponent = React.memo((props: any) => {
         className={`wrapper-component `}
         style={{ height: "100vh", display: "flex", flexDirection: "column" }}
       >
-        <HeaderSection />
+        <FooterComponent />
         <div className="middle-section" style={{ flex: 1, display: "flex" }}>
           <Splitter
             style={{
@@ -335,7 +396,6 @@ const MainComponent = React.memo((props: any) => {
             </Splitter.Panel>
           </Splitter>
         </div>
-        <FooterComponent />
       </div>
     </MainContext.Provider>
   );

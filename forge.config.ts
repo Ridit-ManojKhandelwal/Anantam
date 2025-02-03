@@ -6,6 +6,7 @@
 import type { ForgeConfig } from "@electron-forge/shared-types";
 import { MakerSquirrel } from "@electron-forge/maker-squirrel";
 import { MakerDeb } from "@electron-forge/maker-deb";
+import { MakerZIP } from "@electron-forge/maker-zip";
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 import { WebpackPlugin } from "@electron-forge/plugin-webpack";
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
@@ -26,16 +27,17 @@ const config: ForgeConfig = {
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({
-      setupIcon: "./assets/icon.ico",
-      authors: "MNovus",
-      owners: "MNovus",
-      version: "1.0.0",
-      name: "Anantam",
-      setupExe: "AnantamInstaller.exe",
-      noMsi: true,
-    }),
-    new MakerDeb({}),
+    // new MakerSquirrel({
+    //   setupIcon: "./assets/icon.ico",
+    //   authors: "MNovus",
+    //   owners: "MNovus",
+    //   version: "1.0.0",
+    //   name: "Anantam",
+    //   setupExe: "AnantamInstaller.exe",
+    //   noMsi: true,
+    // }),
+    // new MakerDeb({}),
+    new MakerZIP({}),
   ],
   plugins: [
     // new AutoUnpackNativesPlugin({}),

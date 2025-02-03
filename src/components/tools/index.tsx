@@ -14,31 +14,11 @@ import {
 
 import "./styling/index.css";
 import "./styling/table.css";
-import { ImportOutlined } from "@ant-design/icons/lib";
+import Tooltip from "../../anantui/tooltip/Tooltip";
 
 export const Tools = () => {
-  let data = [
-    {
-      name: "Three",
-      type: "excel",
-      path: "/home/ridit/Downloads/Financial Sample.xlsx",
-      skip_rows: 24,
-      sheet: "sheet1",
-    },
-  ];
+  let data = useAppSelector((state) => state.main.toolsdata);
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(
-      update_tools_data({
-        name: "Three",
-        type: "excel",
-        path: "/home/ridit/Downloads/Financial Sample.xlsx",
-        skip_rows: 24,
-        sheet: "sheet1",
-      })
-    );
-  }, []);
 
   const [tools, setTools] = useState<any[]>([
     "table",
@@ -64,6 +44,7 @@ export const Tools = () => {
   window.electron.ipcRenderer.on(
     "update-tools-data",
     (event: any, data: any) => {
+      dispatch(update_tools_data(data));
       console.log(data);
     }
   );
@@ -99,8 +80,15 @@ export const Tools = () => {
                 id={tool}
                 onClick={() => setCurrentTool(tool)}
               >
-                {tool.charAt(0).toUpperCase().replace("_", " ") +
-                  tool.slice(1).replace("_", " ")}
+                <Tooltip
+                  text={`${
+                    tool.charAt(0).toUpperCase().replace("_", " ") +
+                    tool.slice(1).replace("_", " ")
+                  }`}
+                >
+                  {tool.charAt(0).toUpperCase().replace("_", " ") +
+                    tool.slice(1).replace("_", " ")}
+                </Tooltip>
               </li>
             ))}
           </ul>

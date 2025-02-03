@@ -5,18 +5,21 @@
 
 // Folder Structure Type
 export interface IFolderStructure {
+  id: number;
   name: string;
   root: string;
-  tree: TFolderTree[];
+  isFolder: boolean;
+  items: TFolderTree[];
 }
 
 // Folder Tree Type
 export type TFolderTree = {
+  id: number;
   name: string;
   parentPath: string;
   path: string;
-  children?: TFolderTree[];
-  is_dir: boolean;
+  items?: TFolderTree[];
+  is_Folder: boolean;
 };
 
 // Normal settings

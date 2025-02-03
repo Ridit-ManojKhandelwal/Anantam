@@ -391,6 +391,27 @@ body {
   grid-template-rows: 40px 1fr;
 }
 
+.runTool {
+  width: fit-content;
+  background: var(--main-bg);
+  border-left: 2px solid #3d4350ff;
+  display: flex;
+  align-items: center;
+}
+
+.runTool svg {
+  font-size: 16px;
+}
+
+.runTool button {
+  height: auto;
+  padding: 10px 15px;
+  border: none;
+  color: #fff;
+  background: var(--main-bg);
+  cursor: pointer;
+}
+
 .content-inner .page-tabs-cont {
   display: flex;
   background-color: var(--tabs-bg);
@@ -398,13 +419,20 @@ body {
   flex: 1;
   overflow: auto;
   max-height: calc(100vh - 50px);
+  height: 40px;
+  justify-content: space-between;
+}
+
+.content-inner .page-tabs-cont .tabs {
+  display: flex;
+  position: relative;
 }
 
 .content-inner .page-tabs-cont .tab {
   flex-shrink: 0;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--sidebar-text-color);
-  padding: 0px 20px;
+  padding: 0px 10px;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -415,9 +443,7 @@ body {
 
 .content-inner .page-tabs-cont .tab:first-child {
   flex-shrink: 0;
-  font-size: 16px;
   color: var(--sidebar-text-color);
-  padding: 0px 20px;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -490,6 +516,11 @@ body {
 .content-inner .page-tabs-cont .tab:hover,
 .content-inner .page-tabs-cont .tab.active {
   background-color: #21252bff;
+}
+
+.content-inner .page-tabs-cont .tab:hover,
+.content-inner .page-tabs-cont .tab.active svg path {
+  visibility: visible;
 }
 
 .no-selected-files {
@@ -1146,101 +1177,6 @@ code.output {
 #close {
   margin-left: 10px;
   font-size: 18px;
-}
-
-.toolbar {
-  height: fit-content;
-  padding-left: 12px;
-  border: 1px solid var(--border-color);
-  background: var(--main-bg);
-}
-
-.toolbar .tools {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.toolbar .tools .tool button:first-child {
-  background: transparent;
-  color: #abb2bfff;
-  cursor: pointer;
-  border: none;
-}
-
-.toolbar .tools .tool button {
-  background: transparent;
-  color: #fff;
-  cursor: pointer;
-  border: none;
-}
-
-.toolbar .tools .path p {
-  font-size: 16px;
-  color: var(--main-text-color);
-}
-
-.runTool {
-  width: fit-content;
-  background: var(--main-bg);
-  border-left: 2px solid #3d4350ff;
-  display: flex;
-  align-items: center;
-}
-
-.runTool svg {
-  font-size: 16px;
-}
-
-.runTool button {
-  height: auto;
-  padding: 10px 15px;
-  position: fixed;
-  right: 0;
-
-  border: none;
-  color: #fff;
-  background: var(--main-bg);
-  cursor: pointer;
-}
-
-.interpreter-dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.interpreter-menu {
-  position: absolute;
-  width: 40vh;
-  right: 0;
-  background: var(--main-bg);
-  color: var(--main-text-color);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  z-index: 10;
-}
-
-.interpreter-menu ul {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  border-bottom: 1px solid #3d4350ff;
-}
-
-.interpreter-menu li {
-  padding: 8px 16px;
-  cursor: pointer;
-}
-
-.add-interpreter {
-  width: 100%;
-  margin: 6px;
-  padding: 6px;
-  font-size: 14px;
-}
-
-.interpreter-menu li:hover {
-  background: var(--file-list-bg);
 }
 
 .terminal {

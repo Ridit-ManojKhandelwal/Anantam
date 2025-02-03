@@ -11,6 +11,7 @@ import { IFolderStructure } from "./shared/types";
 import { set_folder_structure } from "./shared/rdx-slice";
 import { ConfigProvider, theme } from "antd/es";
 import { PrimeReactProvider } from "primereact/api";
+import { AnantProvider } from "./anantui";
 
 const App = React.memo((props: any) => {
   const dispatch = useAppDispatch();
@@ -25,15 +26,17 @@ const App = React.memo((props: any) => {
   }, []);
 
   return (
-    <PrimeReactProvider>
-      <ConfigProvider
-        theme={{
-          algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
-        }}
-      >
-        <RouterProvider router={router} />
-      </ConfigProvider>
-    </PrimeReactProvider>
+    <AnantProvider mode="dark">
+      <PrimeReactProvider>
+        <ConfigProvider
+          theme={{
+            algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
+          }}
+        >
+          <RouterProvider router={router} />
+        </ConfigProvider>
+      </PrimeReactProvider>
+    </AnantProvider>
   );
 });
 

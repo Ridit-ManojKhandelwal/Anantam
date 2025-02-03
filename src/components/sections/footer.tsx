@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { ReactComponent as RadioTowerIcon } from "../../assets/svg/radio-tower.svg";
 import { useAppDispatch, useAppSelector } from "../../shared/hooks";
 import { get_file_types } from "../../shared/functions";
 import {
@@ -52,12 +51,6 @@ const FooterComponent = React.memo((props: any) => {
                 : folder_structure?.name?.split(/\/|\\/).at(-1)
               : active_file.name}
           </span>
-        </div>
-        <div className="">
-          <span className="bigger-icon" style={{ marginRight: 5 }}>
-            <RadioTowerIcon />
-          </span>
-          <div>Terminal</div>
         </div>
       </div>
       <div>

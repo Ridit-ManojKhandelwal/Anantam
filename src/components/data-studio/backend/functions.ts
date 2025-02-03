@@ -1,5 +1,3 @@
-import * as XLSX from "xlsx";
-
 interface HandleFileUploadProps {
   e: React.ChangeEvent<HTMLInputElement>;
   setFileData: (data: any) => void;
@@ -33,11 +31,11 @@ export const handleFileUpload = ({
         throw new Error("Failed to read file data.");
       }
 
-      const workbook = XLSX.read(data, { type: "array" }); // Use 'array' for better compatibility
-      const sheet = workbook.Sheets[workbook.SheetNames[0]]; // Use the first sheet by default
-      const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      // const workbook = XLSX.read(data, { type: "array" }); // Use 'array' for better compatibility
+      // const sheet = workbook.Sheets[workbook.SheetNames[0]]; // Use the first sheet by default
+      // const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-      setFileData(jsonData);
+      // setFileData(jsonData);
       setCurrentExcelStep(1); // Move to the Preview step after file is loaded
     } catch (error) {
       message.error(`Error reading the file: ${error.message}`);

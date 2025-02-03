@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+
 import { useAppDispatch, useAppSelector } from "../../shared/hooks";
 import {
   set_data_tool_tab,
@@ -9,18 +10,22 @@ import {
   update_env_vars,
   update_terminal_active,
 } from "../../shared/rdx-slice";
+import FileIcon from "../../shared/file-icon";
+
 import { IFolderStructure, TActiveFile } from "../../shared/types";
+
 import { ReactComponent as TimesIcon } from "../../assets/svg/times.svg";
+
 import PerfectScrollbar from "react-perfect-scrollbar";
+
 import { MainContext } from "../../shared/functions";
+
 const SettingsComponent = React.lazy(
   () => import("../settings-section/settings")
 );
 const DataStudio = React.lazy(() => import("../data-studio/app"));
 
 import { CaretRightFilled, SettingOutlined } from "@ant-design/icons/lib";
-import { Tools } from "../tools";
-import { Splitter } from "antd/es";
 
 const ContentSection = React.memo((props: any) => {
   const dispatch = useAppDispatch();
@@ -41,65 +46,6 @@ const ContentSection = React.memo((props: any) => {
   }));
 
   const useMainContextIn = React.useContext(MainContext);
-
-  const [interpreterMenuOpen, setInterpreterMenuOpen] = useState(false);
-  const [interpreter, setInterpreter] = useState("");
-  const [interpreters, setInterpreters] = useState<string[]>([]);
-
-  useEffect(() => {
-    const getInterpreter = async () => {
-      const savedInterpreter = await window.electron.get_interpreter();
-      if (savedInterpreter?.path) {
-        setInterpreters((prev) =>
-          prev.includes(savedInterpreter.path)
-            ? prev
-            : [...prev, savedInterpreter.path]
-        );
-        console.log(savedInterpreter);
-      }
-    };
-
-    getInterpreter();
-  }, []);
-
-  const toggleInterpreterMenu = () => {
-    setInterpreterMenuOpen(!interpreterMenuOpen);
-  };
-
-  const handleSelectInterpreter = (selectedInterpreter: string) => {
-    setInterpreter(selectedInterpreter);
-    setInterpreterMenuOpen(false);
-  };
-
-  const handleAddInterpreter = async () => {
-    try {
-      const selectedFiles = await window.electron.selectInterpreter();
-      if (selectedFiles && selectedFiles.length > 0) {
-        const newInterpreter = selectedFiles;
-
-        const prevInterpreter = await window.electron.get_interpreter();
-
-        const prevInterpreterArray = Array.isArray(prevInterpreter)
-          ? prevInterpreter
-          : prevInterpreter?.path
-          ? [prevInterpreter]
-          : [];
-
-        const interpreters = {
-          ...prevInterpreterArray.map((interpreter) => ({
-            path: interpreter.path,
-          })),
-          path: newInterpreter,
-        };
-
-        setInterpreters((prev) => [...prev, newInterpreter.path]);
-
-        await window.electron.set_interpreter(interpreters);
-      }
-    } catch (error) {
-      console.error("Error adding interpreter:", error);
-    }
-  };
 
   const handle_open_folder = React.useCallback(async () => {
     const folder = (await window.electron.openFolder()) as IFolderStructure;
@@ -178,79 +124,33 @@ const ContentSection = React.memo((props: any) => {
       ) : (
         <div className="content-inner">
           <PerfectScrollbar className="page-tabs-cont" style={{ zIndex: 9 }}>
-            {active_files.map((file) => (
-              <div
-                onClick={() => handle_set_selected_file(file)}
-                className={
-                  "tab" + (active_file?.path == file.path ? " active" : "")
-                }
-              >
-                <span>{file.icon}</span>
-                <span>{file.name}</span>
-                <span
-                  onClick={(e) => handleRemoveFile(e as any, file)}
-                  className={file.is_touched ? "is_touched" : ""}
+            <div className="tabs">
+              {active_files.map((file) => (
+                <div
+                  onClick={() => handle_set_selected_file(file)}
+                  className={
+                    "tab" + (active_file?.path == file.path ? " active" : "")
+                  }
                 >
-                  <TimesIcon />
-                  <span className="dot"></span>
-                </span>
-              </div>
-            ))}
+                  <span>{FileIcon({ type: file.icon.split(".").at(-1) })}</span>
+                  <span>{file.name}</span>
+                  <span
+                    onClick={(e) => handleRemoveFile(e as any, file)}
+                    className={file.is_touched ? "is_touched" : ""}
+                  >
+                    <TimesIcon />
+                    <span className="dot"></span>
+                  </span>
+                </div>
+              ))}
+            </div>
             <div className="runTool">
               <button onClick={handleRun}>
                 <CaretRightFilled />
               </button>
             </div>
           </PerfectScrollbar>
-
-          <div>
-            <div className="toolbar">
-              <div className="tools">
-                <div className="path">
-                  <p>{active_file.path}</p>
-                </div>
-                <div className="tool">
-                  <div className="interpreter-dropdown">
-                    <button onClick={toggleInterpreterMenu}>
-                      {interpreter || "Select Interpreter"}
-                    </button>
-                    {interpreterMenuOpen && (
-                      <div className="interpreter-menu">
-                        <ul>
-                          {interpreters.map((item, index) => (
-                            <li
-                              key={index}
-                              onClick={() => handleSelectInterpreter(item)}
-                            >
-                              {item}
-                            </li>
-                          ))}
-                        </ul>
-                        <button
-                          className="add-interpreter"
-                          onClick={handleAddInterpreter}
-                        >
-                          Add Interpreter
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => {
-                      if (!settings) {
-                        dispatch(set_settings_tab(true));
-                      } else {
-                        dispatch(set_settings_tab(false));
-                      }
-                    }}
-                  >
-                    <SettingOutlined />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="editor-container"></div>
+          <div className="editor-container" id="editor"></div>
         </div>
       )}
     </div>

@@ -6,6 +6,7 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import { ExportOutlined, ImportOutlined } from "@ant-design/icons/lib";
 import { useAppDispatch, useAppSelector } from "../../shared/hooks";
 import { update_tools_window_state } from "../../shared/rdx-slice";
+import { Tabs } from "../../anantui/index";
 
 export const BottomTabs = () => {
   const [currentTab, setCurrentTab] = useState<number>(0);
@@ -14,11 +15,15 @@ export const BottomTabs = () => {
       key: 0,
       name: "Tools",
       content: <Tools />,
+      closable: false,
+      onTabClick: () => setCurrentTab(0),
     },
     {
       key: 1,
       name: "Terminal",
       content: <Terminal />,
+      closable: false,
+      onTabClick: () => setCurrentTab(1),
     },
   ];
   const tools_in_a_window = useAppSelector(
@@ -29,22 +34,9 @@ export const BottomTabs = () => {
   return (
     <PerfectScrollbar>
       <div className="bottom-wrapper">
-        <div className="tabs">
-          <div
-            style={{
-              display: "flex",
-            }}
-          >
-            {tabs.map((tab) => (
-              <div
-                className={`tab ${currentTab === tab.key && "active"}`}
-                onClick={() => setCurrentTab(tab.key)}
-              >
-                <p>{tab.name}</p>
-              </div>
-            ))}
-          </div>
-          {currentTab === 0 && (
+        <Tabs
+          items={tabs}
+          customButtons={[
             <button
               onClick={() =>
                 dispatch(
@@ -53,9 +45,10 @@ export const BottomTabs = () => {
               }
             >
               {tools_in_a_window ? <ImportOutlined /> : <ExportOutlined />}
-            </button>
-          )}
-        </div>
+            </button>,
+          ]}
+          customButtonsTooltip={["Open In a New Window"]}
+        />
         <div className="tab-content">
           {tabs.map((tab) => tab.key === currentTab && tab.content)}
         </div>
