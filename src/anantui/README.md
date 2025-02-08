@@ -55,7 +55,7 @@ AnantUI is licensed under the **MIT License**. See the [LICENSE](https://github.
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
 # Github Repo
-[REPO][https://github.com/Ridit-ManojKhandelwal/AnantUI/]
+[REPO](https://github.com/Ridit-ManojKhandelwal/AnantUI/)
 
 ---
 
