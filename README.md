@@ -2,7 +2,7 @@
 
 Anantam is a modern Integrated Development Environment (IDE) designed specifically for Python development. It provides all the essential tools required for efficient Python programming and is built entirely in TypeScript. Additionally, Anantam features a dedicated Python Language Server to enhance the development experience by offering intelligent code completion, linting, and more.
 
-The name `Anantam` translates to *Anything is Possible*, embodying the limitless possibilities this IDE offers to developers.
+The name `Anantam` means to *Anything is Possible* and translates to *Infinity* , embodying the limitless possibilities this IDE offers to developers.
 
 ## Installation
 
