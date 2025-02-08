@@ -18,6 +18,7 @@ interface TabProps {
   addTabButtonText?: string;
   customButtons?: React.ReactNode[];
   customButtonsTooltip?: string[];
+  defaultTabActive?: number;
 }
 
 export const Tabs = ({
@@ -26,6 +27,7 @@ export const Tabs = ({
   addTabButtonText = "",
   customButtons = [],
   customButtonsTooltip = [],
+  defaultTabActive = 0,
 }: TabProps) => {
   const [tabs, setTabs] = useState(items);
   const [activeTab, setActiveTab] = useState(tabs.length > 1 ? 0 : 1);
@@ -73,6 +75,7 @@ export const Tabs = ({
                 <span>{item.name}</span>
                 {item.closable && (
                   <button
+                    key={item.key}
                     className="anant-close-btn"
                     onClick={() => removeTab(item.key)}
                   >

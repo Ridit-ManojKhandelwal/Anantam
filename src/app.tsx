@@ -31,6 +31,11 @@ const App = React.memo((props: any) => {
         <ConfigProvider
           theme={{
             algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
+            components: {
+              Splitter: {
+                splitBarSize: 0,
+              },
+            },
           }}
         >
           <RouterProvider router={router} />

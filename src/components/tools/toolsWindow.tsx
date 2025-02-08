@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import ReactDOM from "react-dom/client";
+import { useState } from "react";
 
 import { Table } from "./chart-engines/table";
 import { BarChart } from "./chart-engines/bar-chart";
@@ -10,9 +9,9 @@ import { useAppDispatch, useAppSelector } from "../../shared/hooks";
 
 import "./styling/index.css";
 import "./styling/table.css";
+
 import {
   BarChartOutlined,
-  ImportOutlined,
   LineChartOutlined,
   PieChartOutlined,
   TableOutlined,
@@ -21,13 +20,13 @@ import {
   StockOutlined,
   FundOutlined,
 } from "@ant-design/icons/lib";
-import { update_tools_window_state } from "../../shared/rdx-slice";
 
 export const ToolsWindow = () => {
-  const data = useAppSelector((state) => state.main.toolsdata);
-  const dispatch = useAppDispatch();
+  const [currentTool, setCurrentTool] = useState<string>("table");
 
-  const [tools, setTools] = useState<any[]>([
+  const data = useAppSelector((state) => state.main.toolsdata);
+
+  const tools = [
     "table",
     "bar_chart",
     "line_chart",
@@ -36,7 +35,7 @@ export const ToolsWindow = () => {
     "radar_chart",
     "stock_chart",
     "fund_chart",
-  ]);
+  ];
 
   const toolsIcon: any = {
     table: <TableOutlined style={{ color: "#1890ff" }} />,
@@ -49,7 +48,7 @@ export const ToolsWindow = () => {
     fund_chart: <FundOutlined style={{ color: "#eb2f96" }} />,
   };
 
-  const [toolsContent, setToolsContent] = useState<any[]>([
+  const toolsContent: any = [
     {
       table: <Table data={data} />,
       bar_chart: <BarChart data={data} />,
@@ -60,9 +59,7 @@ export const ToolsWindow = () => {
       stock_chart: <div>Stock Chart</div>,
       fund_chart: <div>Fund Chart</div>,
     },
-  ]);
-
-  const [currentTool, setCurrentTool] = useState<string>("table");
+  ];
 
   window.electron.ipcRenderer.on(
     "update-tools-data",
@@ -76,7 +73,7 @@ export const ToolsWindow = () => {
       <div className="tools">
         <div className="tools-content">
           <p>{currentTool.toLocaleUpperCase()}</p>
-          {toolsContent.map((toolContent) => toolContent[currentTool])}
+          {toolsContent.map((toolContent: any) => toolContent[currentTool])}
         </div>
         <ul className="tools-list">
           {tools.map((tool, index) => (
@@ -91,7 +88,6 @@ export const ToolsWindow = () => {
               >
                 <div className="tool-icon">{toolsIcon[tool]}</div>
               </li>
-              {(index + 1) % 2 === 0 && <div className="line-break"></div>}
             </div>
           ))}
         </ul>

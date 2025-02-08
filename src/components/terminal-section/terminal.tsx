@@ -14,20 +14,32 @@ export const Terminal = () => {
 
     const term = new XTerminal({
       cursorBlink: true,
-      theme: {
-        background: "#282c34ff",
-      },
+      fontFamily: "Ubuntu Mono, monospace",
       fontSize: 16,
+      letterSpacing: 1.1,
+      lineHeight: 1.4,
+      theme: {
+        background: "#21252bff",
+        foreground: "#cdd6f4",
+        cursor: "#f38ba8",
+        black: "#45475a",
+        red: "#f38ba8",
+        green: "#a6e3a1",
+        yellow: "#f9e2af",
+        blue: "#89b4fa",
+        magenta: "#cba6f7",
+        cyan: "#94e2d5",
+        white: "#bac2de",
+      },
     });
 
-    // const fit = new FitAddon();
-    // fitAddon.current = fit;
-    // term.loadAddon(fit);
+    const fit = new FitAddon();
+    fitAddon.current = fit;
+    term.loadAddon(fit);
 
     term.open(terminalRef.current);
-    // fit.fit(); // Initial fit
+    term.write("Anantam builtin terminal >>");
 
-    term.write(">>");
     terminalInstance.current = term;
 
     const handleIncomingData = (_event: any, data: string) => {

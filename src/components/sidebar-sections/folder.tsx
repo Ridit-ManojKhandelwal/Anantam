@@ -10,6 +10,8 @@ import {
   FolderOutlined,
 } from "@ant-design/icons/lib";
 import FileIcon from "../../shared/file-icon";
+import FolderIcon from "../../shared/folder-icon";
+
 import { useAppDispatch, useAppSelector } from "../../shared/hooks";
 import { MainContext } from "../../shared/functions";
 
@@ -27,11 +29,19 @@ const Folder = React.memo(({ handleInsertNode = () => {}, explorer }: any) => {
     visible: false,
     isFolder: null,
   });
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
   const active_files = useAppSelector((state) => state.main.active_files);
   const useMainContextIn = React.useContext(MainContext);
 
   const dispatch = useAppDispatch();
+
+  const sortedItems = Array.isArray(explorer.items)
+    ? [...explorer.items].sort((a, b) => {
+        if (a.isFolder === b.isFolder) return a.name.localeCompare(b.name);
+        return a.isFolder ? -1 : 1;
+      })
+    : [];
 
   const handleNewFolder = (e: any, isFolder: any) => {
     e.stopPropagation();
@@ -84,13 +94,13 @@ const Folder = React.memo(({ handleInsertNode = () => {}, explorer }: any) => {
     [active_files]
   );
 
-  const onAddFolder = (e: any) => {
+  const onAddFolder = async (e: any) => {
     if (e.keyCode === 13 && e.target.value.trim()) {
       const newName = e.target.value.trim();
 
-      // Check if the file or folder already exists
       const alreadyExists = explorer.items.some(
-        (item: any) => item.name === newName
+        (item: any) =>
+          item.name === newName && item.isFolder === showInput.isFolder
       );
 
       if (alreadyExists) {
@@ -102,21 +112,30 @@ const Folder = React.memo(({ handleInsertNode = () => {}, explorer }: any) => {
         return;
       }
 
-      handleInsertNode(explorer.id, newName, showInput.isFolder);
+      console.log(explorer.id);
+      try {
+        if (showInput.isFolder) {
+          await window.electron.create_folder({
+            path: path_join([explorer.name, newName]),
+            fileName: newName,
+            rootPath: explorer.root,
+          });
+        } else {
+          await window.electron.create_file({
+            path: path_join([explorer.name, newName]),
+            fileName: newName,
+            rootPath: explorer.root,
+          });
+        }
 
-      console.log(explorer);
-      if (showInput.isFolder) {
-        window.electron.create_folder({
-          path: explorer.root,
-          fileName: newName,
-          rootPath: explorer.root,
-        });
-      } else {
-        window.electron.create_file({
-          path: path_join([explorer.path, newName]),
-          fileName: newName,
-          rootPath: explorer.root,
-        });
+        handleInsertNode(explorer.id, newName, showInput.isFolder);
+      } catch (error) {
+        console.error("Error creating file/folder:", error);
+        alert(
+          `Failed to create ${showInput.isFolder ? "folder" : "file"}: ${
+            error.message
+          }`
+        );
       }
 
       setShowInput({ ...showInput, visible: false });
@@ -138,7 +157,7 @@ const Folder = React.memo(({ handleInsertNode = () => {}, explorer }: any) => {
           }
         >
           <span>
-            {expand ? <FolderOpenOutlined /> : <FolderOutlined />}
+            <FolderIcon name={explorer.name} expanded={expand} />
             {explorer.name.split(/\/|\\/).at(-1)}
           </span>
           <div>
@@ -165,26 +184,29 @@ const Folder = React.memo(({ handleInsertNode = () => {}, explorer }: any) => {
               />
             </div>
           )}
-          {explorer.items.map((exp: any) => {
-            return (
-              <span key={exp.id}>
-                <Folder handleInsertNode={handleInsertNode} explorer={exp} />
-              </span>
-            );
-          })}
+          {sortedItems.map((exp: any) => (
+            <span key={exp.id}>
+              <Folder handleInsertNode={handleInsertNode} explorer={exp} />
+            </span>
+          ))}
         </div>
       </div>
     );
   } else {
     return (
       <span
-        className="file"
-        onClick={() =>
+        className={`file`}
+        onClick={() => {
           handle_set_editor(
             explorer.name,
             path_join([explorer.path, explorer.name])
-          )
-        }
+          );
+          if (selectedItem === explorer.name) {
+            setSelectedItem(null);
+          } else {
+            setSelectedItem(explorer.name);
+          }
+        }}
         onAuxClick={() =>
           window.electron.show_contextmenu({
             path: explorer.name,

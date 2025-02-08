@@ -10,6 +10,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Ubuntu Mono", monospace;
+  src: url("/src/assets/fonts/UbuntuMono-Regular.ttf") format("ttf");
+  font-weight: 100 800;
+  font-style: normal;
+}
+
 :root {
   --main-bg: #21252bff;
   --main-text-color: #abb2bfff;
@@ -516,11 +523,6 @@ body {
 .content-inner .page-tabs-cont .tab:hover,
 .content-inner .page-tabs-cont .tab.active {
   background-color: #21252bff;
-}
-
-.content-inner .page-tabs-cont .tab:hover,
-.content-inner .page-tabs-cont .tab.active svg path {
-  visibility: visible;
 }
 
 .no-selected-files {
@@ -1185,10 +1187,6 @@ code.output {
   height: "100%";
 }
 
-.editor-container {
-  height: 83vh;
-}
-
 .bottom-wrapper {
   overflow: hidden;
 }
@@ -1239,3 +1237,7 @@ code.output {
 .xterm-viewport::-webkit-scrollbar-corner {
   background: #1e1e1e;
 }
+
+/* .editor-container {
+  height: 100%;
+} */

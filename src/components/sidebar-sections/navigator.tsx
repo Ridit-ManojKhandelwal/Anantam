@@ -27,11 +27,16 @@ const Navigator = React.memo((props: any) => {
 
   const dispatch = useAppDispatch();
 
-  const { insertNode } = useTraverseTree();
+  const { insertNode, removeNode } = useTraverseTree();
 
   const handleInsertNode = (folderId: any, item: any, isFolder: any) => {
     const finalTree = insertNode(folder_structure, folderId, item, isFolder);
     dispatch(set_folder_structure(finalTree));
+  };
+
+  const handleRemoveNode = (nodeId: any) => {
+    const updatedTree = removeNode(folder_structure, nodeId);
+    dispatch(set_folder_structure(updatedTree));
   };
 
   console.log(folder_structure);
@@ -48,6 +53,7 @@ const Navigator = React.memo((props: any) => {
             {/* <div ref={content_main_div_ref} className="content-list main"></div> */}
             <Folder
               handleInsertNode={handleInsertNode}
+              handleRemoveNode={handleRemoveNode}
               explorer={folder_structure}
             />
           </PerfectScrollbar>

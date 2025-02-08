@@ -36,7 +36,7 @@ const config: ForgeConfig = {
     //   setupExe: "AnantamInstaller.exe",
     //   noMsi: true,
     // }),
-    // new MakerDeb({}),
+    new MakerDeb({}),
     new MakerZIP({}),
   ],
   plugins: [

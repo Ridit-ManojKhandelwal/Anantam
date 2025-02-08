@@ -36,18 +36,21 @@ export const BottomTabs = () => {
       <div className="bottom-wrapper">
         <Tabs
           items={tabs}
-          customButtons={[
-            <button
-              onClick={() =>
-                dispatch(
-                  update_tools_window_state(tools_in_a_window ? false : true)
-                )
-              }
-            >
-              {tools_in_a_window ? <ImportOutlined /> : <ExportOutlined />}
-            </button>,
-          ]}
-          customButtonsTooltip={["Open In a New Window"]}
+          customButtons={
+            currentTab === 0 && [
+              <button
+                onClick={() =>
+                  dispatch(
+                    update_tools_window_state(tools_in_a_window ? false : true)
+                  )
+                }
+              >
+                {tools_in_a_window ? <ImportOutlined /> : <ExportOutlined />}
+              </button>,
+            ]
+          }
+          customButtonsTooltip={currentTab === 0 && ["Open In a New Window"]}
+          defaultTabActive={0}
         />
         <div className="tab-content">
           {tabs.map((tab) => tab.key === currentTab && tab.content)}

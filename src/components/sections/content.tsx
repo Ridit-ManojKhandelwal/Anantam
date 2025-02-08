@@ -45,6 +45,8 @@ const ContentSection = React.memo((props: any) => {
     data_tab: state.main.set_data_tool_type_tab,
   }));
 
+  const editorRef = useRef<HTMLDivElement>(null);
+
   const useMainContextIn = React.useContext(MainContext);
 
   const handle_open_folder = React.useCallback(async () => {
@@ -78,7 +80,6 @@ const ContentSection = React.memo((props: any) => {
   );
 
   const handleRun = async () => {
-    const settings = await window.electron.get_settings();
     const vars = await window.electron.get_variables(active_file.path);
     dispatch(update_terminal_active(true));
     dispatch(update_env_vars(vars));
@@ -89,71 +90,84 @@ const ContentSection = React.memo((props: any) => {
   };
 
   return (
-    <div className="content-section">
-      {Object.keys(folder_structure).length == 0 && (
-        <div className="default-screen">
-          <button onClick={handle_open_folder}>Open Directory</button>
-        </div>
-      )}
-      {Object.keys(folder_structure).length > 0 && active_files.length == 0 ? (
-        <div className="no-selected-files">
-          {data_studio_active ? (
-            <React.Suspense fallback={<div>Loading...</div>}>
-              <div
-                style={{
-                  zIndex: 1000,
-                }}
-              >
-                <DataStudio />
-              </div>
-            </React.Suspense>
-          ) : settings ? (
-            <React.Suspense fallback={<div>Loading...</div>}>
-              <div
-                style={{
-                  zIndex: 1000,
-                }}
-              >
-                <SettingsComponent />
-              </div>
-            </React.Suspense>
-          ) : (
-            <div></div>
-          )}
-        </div>
-      ) : (
-        <div className="content-inner">
-          <PerfectScrollbar className="page-tabs-cont" style={{ zIndex: 9 }}>
-            <div className="tabs">
-              {active_files.map((file) => (
+    <PerfectScrollbar>
+      <div className="content-section">
+        {Object.keys(folder_structure).length == 0 && (
+          <div className="default-screen">
+            <button onClick={handle_open_folder}>Open Directory</button>
+          </div>
+        )}
+        {Object.keys(folder_structure).length > 0 &&
+        active_files.length == 0 ? (
+          <div className="no-selected-files">
+            {data_studio_active ? (
+              <React.Suspense fallback={<div>Loading...</div>}>
                 <div
-                  onClick={() => handle_set_selected_file(file)}
-                  className={
-                    "tab" + (active_file?.path == file.path ? " active" : "")
-                  }
+                  style={{
+                    zIndex: 1000,
+                  }}
                 >
-                  <span>{FileIcon({ type: file.icon.split(".").at(-1) })}</span>
-                  <span>{file.name}</span>
-                  <span
-                    onClick={(e) => handleRemoveFile(e as any, file)}
-                    className={file.is_touched ? "is_touched" : ""}
-                  >
-                    <TimesIcon />
-                    <span className="dot"></span>
-                  </span>
+                  <DataStudio />
                 </div>
-              ))}
-            </div>
-            <div className="runTool">
-              <button onClick={handleRun}>
-                <CaretRightFilled />
-              </button>
-            </div>
-          </PerfectScrollbar>
-          <div className="editor-container" id="editor"></div>
-        </div>
-      )}
-    </div>
+              </React.Suspense>
+            ) : settings ? (
+              <React.Suspense fallback={<div>Loading...</div>}>
+                <div
+                  style={{
+                    zIndex: 1000,
+                  }}
+                >
+                  <SettingsComponent />
+                </div>
+              </React.Suspense>
+            ) : (
+              <div></div>
+            )}
+          </div>
+        ) : (
+          <div className="content-inner">
+            <PerfectScrollbar className="page-tabs-cont" style={{ zIndex: 9 }}>
+              <div className="tabs">
+                {active_files.map((file) => (
+                  <div
+                    onClick={(e) => {
+                      if (e.button === 1) {
+                        handleRemoveFile(e as any, file);
+                      } else {
+                        handle_set_selected_file(file);
+                      }
+                    }}
+                    key={file.path}
+                    onMouseDown={(e) => e.button === 1 && e.preventDefault()}
+                    className={
+                      "tab" + (active_file?.path == file.path ? " active" : "")
+                    }
+                  >
+                    <span>
+                      {FileIcon({ type: file.name.split(".").at(-1) })}
+                    </span>
+                    <span>{file.name}</span>
+                    <span
+                      onClick={(e) => handleRemoveFile(e as any, file)}
+                      className={file.is_touched ? "is_touched" : ""}
+                    >
+                      <TimesIcon />
+                      <span className="dot"></span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="runTool">
+                <button onClick={handleRun}>
+                  <CaretRightFilled />
+                </button>
+              </div>
+            </PerfectScrollbar>
+            <div className="editor-container" id="editor" ref={editorRef}></div>
+          </div>
+        )}
+      </div>
+    </PerfectScrollbar>
   );
 });
 

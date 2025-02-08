@@ -3,32 +3,26 @@
 //  *  Licensed under the MIT License. See License.txt in the project root for license information.
 //  *--------------------------------------------------------------------------------------------*/
 
-import React, { useEffect, useState } from "react";
+import React from "react";
+
+import * as monaco from "monaco-editor";
+
+import {
+  update_active_files,
+  update_env_vars,
+  update_indent,
+  update_terminal_active,
+} from "../shared/rdx-slice";
 
 import { MainContext } from "../shared/functions";
-import * as monaco from "monaco-editor";
 import { get_file_types } from "../shared/functions";
 import { useAppDispatch, useAppSelector } from "../shared/hooks";
 import { TSelectedFile } from "../shared/types";
-import { update_active_files, update_indent } from "../shared/rdx-slice";
 import { store } from "../shared/store";
-import { Splitter } from "antd";
-import FooterComponent from "./sections/footer";
-import ContentSection from "./sections/content";
-import { BottomTabs } from "./bottom-section/tab";
-import Navigator from "./sidebar-sections/navigator";
-import Enviornment from "./sidebar-sections/enviornment";
 
-import "monaco-languages";
-import {
-  CloseAction,
-  createConnection,
-  ErrorAction,
-  MonacoLanguageClient,
-  MonacoServices,
-} from "monaco-languageclient";
-import { listen } from "@codingame/monaco-jsonrpc";
-import { WorkerLanguageClient } from "./python/WorkerLanguageClient";
+import { MonacoPyrightProvider } from "monaco-pyright-lsp";
+
+import { App } from "./app";
 
 const MainComponent = React.memo((props: any) => {
   const folder_structure = useAppSelector(
@@ -47,35 +41,8 @@ const MainComponent = React.memo((props: any) => {
 
   const active_file = useAppSelector((state) => state.main.active_file);
 
-  const sidebarActive = useAppSelector((state) => state.main.sidebar_active);
-  const terminalActive = useAppSelector((state) => state.main.terminal_active);
-
-  useEffect(() => {
-    Object.assign(window, {
-      MonacoEnvironment: {
-        getWorker(moduleId: string, label: string) {
-          switch (label) {
-            case "editorWorkerService":
-              return new Worker(
-                new URL(
-                  "monaco-editor/esm/vs/editor/editor.worker",
-                  import.meta.url
-                )
-              );
-            default:
-              throw new Error(`Unknown label ${label}`);
-          }
-        },
-      },
-    });
-
-    MonacoServices.install(monaco as any);
-  }, []);
-
-  const langClient = new WorkerLanguageClient("/python.ls.worker.min.js");
-
   const handle_set_editor = React.useCallback(
-    (selected_file: TSelectedFile) => {
+    async (selected_file: TSelectedFile) => {
       console.log("selected_file", selected_file);
 
       if (editor_ref.current != undefined) {
@@ -139,31 +106,22 @@ const MainComponent = React.memo((props: any) => {
         noSyntaxValidation: true,
       });
 
-      if (editor_ref.current == undefined) {
-        editor_ref.current = monaco.editor.create(
-          document.querySelector(".editor-container"),
+      async function initializeEditor() {
+        const pyrightProvider = new MonacoPyrightProvider();
+        await pyrightProvider.init(monaco);
+
+        const editor = monaco.editor.create(
+          document.getElementById("#editor"),
           {
-            theme: "vs-dark",
-            minimap: {
-              enabled: false,
-            },
-            mouseWheelZoom: false,
-            smoothScrolling: true,
-            wrappingIndent: "same",
-            fontSize: 14,
-            fontFamily: "monospace",
-            lineHeight: 22,
-            renderLineHighlight: "none",
-            renderWhitespace: "none",
-            scrollBeyondLastLine: false,
-            scrollBeyondLastColumn: 0,
-            hover: {
-              enabled: false,
-            },
-            readOnly: true,
+            value: "# Write your Python code here",
+            language: "python",
           }
         );
+
+        await pyrightProvider.setupDiagnostics(editor);
       }
+
+      initializeEditor();
 
       monaco.editor.defineTheme("dark", {
         base: "vs-dark",
@@ -188,29 +146,16 @@ const MainComponent = React.memo((props: any) => {
 
       editor_ref.current.setModel(new_model);
 
-      editor_ref.current.onKeyUp((e) => {
-        if (e.ctrlKey && e.keyCode == 49) {
+      editor_ref.current.addCommand(
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
+        function () {
           console.log("will save");
-
-          return handle_save_file({
+          handle_save_file({
             path: editor_ref.current.getModel().uri.path,
             content: editor_ref.current.getValue(),
           });
         }
-      });
-
-      // editor_ref.current.onDidChangeModelContent(() => {
-      //   const state = store.getState().main;
-      //   const index = state.active_files.findIndex(
-      //     (file) => file.path === editor_ref.current.getModel().uri.path
-      //   );
-
-      //   if (index !== -1) {
-      //     const updated_files = [...state.active_files];
-      //     updated_files[index] = { ...updated_files[index], is_touched: true };
-      //     dispatch(update_active_files(updated_files));
-      //   }
-      // });
+      );
 
       editor_ref.current.onDidChangeCursorPosition((e) => {
         dispatch(
@@ -220,37 +165,6 @@ const MainComponent = React.memo((props: any) => {
           })
         );
       });
-
-      listen({
-        webSocket: langClient.toFakeWebSocket(),
-        onConnection: (connection) => {
-          console.log("connected");
-          // create and start the language client
-          const languageClient = new MonacoLanguageClient({
-            name: "Worker Language Client",
-            clientOptions: {
-              documentSelector: ["python"],
-              errorHandler: {
-                error: () => ErrorAction.Continue,
-                closed: () => CloseAction.DoNotRestart,
-              },
-            },
-            // create a language client connection from the JSON RPC connection on demand
-            connectionProvider: {
-              get: (errorHandler, closeHandler) => {
-                return Promise.resolve(
-                  createConnection(connection, errorHandler, closeHandler)
-                );
-              },
-            },
-          });
-
-          const disposable: any = languageClient.start();
-          connection.onClose(() => {
-            disposable.dispose();
-          });
-        },
-      });
     },
 
     [editor_ref.current, editor_files_ref.current, active_files]
@@ -259,21 +173,6 @@ const MainComponent = React.memo((props: any) => {
   const handle_save_file = React.useCallback(
     (data: { path: string; content: string }) => {
       window.electron.save_file(data);
-
-      setTimeout(() => {
-        const model_editing_index = store
-          .getState()
-          .main.active_files.findIndex((file) => file.path == data.path);
-        const model_editing = {
-          ...store.getState().main.active_files[model_editing_index],
-        };
-        const _active_file = [...store.getState().main.active_files];
-
-        _active_file.splice(model_editing_index, 1);
-        model_editing.is_touched = false;
-        _active_file[model_editing_index] = model_editing;
-        dispatch(update_active_files(_active_file));
-      }, 0);
     },
     []
   );
@@ -288,8 +187,6 @@ const MainComponent = React.memo((props: any) => {
       const target_model_index = allModels.findIndex(
         (model) => model.uri.path == selected_file.path
       );
-      // monaco.editor.add
-      // monaco.editor.getModels().splice(target_model_index, 1)
       console.log(
         "monaco.editor.getModels().length",
         monaco.editor.getModels().length
@@ -333,6 +230,38 @@ const MainComponent = React.memo((props: any) => {
   }, []);
 
   React.useEffect(() => {
+    const active_files = store
+      .getState()
+      .main.active_files.filter((file) => file.path === active_file.path);
+    window.electron.ipcRenderer.on("save-current-file", () => {
+      console.log(active_file, active_files);
+      active_files.forEach((file) => {
+        handle_save_file({
+          path: file.path,
+          content: monaco.editor
+            .getModels()
+            .find((model) => model.uri.path == file.path)
+            .getValue(),
+        });
+      });
+    });
+  }, []);
+
+  React.useEffect(() => {
+    try {
+      window.electron.ipcRenderer.on("run-current-file", async () => {
+        const vars = await window.electron.get_variables(active_file.path);
+        dispatch(update_terminal_active(true));
+        dispatch(update_env_vars(vars));
+        window.electron.run_code({
+          path: active_file.path,
+          script: "python3",
+        });
+      });
+    } catch {}
+  });
+
+  React.useEffect(() => {
     window.addEventListener("blur", handle_win_blur);
     return () => window.removeEventListener("blur", handle_win_blur);
   }, []);
@@ -341,62 +270,7 @@ const MainComponent = React.memo((props: any) => {
     <MainContext.Provider
       value={{ handle_set_editor, handle_remove_editor, handle_save_file }}
     >
-      <div
-        className={`wrapper-component `}
-        style={{ height: "100vh", display: "flex", flexDirection: "column" }}
-      >
-        <FooterComponent />
-        <div className="middle-section" style={{ flex: 1, display: "flex" }}>
-          <Splitter
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "row",
-            }}
-          >
-            {sidebarActive ? (
-              <Splitter.Panel defaultSize="20%" min="10%" max="95%">
-                <Splitter
-                  layout="vertical"
-                  style={{
-                    height: "100vh",
-                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <Splitter.Panel>
-                    <Navigator />
-                  </Splitter.Panel>
-
-                  <Splitter.Panel>
-                    <Enviornment />
-                  </Splitter.Panel>
-                </Splitter>
-              </Splitter.Panel>
-            ) : (
-              ""
-            )}
-            <Splitter.Panel>
-              <Splitter layout="vertical">
-                <Splitter.Panel>
-                  <ContentSection />
-                </Splitter.Panel>
-                {terminalActive ? (
-                  <Splitter.Panel
-                    defaultSize="30%"
-                    min="10%"
-                    max="95%"
-                    className="terminal"
-                  >
-                    <BottomTabs />
-                  </Splitter.Panel>
-                ) : (
-                  ""
-                )}
-              </Splitter>
-            </Splitter.Panel>
-          </Splitter>
-        </div>
-      </div>
+      <App />
     </MainContext.Provider>
   );
 });

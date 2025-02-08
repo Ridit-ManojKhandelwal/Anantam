@@ -19,7 +19,7 @@
 .tools-wrapper .tools {
   display: flex;
   background: var(--main-bg);
-  border: 1px solid var(--border-color);
+  /* border: 1px solid var(--border-color); */
   justify-content: space-between;
 }
 

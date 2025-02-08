@@ -17,7 +17,14 @@ const FooterComponent = React.memo((props: any) => {
   const dispatch = useAppDispatch();
 
   return (
-    <div className="footer-section">
+    <div
+      className="footer-section"
+      style={{
+        position: "absolute",
+        bottom: 0,
+        zIndex: 100,
+      }}
+    >
       <div>
         <div className="">
           <span

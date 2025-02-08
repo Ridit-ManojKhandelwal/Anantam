@@ -6,6 +6,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+// Import
 import {
   app,
   BrowserWindow,
@@ -17,15 +18,16 @@ import {
   globalShortcut,
 } from "electron";
 
+// FileSytem
 import fs from "fs";
 
+// Store for local storage
 import Store from "electron-store";
 
 import os from "os";
 
+// For Terminal
 import * as pty from "node-pty";
-
-import { execFile } from "child_process";
 
 import path from "path";
 
@@ -99,7 +101,13 @@ const template = [
       { label: "Save Workspace As" },
       { label: "Duplicate Workspace" },
       { type: "separator" },
-      { label: "Save" },
+      {
+        label: "Save",
+        click: () => {
+          mainWindow.webContents.send("save-current-file");
+        },
+        accelator: "Ctrl + S",
+      },
       { label: "Save As..." },
       { label: "Save All" },
       { type: "separator" },
@@ -196,7 +204,13 @@ const template = [
       { label: "Explorer" },
       { label: "Search" },
       { label: "Source Control" },
-      { label: "Run" },
+      {
+        label: "Run",
+        click: () => {
+          mainWindow.webContents.send("run-current-file");
+        },
+        accelator: "F5",
+      },
       { label: "Extensions" },
       { type: "separator" },
       { label: "Problems" },
@@ -262,6 +276,13 @@ const template = [
   {
     label: "Run",
     submenu: [
+      {
+        label: "Run",
+        click: () => {
+          mainWindow.webContents.send("run-current-file");
+        },
+        accelator: "F5",
+      },
       { label: "Start Debugging" },
       { label: "Run Without Debugging" },
       { label: "Stop Debugging", enabled: false },
@@ -331,14 +352,6 @@ ipcMain.handle("get-folder", async (event, data) => {
 ipcMain.on("clear-folder", () => {
   // @ts-ignore
   store.delete(SELECTED_FOLDER_STORE_NAME);
-});
-
-ipcMain.on("create-project-anantam-config-file", async (event, data) => {
-  const content = `{\n    "project_type": "anantam",\n    "interpreter_path": "'${data.interpreter_path}'",\n    "variables": true,\n    "file_suggestion": false\n}`;
-  fs.writeFileSync(data.path, content);
-});
-ipcMain.on("create-project-anantam-file", async (event, data) => {
-  fs.writeFileSync(data.path, data.content);
 });
 
 ipcMain.on("create-folder", async (event, data) => {
@@ -471,57 +484,6 @@ ipcMain.on("set-settings", (event, data) => {
 ipcMain.handle("get-settings", async (event) => {
   // @ts-ignore
   return store.get(SETTINGS_STORE_NAME);
-});
-
-ipcMain.on("set-interpreter", (event, data) => {
-  // @ts-ignore
-  store.set(INTERPRETER_STORE_NAME, data);
-});
-
-ipcMain.handle("get-interpreter", async (event) => {
-  // @ts-ignore
-  return store.get(INTERPRETER_STORE_NAME);
-});
-
-ipcMain.handle("dialog:select-interpreter", async (event) => {
-  const result = await dialog.showOpenDialog(mainWindow, {
-    title: "Select Interpreter",
-    properties: ["openFile"],
-    filters: [
-      { name: "All Files", extensions: ["*"] }, // Allow all file extensions
-    ],
-  });
-
-  if (result.canceled || result.filePaths.length === 0) {
-    return null; // No file selected
-  }
-
-  const filePath = result.filePaths[0]; // Get the selected file path
-
-  // Check if the file is a valid interpreter
-  const isValidInterpreter = await new Promise((resolve) => {
-    execFile(filePath, ["--version"], (error, stdout, stderr) => {
-      if (error) {
-        resolve(false); // Not valid if it fails to execute
-      } else if (stdout.toLowerCase().includes("python")) {
-        resolve(true); // Valid Python interpreter
-      } else {
-        resolve(false); // Not valid if output doesn't contain "python"
-      }
-    });
-  });
-
-  if (!isValidInterpreter) {
-    // Show an alert if the interpreter is not valid
-    await dialog.showMessageBox(mainWindow, {
-      type: "error",
-      title: "Invalid Interpreter",
-      message: "The selected file is not a valid Python interpreter.",
-    });
-    return null;
-  }
-
-  return filePath;
 });
 
 ipcMain.handle("get-file-content", async (event, path) => {
@@ -813,32 +775,35 @@ const createWindow = (): void => {
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  const shell = os.platform() === "win32" ? "powershell.exe" : "bash";
+  try {
+    const shell = os.platform() === "win32" ? "powershell.exe" : "bash";
 
-  ptyProcess = pty.spawn(shell, [], {
-    name: "xterm-color",
-    cols: 80,
-    rows: 30,
-    cwd: cwd || process.env.HOME,
-    env: process.env,
-  });
+    ptyProcess = pty.spawn(shell, [], {
+      name: "xterm-color",
+      cols: 80,
+      rows: 30,
+      cwd: cwd || process.env.HOME,
+      env: process.env,
+    });
 
-  ptyProcess.onData(function (data) {
-    mainWindow.webContents.send("terminal.incomingData", data);
-    console.log("Data sent");
-  });
+    ptyProcess.onData(function (data) {
+      mainWindow.webContents.send("terminal.incomingData", data);
+    });
 
-  ipcMain.on("terminal.keystroke", (event, key) => {
-    ptyProcess.write(key);
-  });
+    ipcMain.on("terminal.keystroke", (event, key) => {
+      ptyProcess.write(key);
+    });
 
-  ipcMain.on("terminal.resize", (event, data) => {
-    ptyProcess.resize(data.cols, data.rows);
-  });
+    ipcMain.on("terminal.resize", (event, data) => {
+      ptyProcess.resize(data.cols, data.rows);
+    });
 
-  ipcMain.on("terminal.write", (event, line) => {
-    ptyProcess.write(line);
-  });
+    ipcMain.on("terminal.write", (event, line) => {
+      ptyProcess.write(line);
+    });
+  } catch (err) {
+    mainWindow.webContents.send("terminal.incomingData", err);
+  }
 
   ipcMain.handle("open-folder", async (event, data) => {
     const folder = await dialog.showOpenDialog(mainWindow, {
